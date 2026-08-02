@@ -13,10 +13,13 @@ import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.shared.domain.AuditableEntity;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 @Entity
 @Table(name = "users")
 public class User extends AuditableEntity {
+
+    private static final int LOCK_THRESHOLD = 5;
 
     @NotBlank
     @Size(max = 50)
@@ -57,6 +60,23 @@ public class User extends AuditableEntity {
 
     public void deactivate() { this.active = false; }
     public void activate() { this.active = true; }
+
+    public void recordSuccessfulLogin() {
+        this.lastLoginAt = LocalDateTime.now(ZoneOffset.UTC);
+        this.failedLoginAttempts = 0;
+    }
+
+    public void recordFailedLogin() {
+        this.failedLoginAttempts++;
+    }
+
+    public boolean isLocked() {
+        return failedLoginAttempts >= LOCK_THRESHOLD;
+    }
+
+    public void unlock() {
+        this.failedLoginAttempts = 0;
+    }
 
     public String getUsername() { return username; }
     public String getPasswordHash() { return passwordHash; }
