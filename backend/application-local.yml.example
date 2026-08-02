@@ -1,0 +1,4 @@
+spring:
+  datasource:
+    username: accessone_app
+    password: PasswordHere
