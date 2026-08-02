@@ -11,9 +11,8 @@ import java.util.Map;
 
 /**
  * Proves the stack end to end: entity mapping, repository, transaction, JSON
- * serialisation. Delete this controller in Phase 3, or lock it behind the
- * system administrator role — an unauthenticated row-count endpoint is a
- * small information leak.
+ * serialisation. Restricted to SYSTEM_ADMIN by SecurityConfig since Phase 3 —
+ * an unauthenticated row-count endpoint is a small information leak.
  */
 @RestController
 @RequestMapping(ApiPaths.API_V1 + "/meta")
