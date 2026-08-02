@@ -36,7 +36,7 @@ management:
     web:
       base-path: /api/actuator
       exposure:
-        include: health,info
+        include: health
 
 springdoc:
   api-docs:
@@ -47,4 +47,3 @@ springdoc:
 logging:
   level:
     org.hibernate.SQL: debug
-    org.hibernate.orm.jdbc.bind: trace
