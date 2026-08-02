@@ -4,6 +4,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ProblemDetail;
+import org.springframework.security.authentication.BadCredentialsException;
+import org.springframework.security.authentication.DisabledException;
+import org.springframework.security.authentication.LockedException;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -45,6 +49,30 @@ public class GlobalExceptionHandler {
                                    "One or more fields are invalid", "validation");
         pd.setProperty("fieldErrors", fieldErrors);
         return pd;
+    }
+
+    /**
+     * "User does not exist" and "wrong password" return the same message —
+     * differing responses let an attacker enumerate valid usernames.
+     */
+    @ExceptionHandler({BadCredentialsException.class, UsernameNotFoundException.class})
+    public ProblemDetail handleBadCredentials(Exception ex) {
+        return problem(HttpStatus.UNAUTHORIZED, "Authentication failed",
+                       "Invalid username or password", "authentication");
+    }
+
+    @ExceptionHandler(DisabledException.class)
+    public ProblemDetail handleDisabled(DisabledException ex) {
+        return problem(HttpStatus.FORBIDDEN, "Account disabled",
+                       "This account has been deactivated. Contact your administrator.",
+                       "account-disabled");
+    }
+
+    @ExceptionHandler(LockedException.class)
+    public ProblemDetail handleLocked(LockedException ex) {
+        return problem(HttpStatus.FORBIDDEN, "Account locked",
+                       "Too many failed sign-in attempts. Contact your administrator.",
+                       "account-locked");
     }
 
     /** Routing 404 — unmapped URL. Kept as ProblemDetail rather than the Whitelabel page. */
