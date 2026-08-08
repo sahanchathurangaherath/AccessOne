@@ -9,7 +9,7 @@ public enum RequestStatus {
     DRAFT, SUBMITTED, UNDER_VERIFICATION, APPROVED, REJECTED, WITHDRAWN, CANCELLED;
 
     private static final Map<RequestStatus, Set<RequestStatus>> ALLOWED = Map.of(
-        DRAFT,              EnumSet.of(SUBMITTED, CANCELLED),
+        DRAFT,              EnumSet.of(SUBMITTED),
         SUBMITTED,          EnumSet.of(UNDER_VERIFICATION, WITHDRAWN, CANCELLED),
         UNDER_VERIFICATION, EnumSet.of(APPROVED, REJECTED, WITHDRAWN),
         REJECTED,           EnumSet.of(SUBMITTED)
@@ -20,8 +20,13 @@ public enum RequestStatus {
                       .contains(target);
     }
 
-    /** Hard delete is permitted only while the request has never been acted on. */
+    /** A draft is deleted, not cancelled; cancelling only applies once a request has been submitted. */
     public boolean isHardDeletable() {
         return this == DRAFT;
+    }
+
+    public boolean isClosed() {
+        return this == APPROVED || this == REJECTED
+            || this == WITHDRAWN || this == CANCELLED;
     }
 }
