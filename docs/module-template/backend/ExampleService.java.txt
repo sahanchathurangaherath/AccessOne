@@ -1,0 +1,47 @@
+// Copy from: backend/src/main/java/lk/AccessOne/cardrequest/service/CardRequestService.java
+//
+// If step 2 is skipped (hand-rolled lookups/ownership instead of the
+// shared helpers): it still works, but it is now a fifth implementation
+// of a rule five services should share, and it will drift the first time
+// someone fixes the bug in only one of them.
+
+package lk.AccessOne.<module>.service;
+
+// TODO 1: constructor-inject your repository, EntityLookup, OwnershipGuard,
+//   StatusChangeSupport, TimelineService, your mapper, and
+//   ApplicationEventPublisher. Add FileStorageService only if this module
+//   uploads files.
+
+@Service
+public class ExampleService {
+
+    private static final String[] PRIVILEGED_ROLES = { "TODO_ROLE", "SYSTEM_ADMIN" };
+
+    // TODO 2: findById(id) -- lookup.require(...) then
+    //   guard.requireOwnerOr(ownerEmployeeId, "Example", id, PRIVILEGED_ROLES)
+    //   before mapping to the Detail DTO. This throws 404, never 403 --
+    //   see OwnershipGuard's own comment for why.
+
+    // TODO 3: create(input) -- validate any rule that needs another row to
+    //   check (an in-progress duplicate, an inactive employee) here, not
+    //   in the entity, because the entity can't query the database.
+
+    // TODO 4: one method per status action (submit/approve/reject/...),
+    //   each three lines:
+    //     ExampleEntity entity = loadOwned(id);
+    //     statusChanges.apply("table_name", id, entity::getStatus, entity::submit);
+    //     return mapper.toDetail(entity);
+
+    // TODO 5: timeline(id) -- findById(id) first for the ownership check,
+    //   then timelineService.forEntity("table_name", id), mapped to your
+    //   module's own TimelineEntry DTO shape.
+
+    // TODO 6: delete(id) if the module has a hard-deletable state -- call
+    //   storage.deleteFolder(...) here too if this module uploads files,
+    //   this is the one line most modules forget.
+
+    // TODO 7: private loadOwned(id) -- lookup.require then
+    //   guard.requireOwnerOr, package-private so a sibling service (e.g.
+    //   a DocumentService the way RequestDocumentService works) can reuse
+    //   the same ownership check instead of re-deriving it.
+}
