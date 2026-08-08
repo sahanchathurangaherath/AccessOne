@@ -1,0 +1,23 @@
+// Copy from: backend/src/main/java/lk/AccessOne/cardrequest/repository/CardRequestRepository.java
+//
+// If step 2 is skipped: the list screen works until there are enough rows
+// to see a LazyInitializationException (missing join fetch) or a wrong
+// pagination total (missing countQuery on a fetch-joined @Query).
+
+package lk.AccessOne.<module>.repository;
+
+// TODO 1: extends JpaRepository<ExampleEntity, Long>
+
+public interface ExampleRepository extends JpaRepository<ExampleEntity, Long> {
+
+    // TODO 2: a search(...) method for the list screen with a @Query that
+    //   join fetches every association the summary DTO reads, plus an
+    //   explicit countQuery -- see CardRequestRepository.search for the
+    //   exact shape, including the (:param is null or field = :param)
+    //   optional-filter pattern.
+
+    // TODO 3: a findDetailById(id) that join fetches everything the
+    //   detail DTO reads, including a left join fetch on any single
+    //   nullable association and at most one collection (Hibernate
+    //   throws MultipleBagFetchException on two).
+}
