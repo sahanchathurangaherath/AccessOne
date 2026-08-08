@@ -18,6 +18,7 @@ Group ID: `2026-Y2-S1-MLB-B1G1-04`
 - [Prerequisites](#prerequisites)
 - [Setup](#setup)
 - [Running the system](#running-the-system)
+- [Seeded test accounts](#seeded-test-accounts)
 - [Project structure](#project-structure)
 - [Development workflow](#development-workflow)
 - [Scope and limitations](#scope-and-limitations)
@@ -224,6 +225,27 @@ Expected: `{"status":"UP"}`. Note that the request goes to port 3000 and is answ
 
 With the backend running, the interactive OpenAPI documentation is at
 **http://localhost:8080/swagger-ui.html**
+
+---
+
+## Seeded test accounts
+
+`V4__sample_data.sql` seeds ten accounts covering every role. All of them share one password: **`Password@123`**.
+
+| Username | Role | Employee ID |
+|---|---|---|
+| `admin` | SYSTEM_ADMIN | — (not linked to an employee) |
+| `nperera` | HR_MANAGER | 2 |
+| `kjayasinghe` | IT_ADMIN | 3 |
+| `rfernando` | SECURITY_OFFICER | 4 |
+| `twickramaratne` | PRINT_SUPERVISOR | 5 |
+| `dgunawardena` | HR_MANAGER | 6 |
+| `crajapaksa` | EMPLOYEE | 7 |
+| `iweerasinghe` | EMPLOYEE | 9 |
+| `nsenanayake` | SECURITY_OFFICER | 14 |
+| `asilva` | EMPLOYEE | 1 |
+
+These are for local development and testing only — never reuse this password scheme outside seeded sample data.
 
 ---
 
