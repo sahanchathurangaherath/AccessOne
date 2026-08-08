@@ -4,13 +4,13 @@ import { useParams } from "next/navigation";
 import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { ErrorState, FullPageSpinner } from "@/components/states";
-import { useRequest } from "../../../_hooks/useRequests";
+import { requests } from "../../../_hooks/useRequests";
 import { RequestForm } from "../../../_components/RequestForm";
 
 export default function EditRequestPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
-  const { data: request, isLoading, isError, refetch } = useRequest(id);
+  const { data: request, isLoading, isError, refetch } = requests.useDetail(id);
 
   return (
     <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>

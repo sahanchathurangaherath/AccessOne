@@ -1,0 +1,66 @@
+// Copy from: frontend/src/app/(app)/employee/_components/RequestForm.tsx
+//
+// If step 2 is skipped (zod rules that don't mirror a CHECK constraint):
+// the frontend accepts input the database will reject, and the user sees
+// a raw 409 instead of a field-level message -- the whole point of having
+// three validation layers is that they say the same thing.
+
+"use client";
+
+import { useState } from "react";
+import { useRouter } from "next/navigation";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { useForm } from "react-hook-form";
+import { z } from "zod";
+import { Field } from "@/components/form/field";
+import { FormShell } from "@/components/form/form-shell";
+import { applyServerErrors } from "@/lib/forms";
+import { examples, type ExampleDetail } from "../_hooks/useExamples";
+
+// TODO 1: a zod schema whose .refine() rules mirror every CHECK
+//   constraint on this table the form can violate -- one refine per
+//   constraint, same wording as the constraint's own comment so the
+//   next reader can find it.
+const schema = z.object({ /* TODO */ });
+type FormValues = z.infer<typeof schema>;
+
+export function ExampleForm({ existing }: { existing?: ExampleDetail }) {
+  const router = useRouter();
+  const [formError, setFormError] = useState<string | null>(null);
+
+  const create = examples.useCreate();
+  const update = examples.useUpdate();
+
+  const form = useForm<FormValues>({
+    resolver: zodResolver(schema),
+    defaultValues: { /* TODO 2: seed from `existing` when editing */ },
+  });
+
+  async function onSubmit(values: FormValues) {
+    setFormError(null);
+    try {
+      const saved = existing
+        ? await update.mutateAsync({ id: existing.id, body: values })
+        : await create.mutateAsync(values);
+      router.push(`TODO/${saved.id}`);
+    } catch (error) {
+      const message = applyServerErrors(error, form.setError);
+      if (message) setFormError(message);
+    }
+  }
+
+  return (
+    <FormShell
+      onSubmit={form.handleSubmit(onSubmit)}
+      formError={formError}
+      isPending={create.isPending || update.isPending}
+      submitLabel={existing ? "Save changes" : "Create"}
+      onCancel={() => router.back()}
+    >
+      {/* TODO 3: one <Field> per form control -- see RequestForm.tsx for
+          the Select / Input / Textarea pattern, and add a
+          <FileUploadField> here instead of a bare <input type="file">
+          if this module uploads a photo or document. */}
+    </FormShell>
+  );
+}
