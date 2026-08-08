@@ -25,4 +25,18 @@ public record PageResponse<T>(
                 page.isLast()
         );
     }
+
+    /**
+     * For results read through a native query with manual OFFSET/FETCH
+     * rather than a Spring Data {@code Page<>} -- the pending-request
+     * queue view, for one, where the paging happens in SQL Server's own
+     * OFFSET ... FETCH NEXT rather than through a Pageable.
+     */
+    public static <D> PageResponse<D> ofList(List<D> content, int page, int size, long totalElements) {
+        int totalPages = size == 0 ? 0 : (int) Math.ceil((double) totalElements / size);
+        return new PageResponse<>(
+                content, page, size, totalElements, totalPages,
+                page == 0, page >= totalPages - 1
+        );
+    }
 }
