@@ -1,0 +1,88 @@
+// Copy from: frontend/src/app/(app)/employee/requests/[id]/page.tsx
+//
+// If step 2 is skipped (a button gated on `entity.status === "..."`
+// instead of a server boolean): the rule now lives in two places, and
+// the day the service's rule changes, this screen keeps offering an
+// action the API will refuse.
+
+"use client";
+
+import { useState } from "react";
+import { useParams } from "next/navigation";
+import { toast } from "sonner";
+import { RequireRole } from "@/components/require-role";
+import { DetailHeader } from "@/components/detail-header";
+import { ErrorState, FullPageSpinner } from "@/components/states";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { StatusTimeline } from "@/components/status-timeline";
+import { ApiError } from "@/lib/api";
+import { examples, useApprove } from "../../_hooks/useExamples";
+
+export default function ExampleDetailPage() {
+  const params = useParams<{ id: string }>();
+  const id = Number(params.id);
+
+  const { data: entity, isLoading, isError, refetch } = examples.useDetail(id);
+  const { data: timeline } = examples.useTimeline(id);
+  const approve = useApprove();
+
+  // TODO 1: one useState<boolean> per confirm dialog this screen needs
+  const [confirmSomething, setConfirmSomething] = useState(false);
+
+  if (isLoading) return <FullPageSpinner />;
+  if (isError || !entity) {
+    return <ErrorState body="TODO" onRetry={() => void refetch()} />;
+  }
+
+  // TODO 2: one async handler per action, each: mutateAsync, toast.success,
+  //   catch -> toast.error(error instanceof ApiError ? error.problem.detail : "TODO")
+
+  return (
+    <RequireRole allow={["TODO_ROLE"]}>
+      <DetailHeader identifier={"TODO id field"} title={"TODO title"} status={entity.status} />
+
+      <div className="grid gap-6 lg:grid-cols-3">
+        <div className="space-y-6 lg:col-span-2">
+          <Card>
+            <CardHeader><CardTitle>Details</CardTitle></CardHeader>
+            <CardContent className="space-y-3 text-sm">
+              {/* TODO 3: one Row per field, same pattern as the card request detail page */}
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader><CardTitle>Timeline</CardTitle></CardHeader>
+            <CardContent><StatusTimeline entries={timeline ?? []} /></CardContent>
+          </Card>
+        </div>
+
+        <div className="space-y-3">
+          <Card>
+            <CardHeader><CardTitle>Actions</CardTitle></CardHeader>
+            <CardContent className="flex flex-col gap-2">
+              {/* TODO 4: every button gated on a server boolean from `entity`,
+                  never a status string comparison */}
+              {entity.approvable && (
+                <Button onClick={() => void approve.mutateAsync(id)} disabled={approve.isPending}>
+                  Approve
+                </Button>
+              )}
+            </CardContent>
+          </Card>
+        </div>
+      </div>
+
+      {/* TODO 5: one ConfirmDialog per destructive/irreversible action */}
+      <ConfirmDialog
+        open={confirmSomething}
+        onOpenChange={setConfirmSomething}
+        title="TODO"
+        body="TODO -- say what will happen, not just 'are you sure?'"
+        destructive
+        onConfirm={() => {}}
+      />
+    </RequireRole>
+  );
+}
