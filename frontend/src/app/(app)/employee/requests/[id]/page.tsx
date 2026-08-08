@@ -5,22 +5,19 @@ import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { RequireRole } from "@/components/require-role";
-import { PageHeader } from "@/components/page-header";
-import { StatusBadge } from "@/components/status-badge";
+import { DetailHeader } from "@/components/detail-header";
 import { ErrorState, FullPageSpinner } from "@/components/states";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import {
-  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
-} from "@/components/ui/dialog";
+import { ConfirmDialog } from "@/components/confirm-dialog";
+import { StatusTimeline } from "@/components/status-timeline";
 import { ApiError } from "@/lib/api";
-import { Timeline } from "../../_components/Timeline";
 import {
-  useRequest, useRequestTimeline, useSubmitRequest, useWithdrawRequest,
-  useDeleteRequest, useUploadDocument, useDeleteDocument, type DocumentType,
+  requests, useSubmitRequest, useWithdrawRequest,
+  useUploadDocument, useDeleteDocument, type DocumentType,
 } from "../../_hooks/useRequests";
 
 const DOCUMENT_LABEL: Record<DocumentType, string> = {
@@ -36,12 +33,12 @@ export default function RequestDetailPage() {
   const id = Number(params.id);
   const router = useRouter();
 
-  const { data: request, isLoading, isError, refetch } = useRequest(id);
-  const { data: timeline } = useRequestTimeline(id);
+  const { data: request, isLoading, isError, refetch } = requests.useDetail(id);
+  const { data: timeline } = requests.useTimeline(id);
 
   const submit = useSubmitRequest();
   const withdraw = useWithdrawRequest();
-  const deleteRequest = useDeleteRequest();
+  const deleteRequest = requests.useRemove();
   const uploadDocument = useUploadDocument();
   const deleteDocument = useDeleteDocument();
 
@@ -109,14 +106,10 @@ export default function RequestDetailPage() {
 
   return (
     <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
-      <PageHeader
-        title={request.requestNo}
-        description={`${request.requestType.toLowerCase()} request for ${request.employeeName}`}
-        actions={
-          <div className="flex items-center gap-2">
-            <StatusBadge status={request.status} />
-          </div>
-        }
+      <DetailHeader
+        identifier={request.requestNo}
+        title={`${request.requestType.toLowerCase()} request for ${request.employeeName}`}
+        status={request.status}
       />
 
       <div className="grid gap-6 lg:grid-cols-3">
@@ -205,7 +198,7 @@ export default function RequestDetailPage() {
               <CardTitle>Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <Timeline entries={timeline ?? []} />
+              <StatusTimeline entries={timeline ?? []} />
             </CardContent>
           </Card>
         </div>
@@ -255,35 +248,27 @@ export default function RequestDetailPage() {
         </div>
       </div>
 
-      <Dialog open={confirmWithdraw} onOpenChange={setConfirmWithdraw}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Withdraw this request?</DialogTitle>
-            <DialogDescription>
-              This closes the request. You can raise a new one later if you still need a card.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmWithdraw(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => void onWithdraw()}>Withdraw</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={confirmWithdraw}
+        onOpenChange={setConfirmWithdraw}
+        title="Withdraw this request?"
+        body="This closes the request. You can raise a new one later if you still need a card."
+        confirmLabel="Withdraw"
+        destructive
+        onConfirm={() => void onWithdraw()}
+        isPending={withdraw.isPending}
+      />
 
-      <Dialog open={confirmDelete} onOpenChange={setConfirmDelete}>
-        <DialogContent>
-          <DialogHeader>
-            <DialogTitle>Delete this draft?</DialogTitle>
-            <DialogDescription>
-              This cannot be undone. Its documents are removed too.
-            </DialogDescription>
-          </DialogHeader>
-          <DialogFooter>
-            <Button variant="outline" onClick={() => setConfirmDelete(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={() => void onDelete()}>Delete</Button>
-          </DialogFooter>
-        </DialogContent>
-      </Dialog>
+      <ConfirmDialog
+        open={confirmDelete}
+        onOpenChange={setConfirmDelete}
+        title="Delete this draft?"
+        body="This cannot be undone. Its documents are removed too."
+        confirmLabel="Delete"
+        destructive
+        onConfirm={() => void onDelete()}
+        isPending={deleteRequest.isPending}
+      />
     </RequireRole>
   );
 }

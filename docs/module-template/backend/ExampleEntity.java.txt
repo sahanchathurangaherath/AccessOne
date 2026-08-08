@@ -1,0 +1,40 @@
+// Copy from: backend/src/main/java/lk/AccessOne/cardrequest/domain/CardRequest.java
+// Real example: same file, plus RequestDocument.java in the same package for a
+// child entity that stands alone rather than extending AuditableEntity.
+//
+// If step 3 is skipped: Hibernate throws SchemaManagementException on boot
+// (ddl-auto: validate) naming the exact column mismatch -- that error is
+// your friend, read it, don't disable ddl-auto to make it go away.
+
+package lk.AccessOne.<module>.domain;
+
+// TODO 1: import jakarta.persistence.*, your enums, AuditableEntity or BaseEntity.
+//   Extend AuditableEntity only if the table has both created_at and
+//   updated_at. If it has just one timestamp column (e.g. uploaded_at,
+//   performed_at), stand alone like AuditLog / RequestDocument do --
+//   copying AuditableEntity's @CreatedDate machinery onto a table that
+//   doesn't have both columns is the single most common validate failure.
+
+@Entity
+@Table(name = "TODO_2_table_name")
+public class ExampleEntity extends AuditableEntity {
+
+    // TODO 3: one @Column per column in the migration, matching name,
+    //   length and nullable exactly. Copy the CHECK constraint's allowed
+    //   values into an @Enumerated(EnumType.STRING) enum in shared/enums,
+    //   not a String field with implicit values.
+
+    // TODO 4: a protected no-arg constructor for JPA, and a public static
+    //   factory method (draft(...), create(...)) that validates
+    //   invariants before returning -- never a public constructor that
+    //   lets an invalid instance exist even momentarily.
+
+    // TODO 5: behaviour methods that mutate state (submit(), approve(),
+    //   reject()...), each guarded by a check that throws
+    //   BusinessRuleException with a code and a message that says what
+    //   to do next. Put the status-transition check itself on the
+    //   enum's canTransitionTo(), the same pattern as RequestStatus.
+
+    // TODO 6: getters only. No setters -- if a field can change, it
+    //   changes through a named behaviour method, not an anonymous set.
+}
