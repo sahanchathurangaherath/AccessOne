@@ -116,6 +116,134 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/approvals/{requestId}/verify": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["verify"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{requestId}/reject": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reject"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{requestId}/comments": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["comment"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{requestId}/approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["approve"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/raise": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["raiseOnBehalf"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/raise-batch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["raiseBatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/employees/{employeeId}/exit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["recordExit"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/bulk-approve": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["bulkApprove"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/admin/users/{id}/unlock": {
         parameters: {
             query?: never;
@@ -212,6 +340,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/approvals/{requestId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/{requestId}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["timeline_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/queue": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["queue"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/approvals/history": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/requests/{id}/documents/{docId}": {
         parameters: {
             query?: never;
@@ -293,6 +485,69 @@ export interface components {
             role?: string;
             permissions?: string[];
         };
+        ApprovalDetail: {
+            /** Format: int64 */
+            approvalId?: number;
+            /** Format: int64 */
+            requestId?: number;
+            requestNo?: string;
+            decision?: string;
+            rejectionReason?: string;
+            employeeName?: string;
+            empId?: string;
+            designation?: string;
+            deptName?: string;
+            employeeStillActive?: boolean;
+            verifiedBy?: string;
+            /** Format: date-time */
+            verifiedAt?: string;
+            decidedBy?: string;
+            /** Format: date-time */
+            decidedAt?: string;
+            canVerify?: boolean;
+            canDecide?: boolean;
+            comments?: components["schemas"]["CommentDto"][];
+            documents?: components["schemas"]["DocumentSummary"][];
+        };
+        CommentDto: {
+            /** Format: int64 */
+            id?: number;
+            text?: string;
+            commentedBy?: string;
+            /** Format: date-time */
+            commentedAt?: string;
+        };
+        DecisionRequest: {
+            reason?: string;
+        };
+        CommentRequest: {
+            text: string;
+        };
+        RaiseBatchRequest: {
+            requests: components["schemas"]["CreateCardRequest"][];
+        };
+        BulkOutcome: {
+            /** Format: int64 */
+            requestId?: number;
+            success?: boolean;
+            message?: string;
+        };
+        BulkResult: {
+            /** Format: int64 */
+            successCount?: number;
+            /** Format: int64 */
+            failureCount?: number;
+            outcomes?: components["schemas"]["BulkOutcome"][];
+        };
+        EmployeeExitRequest: {
+            /** @enum {string} */
+            reason: "ACTIVE" | "SUSPENDED" | "RESIGNED" | "TERMINATED";
+            /** Format: date */
+            exitDate: string;
+        };
+        BulkApproveRequest: {
+            requestIds: number[];
+        };
         Pageable: {
             /** Format: int32 */
             page?: number;
@@ -333,6 +588,66 @@ export interface components {
             /** Format: date-time */
             changedAt?: string;
             note?: string;
+        };
+        ApprovalTimelineEntry: {
+            status?: string;
+            changedBy?: string;
+            /** Format: date-time */
+            changedAt?: string;
+            note?: string;
+        };
+        PageResponsePendingRequestRow: {
+            content?: components["schemas"]["PendingRequestRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PendingRequestRow: {
+            /** Format: int64 */
+            requestId?: number;
+            requestNo?: string;
+            requestType?: string;
+            status?: string;
+            empId?: string;
+            employeeName?: string;
+            designation?: string;
+            deptName?: string;
+            /** Format: date-time */
+            submittedAt?: string;
+            /** Format: int32 */
+            hoursPending?: number;
+            ageingFlag?: string;
+        };
+        ApprovalHistoryRow: {
+            /** Format: int64 */
+            requestId?: number;
+            requestNo?: string;
+            employeeName?: string;
+            empId?: string;
+            decision?: string;
+            decidedBy?: string;
+            /** Format: date-time */
+            decidedAt?: string;
+        };
+        PageResponseApprovalHistoryRow: {
+            content?: components["schemas"]["ApprovalHistoryRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
         };
     };
     responses: never;
@@ -586,6 +901,198 @@ export interface operations {
             };
         };
     };
+    verify: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalDetail"];
+                };
+            };
+        };
+    };
+    reject: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["DecisionRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalDetail"];
+                };
+            };
+        };
+    };
+    comment: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CommentRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalDetail"];
+                };
+            };
+        };
+    };
+    approve: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalDetail"];
+                };
+            };
+        };
+    };
+    raiseOnBehalf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["CreateCardRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardRequestDetail"];
+                };
+            };
+        };
+    };
+    raiseBatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RaiseBatchRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BulkResult"];
+                };
+            };
+        };
+    };
+    recordExit: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                employeeId: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["EmployeeExitRequest"];
+            };
+        };
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    bulkApprove: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["BulkApproveRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["BulkResult"];
+                };
+            };
+        };
+    };
     unlock: {
         parameters: {
             query?: never;
@@ -708,6 +1215,97 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content?: never;
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalDetail"];
+                };
+            };
+        };
+    };
+    timeline_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                requestId: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ApprovalTimelineEntry"][];
+                };
+            };
+        };
+    };
+    queue: {
+        parameters: {
+            query?: {
+                ageing?: string;
+                page?: number;
+                size?: number;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePendingRequestRow"];
+                };
+            };
+        };
+    };
+    history: {
+        parameters: {
+            query: {
+                deciderId?: number;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseApprovalHistoryRow"];
+                };
             };
         };
     };
