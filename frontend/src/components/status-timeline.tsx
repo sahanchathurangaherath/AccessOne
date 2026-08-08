@@ -1,7 +1,8 @@
 import { StatusBadge } from "@/components/status-badge";
-import type { RequestTimelineEntry } from "../_hooks/useRequests";
+import type { TimelineEntry } from "@/lib/resource";
 
-export function Timeline({ entries }: { entries: RequestTimelineEntry[] }) {
+/** Lifted out of Module 1's detail page. Every module with a status history gets this for one hook call. */
+export function StatusTimeline({ entries }: { entries: TimelineEntry[] }) {
   if (entries.length === 0) {
     return <p className="text-sm text-slate">No history yet.</p>;
   }

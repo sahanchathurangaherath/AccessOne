@@ -5,17 +5,17 @@ import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
-import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import {
   Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
 } from "@/components/ui/select";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Field } from "@/components/form/field";
+import { FormShell } from "@/components/form/form-shell";
+import { FileUploadField } from "@/components/form/file-upload-field";
 import { applyServerErrors } from "@/lib/forms";
 import {
-  useCreateRequest, useUpdateRequest, useUploadPhoto,
+  requests, useUploadPhoto,
   type CardRequestDetail, type RequestType,
 } from "../_hooks/useRequests";
 
@@ -53,8 +53,8 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
   const [formError, setFormError] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
 
-  const create = useCreateRequest();
-  const update = useUpdateRequest(existing?.id ?? -1);
+  const create = requests.useCreate();
+  const update = requests.useUpdate();
   const uploadPhoto = useUploadPhoto();
 
   const form = useForm<FormValues>({
@@ -80,7 +80,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
       };
 
       const saved = existing
-        ? await update.mutateAsync(body)
+        ? await update.mutateAsync({ id: existing.id, body })
         : await create.mutateAsync(body);
 
       if (photoFile) {
@@ -94,15 +94,14 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
   }
 
   return (
-    <form onSubmit={form.handleSubmit(onSubmit)} className="max-w-lg space-y-5">
-      {formError && (
-        <Alert variant="destructive">
-          <AlertDescription>{formError}</AlertDescription>
-        </Alert>
-      )}
-
-      <div className="space-y-1.5">
-        <Label htmlFor="requestType">Request type</Label>
+    <FormShell
+      onSubmit={form.handleSubmit(onSubmit)}
+      formError={formError}
+      isPending={busy}
+      submitLabel={existing ? "Save changes" : "Create draft"}
+      onCancel={() => router.back()}
+    >
+      <Field label="Request type" name="requestType">
         <Select
           value={form.watch("requestType")}
           onValueChange={(v) => form.setValue("requestType", v as RequestType, { shouldValidate: true })}
@@ -116,27 +115,30 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
             ))}
           </SelectContent>
         </Select>
-      </div>
+      </Field>
 
       {isReplacement && (
-        <div className="space-y-1.5">
-          <Label htmlFor="previousCardId">Card being replaced (card id)</Label>
+        <Field
+          label="Card being replaced (card id)"
+          name="previousCardId"
+          required
+          error={form.formState.errors.previousCardId?.message}
+        >
           <Input
             id="previousCardId"
             type="number"
             aria-invalid={!!form.formState.errors.previousCardId}
             {...form.register("previousCardId", { valueAsNumber: true })}
           />
-          {form.formState.errors.previousCardId && (
-            <p className="text-xs text-denied">{form.formState.errors.previousCardId.message}</p>
-          )}
-        </div>
+        </Field>
       )}
 
-      <div className="space-y-1.5">
-        <Label htmlFor="reason">
-          Reason {isReplacement && <span className="text-denied">*</span>}
-        </Label>
+      <Field
+        label="Reason"
+        name="reason"
+        required={isReplacement}
+        error={form.formState.errors.reason?.message}
+      >
         <Textarea
           id="reason"
           maxLength={255}
@@ -144,37 +146,17 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
           aria-invalid={!!form.formState.errors.reason}
           {...form.register("reason")}
         />
-        {form.formState.errors.reason && (
-          <p className="text-xs text-denied">{form.formState.errors.reason.message}</p>
-        )}
-      </div>
+      </Field>
 
-      <div className="space-y-1.5">
-        <Label htmlFor="photo">Photo</Label>
-        <p className="text-xs text-slate">JPEG or PNG, up to 2 MB. Required before you can submit.</p>
-        <input
-          id="photo"
-          type="file"
-          accept="image/jpeg,image/png"
-          onChange={(e) => setPhotoFile(e.target.files?.[0] ?? null)}
-          className="block w-full text-sm text-slate file:mr-3 file:rounded-lg file:border-0 file:bg-paper file:px-3 file:py-1.5 file:text-sm file:font-medium"
-        />
-        {existing?.hasPhoto && !photoFile && (
-          <p className="text-xs text-granted">A photo is already attached.</p>
-        )}
-        {photoFile && (
-          <p className="text-xs text-slate">Selected: {photoFile.name}</p>
-        )}
-      </div>
-
-      <div className="flex gap-2">
-        <Button type="submit" disabled={busy}>
-          {existing ? "Save changes" : "Create draft"}
-        </Button>
-        <Button type="button" variant="outline" onClick={() => router.back()}>
-          Cancel
-        </Button>
-      </div>
-    </form>
+      <FileUploadField
+        label="Photo"
+        name="photo"
+        accept="image/jpeg,image/png"
+        maxBytes={2 * 1024 * 1024}
+        hint="JPEG or PNG, up to 2 MB. Required before you can submit."
+        onChange={setPhotoFile}
+        existingLabel={existing?.hasPhoto ? "A photo is already attached." : undefined}
+      />
+    </FormShell>
   );
 }
