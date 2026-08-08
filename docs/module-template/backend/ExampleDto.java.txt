@@ -1,0 +1,30 @@
+// Copy from: backend/src/main/java/lk/AccessOne/cardrequest/web/dto/CardRequestSummary.java
+//            backend/src/main/java/lk/AccessOne/cardrequest/web/dto/CardRequestDetail.java
+//
+// If step 2 is skipped (no editable/withdrawable/deletable-style booleans):
+// the frontend will reach for `entity.status === "DRAFT"` to decide what
+// buttons to show, and now the rule lives in two places that will
+// eventually disagree.
+
+package lk.AccessOne.<module>.web.dto;
+
+// TODO 1: a Summary record for the list screen -- id, the identifying
+//   number, status, and whatever columns the table shows. Flat fields
+//   only, no nested objects the frontend has to reach into.
+
+public record ExampleSummary(/* TODO */) { }
+
+// TODO 2: a Detail record for the single-record screen -- everything
+//   Summary has, plus every field the detail page shows, plus one
+//   boolean per action the UI can offer (editable, withdrawable,
+//   deletable, approvable...). Compute every boolean in the mapper from
+//   the same enum the service enforces with -- one source of truth.
+
+public record ExampleDetail(/* TODO */) { }
+
+// TODO 3: a CreateExample record for POST/PUT bodies, with @NotNull /
+//   @Size validation annotations matching the migration's NOT NULL /
+//   length constraints -- this is the layer that gives the user a
+//   field-level error instead of a raw database exception.
+
+public record CreateExample(/* TODO */) { }
