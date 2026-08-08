@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.util.Collection;
+import java.util.List;
 import java.util.Optional;
 
 public interface CardRequestRepository extends JpaRepository<CardRequest, Long> {
@@ -46,4 +47,6 @@ public interface CardRequestRepository extends JpaRepository<CardRequest, Long> 
     Optional<CardRequest> findDetailById(@Param("id") Long id);
 
     boolean existsByEmployeeIdAndStatusIn(Long employeeId, Collection<RequestStatus> statuses);
+
+    List<CardRequest> findByEmployeeIdAndStatusIn(Long employeeId, Collection<RequestStatus> statuses);
 }
