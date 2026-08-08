@@ -1,0 +1,25 @@
+// Copy from: frontend/src/app/(app)/employee/_hooks/useRequests.ts
+//
+// If step 2 is skipped (hand-rolled useQuery/useMutation instead of
+// createResource): it still works, but cache invalidation now has its
+// own bespoke key shape that the rest of the app's convention doesn't
+// match, and the next person debugging a stale-cache bug has to learn
+// your one-off shape first.
+
+"use client";
+
+import { createResource } from "@/lib/resource";
+
+// TODO 1: type ExampleSummary, ExampleDetail, CreateExampleInput --
+//   matching the backend DTOs field for field. This is the one place
+//   duplication with the backend is fine; it's a different language.
+
+// TODO 2: export const examples = createResource<ExampleSummary, ExampleDetail, CreateExampleInput>(
+//   "/TODO_path", "TODO_key");
+
+// TODO 3: one alias per status action:
+//   export const useApprove = () => examples.useAction("approve");
+
+// TODO 4: only if this module uploads files -- a bespoke useUploadPhoto
+//   the same shape as useRequests.ts's version. File upload is never
+//   standard CRUD, so it never goes through createResource.
