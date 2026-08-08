@@ -11,7 +11,7 @@ public enum RequestStatus {
     private static final Map<RequestStatus, Set<RequestStatus>> ALLOWED = Map.of(
         DRAFT,              EnumSet.of(SUBMITTED),
         SUBMITTED,          EnumSet.of(UNDER_VERIFICATION, WITHDRAWN, CANCELLED),
-        UNDER_VERIFICATION, EnumSet.of(APPROVED, REJECTED, WITHDRAWN),
+        UNDER_VERIFICATION, EnumSet.of(APPROVED, REJECTED, WITHDRAWN, CANCELLED),
         REJECTED,           EnumSet.of(SUBMITTED)
     );
 
