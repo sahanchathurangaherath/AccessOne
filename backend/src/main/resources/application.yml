@@ -28,6 +28,15 @@ spring:
     baseline-on-migrate: true
     validate-on-migrate: false
 
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 6MB
+
+accessone:
+  storage:
+    root: ./storage
+
 server:
   port: 8080
 
