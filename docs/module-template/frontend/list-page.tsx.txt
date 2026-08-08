@@ -1,0 +1,47 @@
+// Copy from: frontend/src/app/(app)/employee/page.tsx
+//
+// If step 2 is skipped (a hand-rolled <table> instead of DataTable): the
+// fifteen-minute test in docs/RECIPES.md / the review notes stops being
+// true, and this screen is now missing whichever of loading/empty/error/
+// pagination its author forgot -- DataTable is why none of the six
+// modules should have that gap.
+
+"use client";
+
+import { useState } from "react";
+import Link from "next/link";
+import { RequireRole } from "@/components/require-role";
+import { PageHeader } from "@/components/page-header";
+import { StatusBadge } from "@/components/status-badge";
+import { Button } from "@/components/ui/button";
+import { DataTable, type Column } from "@/components/data-table";
+import { examples, type ExampleSummary } from "./_hooks/useExamples";
+
+// TODO 1: const columns: Column<ExampleSummary>[] = [ ... ] -- one entry
+//   per table column, first one wrapped as the row link automatically.
+
+export default function ExampleListPage() {
+  const [page, setPage] = useState(0);
+  // TODO 2: whatever filter state this list needs (status, department...)
+  const { data, isLoading, isError, refetch } = examples.useList({ page /* , ...filters */ });
+
+  return (
+    <RequireRole allow={["TODO_ROLE"]}>
+      <PageHeader title="TODO" description="TODO"
+        actions={<Button render={<Link href="TODO/new">New</Link>} />} />
+
+      {/* TODO 3: filter tabs, same pattern as employee/page.tsx, if this list needs them */}
+
+      <DataTable
+        columns={[] /* TODO 1's columns */}
+        page={data}
+        isLoading={isLoading}
+        isError={isError}
+        onRetry={() => void refetch()}
+        rowHref={(r) => `TODO/${r.id}`}
+        onPageChange={setPage}
+        empty={{ title: "TODO", body: "TODO" }}
+      />
+    </RequireRole>
+  );
+}
