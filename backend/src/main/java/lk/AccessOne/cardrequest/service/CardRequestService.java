@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lk.AccessOne.access.domain.AccessLevel;
 import lk.AccessOne.access.repository.AccessLevelRepository;
 import lk.AccessOne.cardrequest.domain.CardRequest;
+import lk.AccessOne.cardrequest.event.CardRequestSubmitted;
 import lk.AccessOne.cardrequest.repository.CardRequestRepository;
 import lk.AccessOne.cardrequest.web.dto.CardRequestDetail;
 import lk.AccessOne.cardrequest.web.dto.CardRequestSummary;
@@ -161,6 +162,9 @@ public class CardRequestService {
     public CardRequestDetail submit(Long id) {
         CardRequest request = loadOwned(id);
         statusChanges.apply("card_requests", id, request::getStatus, request::submit);
+        // Module 2 listens for this to open (or reopen) the approval row.
+        // This service does not need to know that Module 2 exists.
+        events.publishEvent(new CardRequestSubmitted(id, request.getEmployee().getId()));
         return mapper.toDetail(request);
     }
 
