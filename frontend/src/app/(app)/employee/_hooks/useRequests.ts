@@ -1,8 +1,8 @@
 "use client";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { http } from "@/lib/api";
-import type { PageResponse } from "@/lib/paged";
+import { createResource } from "@/lib/resource";
 
 export type RequestStatus =
   | "DRAFT" | "SUBMITTED" | "UNDER_VERIFICATION"
@@ -32,10 +32,6 @@ export type CardRequestDetail = CardRequestSummary & {
   documents: DocumentSummary[];
 };
 
-export type RequestTimelineEntry = {
-  status: string; changedBy: string; changedAt: string; note: string;
-};
-
 export type CreateCardRequestInput = {
   requestType: RequestType;
   reason?: string;
@@ -44,57 +40,19 @@ export type CreateCardRequestInput = {
   employeeId?: number;
 };
 
-const keys = {
-  all: ["requests"] as const,
-  list: (status?: RequestStatus, page = 0) => [...keys.all, "list", status ?? "ALL", page] as const,
-  detail: (id: number) => [...keys.all, "detail", id] as const,
-  timeline: (id: number) => [...keys.all, "timeline", id] as const,
-};
+/**
+ * The entire query/mutation layer for one resource, built from the shared
+ * factory -- see docs/RECIPES.md. Everything below this line is either a
+ * thin status-action alias or genuinely bespoke (file upload), not another
+ * hand-rolled CRUD hook.
+ */
+export const requests = createResource<CardRequestSummary, CardRequestDetail, CreateCardRequestInput>(
+  "/requests", "requests");
 
-export function useRequestList(status?: RequestStatus, page = 0) {
-  return useQuery({
-    queryKey: keys.list(status, page),
-    queryFn: () => {
-      const params = new URLSearchParams({ page: String(page), size: "20" });
-      if (status) params.set("status", status);
-      return http.get<PageResponse<CardRequestSummary>>(`/requests?${params}`);
-    },
-  });
-}
+export const useSubmitRequest = () => requests.useAction("submit");
+export const useWithdrawRequest = () => requests.useAction("withdraw");
 
-export function useRequest(id: number) {
-  return useQuery({
-    queryKey: keys.detail(id),
-    queryFn: () => http.get<CardRequestDetail>(`/requests/${id}`),
-    enabled: Number.isFinite(id),
-  });
-}
-
-export function useRequestTimeline(id: number) {
-  return useQuery({
-    queryKey: keys.timeline(id),
-    queryFn: () => http.get<RequestTimelineEntry[]>(`/requests/${id}/timeline`),
-    enabled: Number.isFinite(id),
-  });
-}
-
-export function useCreateRequest() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: CreateCardRequestInput) =>
-      http.post<CardRequestDetail>("/requests", body),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
-  });
-}
-
-export function useUpdateRequest(id: number) {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (body: CreateCardRequestInput) =>
-      http.put<CardRequestDetail>(`/requests/${id}`, body),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
-  });
-}
+// Photo and document upload are not standard CRUD, so they stay bespoke.
 
 export function useUploadPhoto() {
   const queryClient = useQueryClient();
@@ -104,7 +62,7 @@ export function useUploadPhoto() {
       form.append("file", file);
       return http.post<CardRequestDetail>(`/requests/${id}/photo`, form);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: requests.keys.all }),
   });
 }
 
@@ -117,7 +75,7 @@ export function useUploadDocument() {
       return http.post<DocumentSummary>(
         `/requests/${id}/documents?documentType=${documentType}`, form);
     },
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: requests.keys.all }),
   });
 }
 
@@ -126,32 +84,6 @@ export function useDeleteDocument() {
   return useMutation({
     mutationFn: ({ id, docId }: { id: number; docId: number }) =>
       http.del<void>(`/requests/${id}/documents/${docId}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
-  });
-}
-
-export function useSubmitRequest() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => http.post<CardRequestDetail>(`/requests/${id}/submit`),
-    // Invalidate everything for this feature. Precise invalidation is a
-    // later optimisation, not a Phase 5 problem.
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
-  });
-}
-
-export function useWithdrawRequest() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => http.post<CardRequestDetail>(`/requests/${id}/withdraw`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
-  });
-}
-
-export function useDeleteRequest() {
-  const queryClient = useQueryClient();
-  return useMutation({
-    mutationFn: (id: number) => http.del<void>(`/requests/${id}`),
-    onSuccess: () => queryClient.invalidateQueries({ queryKey: keys.all }),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: requests.keys.all }),
   });
 }
