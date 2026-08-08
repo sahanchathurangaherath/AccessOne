@@ -8,6 +8,8 @@ import lk.AccessOne.shared.audit.AuditEvent;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.DocumentType;
 import lk.AccessOne.shared.error.ResourceNotFoundException;
+import lk.AccessOne.shared.service.EntityLookup;
+import lk.AccessOne.shared.storage.FileStorageService;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
@@ -29,21 +31,24 @@ public class RequestDocumentService {
     private final FileStorageService storage;
     private final CardRequestMapper mapper;
     private final ApplicationEventPublisher events;
+    private final EntityLookup lookup;
 
     public RequestDocumentService(CardRequestService cardRequests, RequestDocumentRepository documents,
                                    FileStorageService storage, CardRequestMapper mapper,
-                                   ApplicationEventPublisher events) {
+                                   ApplicationEventPublisher events, EntityLookup lookup) {
         this.cardRequests = cardRequests;
         this.documents = documents;
         this.storage = storage;
         this.mapper = mapper;
         this.events = events;
+        this.lookup = lookup;
     }
 
     @Transactional
     public DocumentSummary upload(Long requestId, DocumentType type, MultipartFile file) {
         CardRequest request = cardRequests.loadOwned(requestId);
-        String path = storage.storeDocument(requestId, file);
+        String path = storage.store("requests", requestId, file,
+                FileStorageService.DOCUMENTS, 5L * 1024 * 1024);
 
         RequestDocument document = new RequestDocument(
                 type, file.getOriginalFilename(), path,
@@ -60,10 +65,9 @@ public class RequestDocumentService {
     @Transactional
     public void delete(Long requestId, Long documentId) {
         CardRequest request = cardRequests.loadOwned(requestId);
-        RequestDocument document = request.getDocuments().stream()
+        RequestDocument document = lookup.require(request.getDocuments().stream()
                 .filter(d -> d.getId().equals(documentId))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Document", documentId));
+                .findFirst(), "Document", documentId);
 
         request.removeDocument(document);
         documents.delete(document);
@@ -72,10 +76,9 @@ public class RequestDocumentService {
     @Transactional(readOnly = true)
     public ResponseEntity<Resource> download(Long requestId, Long documentId) {
         CardRequest request = cardRequests.loadOwned(requestId);
-        RequestDocument document = request.getDocuments().stream()
+        RequestDocument document = lookup.require(request.getDocuments().stream()
                 .filter(d -> d.getId().equals(documentId))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException("Document", documentId));
+                .findFirst(), "Document", documentId);
 
         Path path = storage.resolve(document.getFilePath());
         Resource resource;
