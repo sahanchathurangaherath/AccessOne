@@ -1,0 +1,26 @@
+// Copy from: backend/src/main/java/lk/AccessOne/cardrequest/web/CardRequestController.java
+//
+// If step 2 is skipped (any `if` sneaks in here): the rule now lives
+// somewhere the tests written against the service can't see it, and the
+// next person editing the service has no reason to know the controller
+// is also enforcing something.
+
+package lk.AccessOne.<module>.web;
+
+// TODO 1: @RestController, @RequestMapping(ApiPaths.API_V1 + "/TODO_path"),
+//   and confirm SecurityConfig already has a role rule for that path --
+//   it should, security rules are declared ahead of the feature.
+
+@RestController
+@RequestMapping(ApiPaths.API_V1 + "/TODO_path")
+public class ExampleController {
+
+    // TODO 2: constructor-inject the service (and a document/file
+    //   sub-service if this module has one, same split as
+    //   CardRequestController / RequestDocumentService).
+
+    // TODO 3: GET list (Pageable), GET by id, GET /{id}/timeline,
+    //   POST create, PUT update, POST /{id}/{action} per status action,
+    //   DELETE. Every method is one line: call the service, return what
+    //   it returns. No try/catch -- GlobalExceptionHandler owns that.
+}
