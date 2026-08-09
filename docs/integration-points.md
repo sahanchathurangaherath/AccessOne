@@ -63,6 +63,36 @@ is, subscribe with a plain `@EventListener` and revoke every active
 `id_cards` row for `employeeId`. Until then, publishing this event with no
 listener is harmless — that is deliberate, not a gap to fix.
 
+## Module 3 provides
+
+This module has no events — everything it offers is called directly,
+because the caller needs an answer back (a boolean, a reason, a set of
+areas), not a fire-and-forget notification.
+
+- `AccessLevelService.test(levelId, areaId)` — the rule check, with a
+  denial reason. Phase 12's access decision engine calls
+  `AccessLevel.permits(area)` directly rather than going through the
+  service, since it runs on every entry attempt and needs no DTO mapping
+  in between.
+- `AccessLevelRepository.findWithAreas(id)` — a level with its permitted
+  areas already fetched, for the decision engine or anything else that
+  needs to call `permits()` without a second query.
+- `CardAccessAssignmentRepository.findCurrentForCard(cardId)` — the level
+  a card holds right now. Backed by `idx_caa_card_current`, a filtered
+  covering index — this is the query Phase 12 runs on every entry
+  attempt, so it must never table-scan.
+- `PUT /api/v1/config/cards/{cardId}/access-level` — Module 4 calls this
+  once, right after generating a card, to assign its initial level.
+- `AccessLevel.permits(Area area)` — pure, side-effect free, returns
+  `false` for a deactivated level or a deactivated area. This is the one
+  method the phrase "access decision engine" in Phase 12 actually means.
+
+## Module 3 expects
+
+Nothing upstream. It depends only on `Department` and `Employee`
+(already mapped since Phase 2) and the Phase 6 reuse layer, so it was
+built and tested in isolation before either Module 2 or Module 4 existed.
+
 ## Adding a listener
 
 A new module subscribes without changing the publisher:
