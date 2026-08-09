@@ -10,6 +10,7 @@ import jakarta.persistence.Table;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;
 import lk.AccessOne.shared.domain.AuditableEntity;
+import lk.AccessOne.shared.error.BusinessRuleException;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -35,6 +36,15 @@ public class AccessLevel extends AuditableEntity {
     @Column(name = "is_active", nullable = false)
     private boolean active = true;
 
+    /**
+     * The many-to-many is managed entirely through access_level_areas.
+     * Permitted areas are rows, never a delimited column -- that is the
+     * 1NF argument in the normalisation notes, in code.
+     *
+     * The join table carries created_at, which this mapping does not
+     * populate; it has a database default. Hibernate's validate only
+     * checks columns you mapped, so this is fine.
+     */
     @ManyToMany(fetch = FetchType.LAZY)
     @JoinTable(
         name = "access_level_areas",
@@ -51,12 +61,42 @@ public class AccessLevel extends AuditableEntity {
         this.description = description;
     }
 
-    public void grant(Area area) { permittedAreas.add(area); }
-    public void revoke(Area area) { permittedAreas.remove(area); }
-
-    /** The single question the access decision engine asks in Phase 12. */
+    /**
+     * The single question the access decision engine asks, in Phase 12.
+     *
+     * Pure and side-effect free on purpose: it runs on every entry
+     * attempt, and anything that writes or logs here would be executed
+     * thousands of times a day.
+     */
     public boolean permits(Area area) {
-        return active && permittedAreas.contains(area);
+        return active && area != null && area.isReachable()
+            && permittedAreas.contains(area);
+    }
+
+    public void grant(Area area) {
+        if (!area.isReachable()) {
+            throw new BusinessRuleException("AREA_INACTIVE",
+                "Reactivate the area before granting access to it.");
+        }
+        permittedAreas.add(area);
+    }
+
+    public void revoke(Area area) {
+        permittedAreas.remove(area);
+    }
+
+    /** Replaces the whole mapping in one operation. */
+    public void replaceAreas(Set<Area> areas) {
+        areas.stream().filter(a -> !a.isReachable()).findFirst()
+             .ifPresent(a -> { throw new BusinessRuleException("AREA_INACTIVE",
+                 "Cannot grant access to the deactivated area " + a.getAreaName() + "."); });
+        permittedAreas.clear();
+        permittedAreas.addAll(areas);
+    }
+
+    public void update(String levelName, String description) {
+        this.levelName = levelName;
+        this.description = description;
     }
 
     public void deactivate() { this.active = false; }
