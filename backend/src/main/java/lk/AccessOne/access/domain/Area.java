@@ -51,8 +51,25 @@ public class Area extends AuditableEntity {
         this.description = description;
     }
 
+    public void update(String areaName, String building, String floorNo,
+                       boolean restricted, String description) {
+        this.areaName = areaName;
+        this.building = building;
+        this.floorNo = floorNo;
+        this.restricted = restricted;
+        this.description = description;
+    }
+
+    /** Areas are deactivated, never deleted -- access logs reference them. */
     public void deactivate() { this.active = false; }
     public void reactivate() { this.active = true; }
+
+    /**
+     * A deactivated area grants nothing, whatever the levels say. Named
+     * for the question the access decision engine asks -- "isReachable"
+     * reads as a fact about the door, not a flag on a row.
+     */
+    public boolean isReachable() { return active; }
 
     public String getAreaCode() { return areaCode; }
     public String getAreaName() { return areaName; }
