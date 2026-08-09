@@ -10,5 +10,9 @@ public interface AreaRepository extends JpaRepository<Area, Long> {
 
     Optional<Area> findByAreaCode(String areaCode);
 
-    List<Area> findByActiveTrueOrderByAreaName();
+    List<Area> findByActiveTrueOrderByBuildingAscAreaNameAsc();
+
+    boolean existsByAreaCodeIgnoreCase(String areaCode);
+
+    long countByActiveTrueAndRestrictedTrue();
 }
