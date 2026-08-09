@@ -26,4 +26,8 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
            where e.employmentStatus = :status
            """)
     List<Employee> findAllWithDepartment(@Param("status") EmploymentStatus status);
+
+    long countByDepartmentIdAndEmploymentStatus(Long departmentId, EmploymentStatus status);
+
+    long countByDepartmentId(Long departmentId);
 }
