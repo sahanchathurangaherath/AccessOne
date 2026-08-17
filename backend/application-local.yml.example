@@ -2,3 +2,9 @@ spring:
   datasource:
     username: accessone_app
     password: PasswordHere
+
+accessone:
+  credentials:
+    # 32 random bytes, base64. Generate your own -- never reuse this one or commit a real key.
+    nfc-key: "PASTE_YOUR_BASE64_KEY_HERE"
+    qr-base-url: "https://accessone.local/verify"
