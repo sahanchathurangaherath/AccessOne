@@ -27,7 +27,10 @@ public enum CardStatus {
 
     private static final Map<CardStatus, Set<CardStatus>> ALLOWED = Map.of(
         GENERATED,        EnumSet.of(QUEUED_FOR_PRINT, VOID),
-        QUEUED_FOR_PRINT, EnumSet.of(PRINTED, VOID),
+        // GENERATED: a cancelled print job returns the card to the queue's
+        // starting point, not to VOID -- cancelling a job is not the same
+        // decision as voiding the card.
+        QUEUED_FOR_PRINT, EnumSet.of(PRINTED, GENERATED, VOID),
         PRINTED,          EnumSet.of(DISPATCHED, QUEUED_FOR_PRINT, VOID),
         DISPATCHED,       EnumSet.of(ACTIVE, QUEUED_FOR_PRINT),
         ACTIVE,           EnumSet.of(SUSPENDED, REVOKED, LOST, DAMAGED, REPLACED),

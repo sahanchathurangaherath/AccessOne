@@ -63,6 +63,32 @@ prefixed `"Employment ended: "`. Module 2 published this weeks ago with
 nothing subscribed; this listener completes the contract without Module 2
 changing a line.
 
+## `lk.AccessOne.print.event.CardActivated`
+
+```java
+public record CardActivated(Long cardId, String cardSerial, Long receiverId) { }
+```
+
+**Published by:** `DispatchService.recordHandover()`, in the same
+transaction as `IdCard.activate()`. This is the moment a card actually
+becomes usable — not when it was printed, not when it was dispatched.
+
+**Listened for by:** *(nobody yet.)* A candidate subscriber is an employee
+notification module, once one exists.
+
+## `lk.AccessOne.print.event.PrintQualityFailed`
+
+```java
+public record PrintQualityFailed(Long printJobId, Long cardId, String notes) { }
+```
+
+**Published by:** `PrintJobService.recordQualityCheck()`, when the result
+is `FAIL`.
+
+**Listened for by:** *(nobody yet.)* A candidate subscriber is a
+production-alerts dashboard, once the reprint rate needs watching live
+rather than pulled from `/print/reports/reprint-rate`.
+
 ## Module 3 provides
 
 This module has no events — everything it offers is called directly,
@@ -119,18 +145,37 @@ built and tested in isolation before either Module 2 or Module 4 existed.
   to happen in the same transaction as card creation, and a second query
   round-trip would put that outside the boundary.
 
-## Module 6 must know
+## Module 6 provides
 
-- Creating a print job should move the card `GENERATED` → `QUEUED_FOR_PRINT`
-  via `IdCard.moveTo()`, never by setting the status column directly —
-  `CardStatus.canTransitionTo` is the only place the rules live.
-- Activation is Module 6's, at handover: `IdCard.activate()` sets both the
-  status and `activated_at`, which `chk_id_cards_activation` requires.
-- `CardService` currently checks `print_jobs` for a card with a native
-  `COUNT(*)` query rather than through a `PrintJobRepository`, because
-  Module 6 doesn't exist yet. Once it does, that check can move to a
-  proper repository call — the column and the constraint it protects
-  (`ALREADY_IN_PRODUCTION` on void) do not need to change.
+- `CardActivated` event — published at handover. A future notification
+  module subscribes to this, not to anything in Module 4.
+- `PrintJobRepository.existsByCardId(cardId)` — `CardService.hasPrintJob()`
+  (Module 4's void guard, `ALREADY_IN_PRODUCTION`) now calls this directly
+  rather than the native `COUNT(*)` query it used before Module 6 existed.
+- Card statuses reached only through this module: `QUEUED_FOR_PRINT`,
+  `PRINTED`, `DISPATCHED`, `ACTIVE`.
+
+## Module 6 consumes
+
+- `IdCard.moveTo()` and `IdCard.activate()` (Module 4). Never sets the
+  card status directly — the transition rules live in `CardStatus` alone.
+- `CardService.pdf(cardId)` (Module 4) for the print-ready file, exposed
+  at `GET /api/v1/print/jobs/{id}/card-file`.
+
+## CardStatus transitions this module needs
+
+```
+GENERATED        -> QUEUED_FOR_PRINT   (queue a job)
+QUEUED_FOR_PRINT -> PRINTED            (job complete)
+QUEUED_FOR_PRINT -> GENERATED          (job cancelled)
+PRINTED          -> QUEUED_FOR_PRINT   (reprint after QC failure)
+PRINTED          -> DISPATCHED         (dispatch)
+DISPATCHED       -> ACTIVE             (handover -- the activation)
+```
+
+`QUEUED_FOR_PRINT -> GENERATED` did not exist before this module — Phase 9
+had no path back out of the print queue, since nothing before Module 6
+needed one. Added to `CardStatus.ALLOWED` rather than worked around.
 
 ## Adding a listener
 
