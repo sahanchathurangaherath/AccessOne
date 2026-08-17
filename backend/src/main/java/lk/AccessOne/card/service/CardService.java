@@ -1,6 +1,5 @@
 package lk.AccessOne.card.service;
 
-import jakarta.persistence.EntityManager;
 import lk.AccessOne.approval.event.EmployeeExited;
 import lk.AccessOne.card.domain.CardCredential;
 import lk.AccessOne.card.domain.IdCard;
@@ -12,6 +11,7 @@ import lk.AccessOne.card.web.dto.CardDetail;
 import lk.AccessOne.card.web.dto.CardSummary;
 import lk.AccessOne.card.web.dto.CardTimelineEntry;
 import lk.AccessOne.card.web.dto.CardVerification;
+import lk.AccessOne.print.repository.PrintJobRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
@@ -45,15 +45,15 @@ public class CardService {
     private final QrCodeService qrCodes;
     private final CardPdfService pdfService;
     private final CredentialPayloadFactory payloads;
-    private final EntityManager entityManager;
     private final FileStorageService storage;
+    private final PrintJobRepository printJobs;
 
     public CardService(IdCardRepository cards, CardCredentialRepository credentials,
                         CardMapper mapper, EntityLookup lookup, StatusChangeSupport statusChanges,
                         TimelineService timelineService, ApplicationEventPublisher events,
                         QrCodeService qrCodes, CardPdfService pdfService,
-                        CredentialPayloadFactory payloads, EntityManager entityManager,
-                        FileStorageService storage) {
+                        CredentialPayloadFactory payloads, FileStorageService storage,
+                        PrintJobRepository printJobs) {
         this.cards = cards;
         this.credentials = credentials;
         this.mapper = mapper;
@@ -64,8 +64,8 @@ public class CardService {
         this.qrCodes = qrCodes;
         this.pdfService = pdfService;
         this.payloads = payloads;
-        this.entityManager = entityManager;
         this.storage = storage;
+        this.printJobs = printJobs;
     }
 
     // ---------- read ----------
@@ -208,17 +208,8 @@ public class CardService {
                      () -> card.revoke("Employment ended: " + event.reason())));
     }
 
-    /**
-     * A count query against print_jobs directly, not a PrintJobRepository --
-     * Module 6 owns that table and does not exist yet (Phase 10). Same
-     * reasoning as CardRequest.previousCardId being a plain column rather
-     * than a mapped relationship: this module does not wait on that one.
-     */
+    /** Module 6's own check on the same table, per the integration contract. */
     private boolean hasPrintJob(Long cardId) {
-        Number count = (Number) entityManager
-                .createNativeQuery("SELECT COUNT(*) FROM print_jobs WHERE card_id = :cardId")
-                .setParameter("cardId", cardId)
-                .getSingleResult();
-        return count.longValue() > 0;
+        return printJobs.existsByCardId(cardId);
     }
 }
