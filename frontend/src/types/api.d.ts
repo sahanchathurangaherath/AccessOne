@@ -180,6 +180,166 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/print/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["queue"];
+        put?: never;
+        post: operations["queueJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/reprint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reprint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/qc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["qc"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
+        put?: never;
+        post: operations["open"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["markReturned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/handover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["handover"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dispatch"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/config/departments": {
         parameters: {
             query?: never;
@@ -644,6 +804,70 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/print/reports/throughput": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["throughput"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/reports/reprint-rate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reprintRate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/card-file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cardFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta/counts": {
         parameters: {
             query?: never;
@@ -652,6 +876,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -699,7 +939,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_1"];
+        get: operations["list_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -715,7 +955,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_1"];
+        get: operations["get_3"];
         put?: never;
         post?: never;
         delete?: never;
@@ -843,7 +1083,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_2"];
+        get: operations["get_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -875,7 +1115,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["queue"];
+        get: operations["queue_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1048,6 +1288,80 @@ export interface components {
         AreaIdsRequest: {
             areaIds?: number[];
         };
+        QueueJobRequest: {
+            /** Format: int64 */
+            cardId: number;
+        };
+        PrintJobDetail: {
+            /** Format: int64 */
+            id?: number;
+            jobNo?: string;
+            /** Format: int64 */
+            cardId?: number;
+            cardSerial?: string;
+            employeeName?: string;
+            empId?: string;
+            departmentName?: string;
+            jobType?: string;
+            status?: string;
+            printerName?: string;
+            /** Format: date-time */
+            queuedAt?: string;
+            /** Format: date-time */
+            printedAt?: string;
+            qcResult?: string;
+            qcNotes?: string;
+            cancelledReason?: string;
+            dispatchable?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        StartJobRequest: {
+            printerName: string;
+        };
+        ReprintRequest: {
+            reason?: string;
+        };
+        QcRequest: {
+            /** @enum {string} */
+            result: "PENDING" | "PASS" | "FAIL";
+            notes?: string;
+        };
+        ReasonRequest: {
+            reason: string;
+        };
+        OpenDispatchRequest: {
+            /** Format: int64 */
+            printJobId: number;
+            /** @enum {string} */
+            dispatchMethod: "COLLECTION" | "INTERNAL_MAIL" | "COURIER";
+            remarks?: string;
+        };
+        DispatchDetail: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            printJobId?: number;
+            jobNo?: string;
+            /** Format: int64 */
+            cardId?: number;
+            cardSerial?: string;
+            /** Format: int64 */
+            employeeId?: number;
+            employeeName?: string;
+            empId?: string;
+            dispatchMethod?: string;
+            status?: string;
+            /** Format: date-time */
+            dispatchedAt?: string;
+            receivedByName?: string;
+            /** Format: date-time */
+            handedOverAt?: string;
+            handoverSignaturePath?: string;
+            remarks?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
         AccessTestRequest: {
             /** Format: int64 */
             levelId: number;
@@ -1060,9 +1374,6 @@ export interface components {
             areaName?: string;
             restrictedArea?: boolean;
             denialReason?: string;
-        };
-        ReasonRequest: {
-            reason: string;
         };
         CardDetail: {
             /** Format: int64 */
@@ -1211,6 +1522,86 @@ export interface components {
             /** Format: date-time */
             changedAt?: string;
             note?: string;
+        };
+        ThroughputDto: {
+            /** Format: date */
+            printDate?: string;
+            /** Format: int32 */
+            cardsPrinted?: number;
+            /** Format: int32 */
+            passed?: number;
+            /** Format: int32 */
+            failed?: number;
+            avgHoursInQueue?: number;
+        };
+        ReprintRateDto: {
+            deptName?: string;
+            /** Format: int32 */
+            totalJobs?: number;
+            /** Format: int32 */
+            initialJobs?: number;
+            /** Format: int32 */
+            reprintJobs?: number;
+            reprintRatePct?: number;
+            /** Format: int32 */
+            qcFailures?: number;
+        };
+        PageResponsePrintJobRow: {
+            content?: components["schemas"]["PrintJobRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PrintJobRow: {
+            /** Format: int64 */
+            id?: number;
+            jobNo?: string;
+            cardSerial?: string;
+            employeeName?: string;
+            empId?: string;
+            departmentName?: string;
+            jobType?: string;
+            status?: string;
+            printerName?: string;
+            /** Format: date-time */
+            queuedAt?: string;
+            /** Format: date-time */
+            printedAt?: string;
+        };
+        DispatchRow: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            printJobId?: number;
+            jobNo?: string;
+            cardSerial?: string;
+            employeeName?: string;
+            dispatchMethod?: string;
+            status?: string;
+            /** Format: date-time */
+            dispatchedAt?: string;
+            /** Format: date-time */
+            handedOverAt?: string;
+        };
+        PageResponseDispatchRow: {
+            content?: components["schemas"]["DispatchRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
         };
         MatrixColumn: {
             /** Format: int64 */
@@ -1752,6 +2143,304 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["DocumentSummary"];
+                };
+            };
+        };
+    };
+    queue: {
+        parameters: {
+            query: {
+                status?: "QUEUED" | "IN_PROGRESS" | "PRINTED" | "QC_PASSED" | "QC_FAILED" | "CANCELLED";
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePrintJobRow"];
+                };
+            };
+        };
+    };
+    queueJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueueJobRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartJobRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    reprint: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReprintRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    qc: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QcRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    list_1: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseDispatchRow"];
+                };
+            };
+        };
+    };
+    open: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpenDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    markReturned: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    handover: {
+        parameters: {
+            query: {
+                receiverId: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    signature?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    dispatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
                 };
             };
         };
@@ -2487,6 +3176,92 @@ export interface operations {
             };
         };
     };
+    throughput: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ThroughputDto"][];
+                };
+            };
+        };
+    };
+    reprintRate: {
+        parameters: {
+            query?: {
+                fromDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReprintRateDto"][];
+                };
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    cardFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
     counts: {
         parameters: {
             query?: never;
@@ -2505,6 +3280,28 @@ export interface operations {
                     "*/*": {
                         [key: string]: number;
                     };
+                };
+            };
+        };
+    };
+    get_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
                 };
             };
         };
@@ -2551,7 +3348,7 @@ export interface operations {
             };
         };
     };
-    list_1: {
+    list_2: {
         parameters: {
             query: {
                 employeeId?: number;
@@ -2575,7 +3372,7 @@ export interface operations {
             };
         };
     };
-    get_1: {
+    get_3: {
         parameters: {
             query?: never;
             header?: never;
@@ -2747,7 +3544,7 @@ export interface operations {
             };
         };
     };
-    get_2: {
+    get_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -2791,7 +3588,7 @@ export interface operations {
             };
         };
     };
-    queue: {
+    queue_1: {
         parameters: {
             query?: {
                 ageing?: string;
