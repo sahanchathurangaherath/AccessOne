@@ -1,0 +1,12 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(./mvnw.cmd -q test)",
+      "Bash(nohup ./mvnw.cmd -q spring-boot:run)",
+      "Bash(disown)",
+      "Bash(curl -s http://localhost:8080/api/v3/api-docs -o \"c:/Users/Sahan/Desktop/SLIIT/Y2S1/project/AccessOne/frontend/openapi.json\")",
+      "Bash(powershell -Command \"Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
+      "Bash(awk -F'[ ,]+' '{tests+=$3; fail+=$5; err+=$7; skip+=$9} END {print \"Total:\", tests, \"Failures:\", fail, \"Errors:\", err, \"Skipped:\", skip}')"
+    ]
+  }
+}
