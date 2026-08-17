@@ -29,12 +29,11 @@ public record CardRequestApproved(Long requestId, Long employeeId, Long accessLe
 **Published by:** `ApprovalService.approve()`, after both the approval and
 the card request have moved to their concluded states and been audited.
 
-**Listened for by:** *(nobody yet — card generation is not built.)* When it
-is, subscribe with a plain `@EventListener` (or `@TransactionalEventListener`
-if card generation should only start after the approval genuinely commits)
-and use `accessLevelId` to decide what access the generated card carries.
-`accessLevelId` is nullable — a request can be approved with no specific
-access level requested.
+**Listened for by:** `lk.AccessOne.card.service.CardGenerationListener` --
+generates the card in the same transaction as the approval. `accessLevelId`
+is not read directly off the event; the listener re-reads the request and
+assigns whatever access level it carries (nullable -- a request can be
+approved with no specific access level requested).
 
 ## `lk.AccessOne.approval.event.CardRequestRejected`
 
@@ -58,10 +57,11 @@ public record EmployeeExited(Long employeeId, String reason, LocalDate exitDate)
 `employment_status` is updated and any in-flight card requests
 (`SUBMITTED` or `UNDER_VERIFICATION`) are cancelled.
 
-**Listened for by:** *(nobody yet — card revocation is not built.)* When it
-is, subscribe with a plain `@EventListener` and revoke every active
-`id_cards` row for `employeeId`. Until then, publishing this event with no
-listener is harmless — that is deliberate, not a gap to fix.
+**Listened for by:** `lk.AccessOne.card.service.CardService.on(EmployeeExited)`
+— revokes every `ACTIVE` `id_cards` row for `employeeId`, with the reason
+prefixed `"Employment ended: "`. Module 2 published this weeks ago with
+nothing subscribed; this listener completes the contract without Module 2
+changing a line.
 
 ## Module 3 provides
 
@@ -92,6 +92,45 @@ areas), not a fire-and-forget notification.
 Nothing upstream. It depends only on `Department` and `Employee`
 (already mapped since Phase 2) and the Phase 6 reuse layer, so it was
 built and tested in isolation before either Module 2 or Module 4 existed.
+
+## Module 4 provides
+
+- `CardService.verifyBySerial(serial)` — Phase 12's lookup. Returns
+  `found=false` rather than throwing for an unrecognised serial, because
+  Phase 12 needs to log that as a denied attempt, not an error.
+- `IdCard.isUsable()` — true only when `ACTIVE`.
+- `IdCardRepository.findBySerialWithEmployee(serial)` — one query, employee
+  and department already fetched, for the decision engine's hot path.
+- `GET /api/v1/cards/{id}/pdf`, `/qr`, `/photo` — the printable card, its QR
+  alone, and its photo, each as its own endpoint so none of them requires
+  pulling the others along.
+- Events published: `CardGenerated`, `CardReportedLost`, `CardRevoked` —
+  nobody subscribes to these yet, which is fine; see `EmployeeExited` above
+  for what "nobody subscribes yet" looks like once a listener does exist.
+
+## Module 4 consumes
+
+- `CardRequestApproved` (Module 2) — triggers generation, in the same
+  transaction as the approval.
+- `EmployeeExited` (Module 2) — revokes usable cards.
+- `AccessLevelService.assign(cardId, levelId, remarks)` (Module 3) — called
+  once, right after generation, to assign the card's initial level. Called
+  directly as a Spring bean, not over HTTP — Module 4 needs the assignment
+  to happen in the same transaction as card creation, and a second query
+  round-trip would put that outside the boundary.
+
+## Module 6 must know
+
+- Creating a print job should move the card `GENERATED` → `QUEUED_FOR_PRINT`
+  via `IdCard.moveTo()`, never by setting the status column directly —
+  `CardStatus.canTransitionTo` is the only place the rules live.
+- Activation is Module 6's, at handover: `IdCard.activate()` sets both the
+  status and `activated_at`, which `chk_id_cards_activation` requires.
+- `CardService` currently checks `print_jobs` for a card with a native
+  `COUNT(*)` query rather than through a `PrintJobRepository`, because
+  Module 6 doesn't exist yet. Once it does, that check can move to a
+  proper repository call — the column and the constraint it protects
+  (`ALREADY_IN_PRODUCTION` on void) do not need to change.
 
 ## Adding a listener
 
