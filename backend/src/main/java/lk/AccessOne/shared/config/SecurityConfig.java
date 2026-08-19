@@ -3,6 +3,7 @@ package lk.AccessOne.shared.config;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
@@ -104,6 +105,11 @@ public class SecurityConfig {
                     .hasAnyRole("HR_MANAGER", "SYSTEM_ADMIN")
 
                 // --- Module 3: departments, areas, access levels ---
+                // Read-only carve-out first: Module 5 (visitor passes) must show what an
+                // access level permits when issuing a pass, but must not manage levels --
+                // that stays IT_ADMIN/SYSTEM_ADMIN only, below.
+                .requestMatchers(HttpMethod.GET, "/api/v1/config/access-levels/**")
+                    .hasAnyRole("IT_ADMIN", "SECURITY_OFFICER", "SYSTEM_ADMIN")
                 .requestMatchers("/api/v1/config/**")
                     .hasAnyRole("IT_ADMIN", "SYSTEM_ADMIN")
 

@@ -12,7 +12,11 @@
       "Bash(mv /tmp/phase10_stash/V9__print_job_sequence.sql \"backend/src/main/resources/db/migration/\")",
       "Bash(git checkout *)",
       "Bash(git config *)",
-      "Bash(npm run *)"
+      "Bash(npm run *)",
+      "Bash(mkdir -p screenshots)",
+      "Bash(npx --no-install playwright install chromium)",
+      "Bash(node playwright_check.mjs)",
+      "Bash(npm install *)"
     ]
   }
 }
