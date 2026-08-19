@@ -145,6 +145,59 @@ built and tested in isolation before either Module 2 or Module 4 existed.
   to happen in the same transaction as card creation, and a second query
   round-trip would put that outside the boundary.
 
+## Module 5 provides
+
+- `VisitorPass.isUsableAt(moment)` — Phase 12's check for a visitor pass.
+  Checks the status *and* the validity window itself; never trusts the
+  stored status alone, because the scheduled sweep that keeps status
+  accurate can be stopped without anyone noticing.
+- `VisitorPass.denialReasonAt(moment)` — the specific reason, for the
+  access log.
+- `VisitorPass.permits(area)` — delegates to `AccessLevel.permits()`
+  (Module 3), the same rule cards use.
+- `VisitorPassRepository.findByPassNoForDecision(passNo)` — fetch-joins
+  the access level *and* its permitted areas. Phase 12 must use this, not
+  `findById`, or `permits()` throws `LazyInitializationException` at the
+  door.
+- `VisitorPassService.verifyByPassNo(passNo)` — returns `found=false` for
+  an unrecognised pass rather than throwing, same reasoning as Module 4's
+  `verifyBySerial`.
+
+## Module 5 consumes
+
+- `AccessLevel.permits(area)` and `AccessLevelRepository` (Module 3) —
+  a pass's `access_level_id` is `NOT NULL`, unlike a card's, so every
+  pass has a level to check against from the moment it is issued.
+- `QrCodeService.png()` (Module 4) — reused rather than duplicated; a
+  visitor pass QR and a card QR are the same kind of thing.
+- `/api/v1/config/access-levels` (Module 3) is otherwise `IT_ADMIN`/
+  `SYSTEM_ADMIN`-only in `SecurityConfig`. A read-only `GET` carve-out for
+  `SECURITY_OFFICER` was added ahead of that rule so the issue-pass form
+  can show what a level permits without granting write access to levels
+  themselves.
+
+Nothing downstream depends on Module 5 except Phase 12.
+
+## A pre-existing timezone bug, fixed here
+
+Every `LocalDateTime` written through Hibernate was being stored 5:30
+*behind* true UTC on this host (Sri Lanka Standard Time, the JVM's
+default timezone) and silently corrected back on read — invisible at the
+application layer, and invisible to any native query that compares two
+stored columns to each other, since the offset cancels. It only surfaces
+where a native query compares a stored column against `SYSUTCDATETIME()`
+directly, which is exactly what `v_current_visitors` (pre-existing, Phase
+1/3) and `sp_expire_visitor_passes` do — this module's on-site board was
+the first place in the codebase that made it visible, showing visitors
+as hundreds of minutes overdue seconds after checking in.
+
+Fixed in `AccessOneApplication.main()` with `TimeZone.setDefault(UTC)`
+before the Spring context starts. New writes are correct; rows written
+before this fix keep their -5:30 skew unless corrected separately. The
+Java-side security checks (`isUsableAt`, the scheduled expiry sweep) were
+never affected — they run entirely in the JVM and compare Hibernate-read
+values against each other, not against `SYSUTCDATETIME()`.
+
 ## Module 6 provides
 
 - `CardActivated` event — published at handover. A future notification
