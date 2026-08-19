@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/v1/requests/{id}": {
+    "/api/v1/visitors/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -15,6 +15,22 @@ export interface paths {
         put: operations["update"];
         post?: never;
         delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put: operations["update_1"];
+        post?: never;
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -100,7 +116,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/requests": {
+    "/api/v1/visitors": {
         parameters: {
             query?: never;
             header?: never;
@@ -108,6 +124,38 @@ export interface paths {
             cookie?: never;
         };
         get: operations["list"];
+        put?: never;
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/visitors/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["photo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
         put?: never;
         post: operations["create"];
         delete?: never;
@@ -174,6 +222,310 @@ export interface paths {
         get?: never;
         put?: never;
         post: operations["upload"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["queue"];
+        put?: never;
+        post: operations["queueJob"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/start": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["start"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/reprint": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reprint"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/qc": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["qc"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/complete": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["complete"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_2"];
+        put?: never;
+        post: operations["issue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["suspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["markReturned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/reinstate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reinstate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/extend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["extend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["checkOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["checkIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/expire-sweep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["expireSweep"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_3"];
+        put?: never;
+        post: operations["open"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["markReturned_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/handover": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["handover"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}/dispatch": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["dispatch"];
         delete?: never;
         options?: never;
         head?: never;
@@ -340,6 +692,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/cards/{id}/void": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["voidCard"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["suspend_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/revoke": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["revoke"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/report-lost": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reportLost"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/report-damaged": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reportDamaged"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/reinstate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reinstate_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/regenerate-credentials": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["regenerateCredentials"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/auth/login": {
         parameters: {
             query?: never;
@@ -500,6 +964,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/visitors/reports/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["daily"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/visitors/on-site": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["onSite"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/requests/{id}/timeline": {
         parameters: {
             query?: never;
@@ -532,6 +1028,118 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/print/reports/throughput": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["throughput"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/reports/reprint-rate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["reprintRate"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_2"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/print/jobs/{id}/card-file": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["cardFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["qr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/by-pass-no/{passNo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["verify_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/meta/counts": {
         parameters: {
             query?: never;
@@ -540,6 +1148,22 @@ export interface paths {
             cookie?: never;
         };
         get: operations["counts"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/dispatch/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -572,6 +1196,118 @@ export interface paths {
             cookie?: never;
         };
         get: operations["history"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_4"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_5"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/timeline": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["timeline_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["qr_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["photo_1"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/{id}/pdf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["pdf"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/cards/by-serial/{serial}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["verify_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -619,7 +1355,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_1"];
+        get: operations["get_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -635,7 +1371,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["timeline_1"];
+        get: operations["timeline_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -651,7 +1387,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["queue"];
+        get: operations["queue_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -696,6 +1432,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UpdateVisitorInput: {
+            fullName: string;
+            company?: string;
+            phone?: string;
+            /** Format: email */
+            email?: string;
+            /** Format: int64 */
+            hostEmployeeId: number;
+        };
+        VisitorDto: {
+            /** Format: int64 */
+            id?: number;
+            visitorCode?: string;
+            fullName?: string;
+            idDocumentNo?: string;
+            idDocumentType?: string;
+            company?: string;
+            phone?: string;
+            email?: string;
+            visitorType?: string;
+            /** Format: int64 */
+            hostEmployeeId?: number;
+            hostEmployeeName?: string;
+            hostEmpId?: string;
+            hasPhoto?: boolean;
+            deleted?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+        };
         CreateCardRequest: {
             /** @enum {string} */
             requestType: "NEW" | "REPLACEMENT" | "RENEWAL";
@@ -824,6 +1589,162 @@ export interface components {
         AreaIdsRequest: {
             areaIds?: number[];
         };
+        RegisterVisitorInput: {
+            fullName: string;
+            /** @enum {string} */
+            idDocumentType: "NIC" | "PASSPORT" | "DRIVING_LICENCE";
+            idDocumentNo: string;
+            /** @enum {string} */
+            visitorType: "GUEST" | "CONTRACTOR" | "VENDOR" | "INTERVIEWEE";
+            /** Format: int64 */
+            hostEmployeeId: number;
+            company?: string;
+            phone?: string;
+            /** Format: email */
+            email?: string;
+        };
+        QueueJobRequest: {
+            /** Format: int64 */
+            cardId: number;
+        };
+        PrintJobDetail: {
+            /** Format: int64 */
+            id?: number;
+            jobNo?: string;
+            /** Format: int64 */
+            cardId?: number;
+            cardSerial?: string;
+            employeeName?: string;
+            empId?: string;
+            departmentName?: string;
+            jobType?: string;
+            status?: string;
+            printerName?: string;
+            /** Format: date-time */
+            queuedAt?: string;
+            /** Format: date-time */
+            printedAt?: string;
+            qcResult?: string;
+            qcNotes?: string;
+            cancelledReason?: string;
+            dispatchable?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        StartJobRequest: {
+            printerName: string;
+        };
+        ReprintRequest: {
+            reason?: string;
+        };
+        QcRequest: {
+            /** @enum {string} */
+            result: "PENDING" | "PASS" | "FAIL";
+            notes?: string;
+        };
+        ReasonRequest: {
+            reason: string;
+        };
+        IssuePassInput: {
+            /** Format: int64 */
+            visitorId: number;
+            /** Format: int64 */
+            hostEmployeeId: number;
+            /** Format: int64 */
+            accessLevelId: number;
+            purpose: string;
+            /** Format: date-time */
+            validFrom: string;
+            /** Format: date-time */
+            validUntil: string;
+        };
+        PassDetail: {
+            /** Format: int64 */
+            id?: number;
+            passNo?: string;
+            /** Format: int64 */
+            visitorId?: number;
+            visitorName?: string;
+            visitorCode?: string;
+            /** Format: int64 */
+            hostEmployeeId?: number;
+            hostName?: string;
+            hostEmpId?: string;
+            /** Format: int64 */
+            accessLevelId?: number;
+            accessLevelName?: string;
+            purpose?: string;
+            /** Format: date-time */
+            validFrom?: string;
+            /** Format: date-time */
+            validUntil?: string;
+            status?: string;
+            cancelledReason?: string;
+            /** Format: date-time */
+            issuedAt?: string;
+            issuedByUsername?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        ExtendPassRequest: {
+            /** Format: date-time */
+            newUntil: string;
+            reason: string;
+        };
+        VisitLogDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            passId?: number;
+            passNo?: string;
+            visitorName?: string;
+            entryAreaName?: string;
+            /** Format: date-time */
+            checkInAt?: string;
+            /** Format: date-time */
+            checkOutAt?: string;
+            remarks?: string;
+        };
+        CheckInRequest: {
+            /** Format: int64 */
+            areaId?: number;
+        };
+        ExpireSweepResult: {
+            /** Format: int32 */
+            expiredCount?: number;
+        };
+        OpenDispatchRequest: {
+            /** Format: int64 */
+            printJobId: number;
+            /** @enum {string} */
+            dispatchMethod: "COLLECTION" | "INTERNAL_MAIL" | "COURIER";
+            remarks?: string;
+        };
+        DispatchDetail: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            printJobId?: number;
+            jobNo?: string;
+            /** Format: int64 */
+            cardId?: number;
+            cardSerial?: string;
+            /** Format: int64 */
+            employeeId?: number;
+            employeeName?: string;
+            empId?: string;
+            dispatchMethod?: string;
+            status?: string;
+            /** Format: date-time */
+            dispatchedAt?: string;
+            receivedByName?: string;
+            /** Format: date-time */
+            handedOverAt?: string;
+            handoverSignaturePath?: string;
+            remarks?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
         AccessTestRequest: {
             /** Format: int64 */
             levelId: number;
@@ -836,6 +1757,37 @@ export interface components {
             areaName?: string;
             restrictedArea?: boolean;
             denialReason?: string;
+        };
+        CardDetail: {
+            /** Format: int64 */
+            id?: number;
+            cardSerial?: string;
+            status?: string;
+            /** Format: int32 */
+            versionNo?: number;
+            usable?: boolean;
+            empId?: string;
+            printedName?: string;
+            printedDesignation?: string;
+            printedDepartment?: string;
+            accessLevelName?: string;
+            /** Format: date */
+            issueDate?: string;
+            /** Format: date-time */
+            activatedAt?: string;
+            /** Format: date-time */
+            revokedAt?: string;
+            revocationReason?: string;
+            /** Format: int64 */
+            replacedByCardId?: number;
+            replacedByCardSerial?: string;
+            nfcFormat?: string;
+            encodingAlgorithm?: string;
+            nfcPayload?: string;
+            /** Format: date-time */
+            credentialGeneratedAt?: string;
+            /** Format: date-time */
+            createdAt?: string;
         };
         LoginRequest: {
             username: string;
@@ -920,6 +1872,52 @@ export interface components {
             size?: number;
             sort?: string[];
         };
+        PageResponseVisitorDto: {
+            content?: components["schemas"]["VisitorDto"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        DailyReportDto: {
+            /** Format: date */
+            visitDate?: string;
+            /** Format: int32 */
+            totalVisits?: number;
+            /** Format: int32 */
+            stillOnSite?: number;
+            /** Format: int32 */
+            distinctVisitors?: number;
+            /** Format: int32 */
+            contractorVisits?: number;
+            avgMinutesOnSite?: number;
+        };
+        OnSiteDto: {
+            /** Format: int64 */
+            visitLogId?: number;
+            visitorCode?: string;
+            visitorName?: string;
+            company?: string;
+            visitorType?: string;
+            passNo?: string;
+            passStatus?: string;
+            /** Format: date-time */
+            validUntil?: string;
+            hostName?: string;
+            hostEmpId?: string;
+            entryArea?: string;
+            /** Format: date-time */
+            checkInAt?: string;
+            /** Format: int32 */
+            minutesOnSite?: number;
+            passOverdue?: boolean;
+        };
         CardRequestSummary: {
             /** Format: int64 */
             id?: number;
@@ -954,6 +1952,124 @@ export interface components {
             changedAt?: string;
             note?: string;
         };
+        ThroughputDto: {
+            /** Format: date */
+            printDate?: string;
+            /** Format: int32 */
+            cardsPrinted?: number;
+            /** Format: int32 */
+            passed?: number;
+            /** Format: int32 */
+            failed?: number;
+            avgHoursInQueue?: number;
+        };
+        ReprintRateDto: {
+            deptName?: string;
+            /** Format: int32 */
+            totalJobs?: number;
+            /** Format: int32 */
+            initialJobs?: number;
+            /** Format: int32 */
+            reprintJobs?: number;
+            reprintRatePct?: number;
+            /** Format: int32 */
+            qcFailures?: number;
+        };
+        PageResponsePrintJobRow: {
+            content?: components["schemas"]["PrintJobRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PrintJobRow: {
+            /** Format: int64 */
+            id?: number;
+            jobNo?: string;
+            cardSerial?: string;
+            employeeName?: string;
+            empId?: string;
+            departmentName?: string;
+            jobType?: string;
+            status?: string;
+            printerName?: string;
+            /** Format: date-time */
+            queuedAt?: string;
+            /** Format: date-time */
+            printedAt?: string;
+        };
+        PageResponsePassRow: {
+            content?: components["schemas"]["PassRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PassRow: {
+            /** Format: int64 */
+            id?: number;
+            passNo?: string;
+            visitorName?: string;
+            visitorCode?: string;
+            hostName?: string;
+            status?: string;
+            /** Format: date-time */
+            validFrom?: string;
+            /** Format: date-time */
+            validUntil?: string;
+        };
+        PassVerification: {
+            found?: boolean;
+            /** Format: int64 */
+            passId?: number;
+            passNo?: string;
+            status?: string;
+            usable?: boolean;
+            denialReason?: string;
+            visitorName?: string;
+            hostName?: string;
+            accessLevelName?: string;
+        };
+        DispatchRow: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            printJobId?: number;
+            jobNo?: string;
+            cardSerial?: string;
+            employeeName?: string;
+            dispatchMethod?: string;
+            status?: string;
+            /** Format: date-time */
+            dispatchedAt?: string;
+            /** Format: date-time */
+            handedOverAt?: string;
+        };
+        PageResponseDispatchRow: {
+            content?: components["schemas"]["DispatchRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
         MatrixColumn: {
             /** Format: int64 */
             areaId?: number;
@@ -972,6 +2088,51 @@ export interface components {
         PermissionMatrix: {
             areas?: components["schemas"]["MatrixColumn"][];
             levels?: components["schemas"]["MatrixRow"][];
+        };
+        CardSummary: {
+            /** Format: int64 */
+            id?: number;
+            cardSerial?: string;
+            status?: string;
+            employeeName?: string;
+            empId?: string;
+            departmentName?: string;
+            /** Format: date */
+            issueDate?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        PageResponseCardSummary: {
+            content?: components["schemas"]["CardSummary"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        CardTimelineEntry: {
+            status?: string;
+            changedBy?: string;
+            /** Format: date-time */
+            changedAt?: string;
+            note?: string;
+        };
+        CardVerification: {
+            found?: boolean;
+            /** Format: int64 */
+            cardId?: number;
+            cardSerial?: string;
+            status?: string;
+            usable?: boolean;
+            printedName?: string;
+            empId?: string;
+            printedDepartment?: string;
+            accessLevelName?: string;
         };
         ApprovalTimelineEntry: {
             status?: string;
@@ -1059,12 +2220,80 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CardRequestDetail"];
+                    "*/*": components["schemas"]["VisitorDto"];
                 };
             };
         };
     };
     update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVisitorInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardRequestDetail"];
+                };
+            };
+        };
+    };
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1090,7 +2319,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1305,6 +2534,82 @@ export interface operations {
     list: {
         parameters: {
             query: {
+                search?: string;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseVisitorDto"];
+                };
+            };
+        };
+    };
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterVisitorInput"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    photo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    list_1: {
+        parameters: {
+            query: {
                 status?: "DRAFT" | "SUBMITTED" | "UNDER_VERIFICATION" | "APPROVED" | "REJECTED" | "WITHDRAWN" | "CANCELLED";
                 pageable: components["schemas"]["Pageable"];
             };
@@ -1449,6 +2754,541 @@ export interface operations {
                 };
                 content: {
                     "*/*": components["schemas"]["DocumentSummary"];
+                };
+            };
+        };
+    };
+    queue: {
+        parameters: {
+            query: {
+                status?: "QUEUED" | "IN_PROGRESS" | "PRINTED" | "QC_PASSED" | "QC_FAILED" | "CANCELLED";
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePrintJobRow"];
+                };
+            };
+        };
+    };
+    queueJob: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QueueJobRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    start: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["StartJobRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    reprint: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReprintRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    qc: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["QcRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    complete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    cancel: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    list_2: {
+        parameters: {
+            query: {
+                status?: "ISSUED" | "ACTIVE" | "EXPIRED" | "SUSPENDED" | "CANCELLED" | "RETURNED";
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePassRow"];
+                };
+            };
+        };
+    };
+    issue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssuePassInput"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    suspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    markReturned: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    reinstate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    extend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtendPassRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    checkOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitLogDto"];
+                };
+            };
+        };
+    };
+    checkIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CheckInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitLogDto"];
+                };
+            };
+        };
+    };
+    cancel_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    expireSweep: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpireSweepResult"];
+                };
+            };
+        };
+    };
+    list_3: {
+        parameters: {
+            query: {
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseDispatchRow"];
+                };
+            };
+        };
+    };
+    open: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["OpenDispatchRequest"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    markReturned_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    handover: {
+        parameters: {
+            query: {
+                receiverId: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    signature?: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
+                };
+            };
+        };
+    };
+    dispatch: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
                 };
             };
         };
@@ -1741,6 +3581,168 @@ export interface operations {
             };
         };
     };
+    voidCard: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    suspend_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    revoke: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    reportLost: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    reportDamaged: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    reinstate_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    regenerateCredentials: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
     login: {
         parameters: {
             query?: never;
@@ -1977,6 +3979,48 @@ export interface operations {
             };
         };
     };
+    daily: {
+        parameters: {
+            query?: {
+                fromDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DailyReportDto"][];
+                };
+            };
+        };
+    };
+    onSite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OnSiteDto"][];
+                };
+            };
+        };
+    };
     timeline: {
         parameters: {
             query?: never;
@@ -2022,6 +4066,160 @@ export interface operations {
             };
         };
     };
+    throughput: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ThroughputDto"][];
+                };
+            };
+        };
+    };
+    reprintRate: {
+        parameters: {
+            query?: {
+                fromDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ReprintRateDto"][];
+                };
+            };
+        };
+    };
+    get_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PrintJobDetail"];
+                };
+            };
+        };
+    };
+    cardFile: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
+    get_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    qr: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": string;
+                };
+            };
+        };
+    };
+    verify_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                passNo: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassVerification"];
+                };
+            };
+        };
+    };
     counts: {
         parameters: {
             query?: never;
@@ -2040,6 +4238,28 @@ export interface operations {
                     "*/*": {
                         [key: string]: number;
                     };
+                };
+            };
+        };
+    };
+    get_4: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DispatchDetail"];
                 };
             };
         };
@@ -2086,6 +4306,164 @@ export interface operations {
             };
         };
     };
+    list_4: {
+        parameters: {
+            query: {
+                employeeId?: number;
+                status?: "GENERATED" | "QUEUED_FOR_PRINT" | "PRINTED" | "DISPATCHED" | "ACTIVE" | "SUSPENDED" | "REVOKED" | "LOST" | "DAMAGED" | "VOID" | "REPLACED";
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseCardSummary"];
+                };
+            };
+        };
+    };
+    get_5: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardDetail"];
+                };
+            };
+        };
+    };
+    timeline_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardTimelineEntry"][];
+                };
+            };
+        };
+    };
+    qr_1: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": string;
+                };
+            };
+        };
+    };
+    photo_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": string;
+                };
+            };
+        };
+    };
+    pdf: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/pdf": string;
+                };
+            };
+        };
+    };
+    verify_2: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                serial: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardVerification"];
+                };
+            };
+        };
+    };
     me: {
         parameters: {
             query?: never;
@@ -2124,7 +4502,7 @@ export interface operations {
             };
         };
     };
-    get_1: {
+    get_6: {
         parameters: {
             query?: never;
             header?: never;
@@ -2146,7 +4524,7 @@ export interface operations {
             };
         };
     };
-    timeline_1: {
+    timeline_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -2168,7 +4546,7 @@ export interface operations {
             };
         };
     };
-    queue: {
+    queue_1: {
         parameters: {
             query?: {
                 ageing?: string;

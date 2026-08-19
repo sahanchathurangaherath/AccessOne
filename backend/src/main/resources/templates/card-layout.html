@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <style>
+    /* CR80 -- the ISO standard for an ID card */
+    @page { size: 85.6mm 54mm; margin: 0; }
+    /* Fallback order matters: for each character the renderer tries these
+       left to right until one has the glyph, which is how a Sinhala or
+       Tamil name in the middle of an otherwise-Latin layout still resolves
+       correctly without the template knowing which script it's printing. */
+    body  { margin: 0; font-family: "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", sans-serif; }
+
+    /* Without border-box, .card's 0.3mm border adds to its declared
+       85.6mm x 54mm, overflowing the @page box by 0.6mm both ways and
+       spilling a blank second page. */
+    *           { box-sizing: border-box; }
+
+    .card       { width: 85.6mm; height: 54mm; position: relative;
+                  background: #FFFFFF; border: 0.3mm solid #DFE3E8; }
+    .band       { height: 8mm; background: #1F4B8E; color: #FFFFFF;
+                  font-size: 3mm; letter-spacing: 0.6mm; padding: 2.4mm 4mm 0; }
+    .photo      { position: absolute; top: 11mm; left: 4mm;
+                  width: 20mm; height: 25mm; object-fit: cover;
+                  border: 0.2mm solid #DFE3E8; }
+    .details    { position: absolute; top: 11mm; left: 27mm; right: 25mm; }
+    .name       { font-size: 4mm; font-weight: 600; }
+    .role       { font-size: 3mm; color: #5A6472; margin-top: 0.8mm; }
+    .dept       { font-size: 3mm; color: #5A6472; }
+    .identifier { font-family: "Noto Sans Mono", monospace; font-size: 3mm; }
+    .qr         { position: absolute; bottom: 4mm; right: 4mm;
+                  width: 19mm; height: 19mm; }
+    .serial     { position: absolute; bottom: 4mm; left: 4mm; font-size: 2.6mm; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="band">CEYLON METRO HOLDINGS</div>
+
+    <img class="photo" th:src="${photoDataUri}" alt=""/>
+
+    <div class="details">
+      <div class="name"       th:text="${card.printedName}">Name</div>
+      <div class="role"       th:text="${card.printedDesignation}">Designation</div>
+      <div class="dept"       th:text="${card.printedDepartment}">Department</div>
+      <div class="identifier" th:text="${card.empId}"
+           style="margin-top:2mm">EMP0000</div>
+    </div>
+
+    <img class="qr" th:src="${qrDataUri}" alt=""/>
+    <div class="serial identifier" th:text="${card.cardSerial}">ACO-2026-000001</div>
+  </div>
+</body>
+</html>
