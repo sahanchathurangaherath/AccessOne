@@ -20,7 +20,9 @@ const NAV: NavItem[] = [
   { href: "/print",    label: "Production",     roles: ["PRINT_SUPERVISOR"] },
   { href: "/print/dispatch", label: "Dispatch", roles: ["PRINT_SUPERVISOR"] },
   { href: "/print/reports", label: "Reports",   roles: ["PRINT_SUPERVISOR"] },
-  { href: "/security", label: "Visitors",       roles: ["SECURITY_OFFICER"] },
+  { href: "/security", label: "On site",        roles: ["SECURITY_OFFICER"] },
+  { href: "/security/visitors", label: "Visitors", roles: ["SECURITY_OFFICER"] },
+  { href: "/security/passes", label: "Passes",   roles: ["SECURITY_OFFICER"] },
   { href: "/security/access", label: "Access log", roles: ["SECURITY_OFFICER"] },
   { href: "/admin",    label: "Administration", roles: ["SYSTEM_ADMIN"] },
 ];
