@@ -4,7 +4,7 @@
  */
 
 export interface paths {
-    "/api/v1/requests/{id}": {
+    "/api/v1/visitors/{id}": {
         parameters: {
             query?: never;
             header?: never;
@@ -15,6 +15,22 @@ export interface paths {
         put: operations["update"];
         post?: never;
         delete: operations["delete"];
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_1"];
+        put: operations["update_1"];
+        post?: never;
+        delete: operations["delete_1"];
         options?: never;
         head?: never;
         patch?: never;
@@ -100,7 +116,7 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
-    "/api/v1/requests": {
+    "/api/v1/visitors": {
         parameters: {
             query?: never;
             header?: never;
@@ -108,6 +124,38 @@ export interface paths {
             cookie?: never;
         };
         get: operations["list"];
+        put?: never;
+        post: operations["register"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/visitors/{id}/photo": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["photo"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/requests": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_1"];
         put?: never;
         post: operations["create"];
         delete?: never;
@@ -276,6 +324,150 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/passes": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["list_2"];
+        put?: never;
+        post: operations["issue"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/suspend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["suspend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/return": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["markReturned"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/reinstate": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["reinstate"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/extend": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["extend"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/check-out": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["checkOut"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/check-in": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["checkIn"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/cancel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["cancel_1"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/expire-sweep": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: operations["expireSweep"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/dispatch": {
         parameters: {
             query?: never;
@@ -283,7 +475,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_1"];
+        get: operations["list_3"];
         put?: never;
         post: operations["open"];
         delete?: never;
@@ -301,7 +493,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["markReturned"];
+        post: operations["markReturned_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -525,7 +717,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["suspend"];
+        post: operations["suspend_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -589,7 +781,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        post: operations["reinstate"];
+        post: operations["reinstate_1"];
         delete?: never;
         options?: never;
         head?: never;
@@ -772,6 +964,38 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/visitors/reports/daily": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["daily"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/visitors/on-site": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["onSite"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v1/requests/{id}/timeline": {
         parameters: {
             query?: never;
@@ -843,7 +1067,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_1"];
+        get: operations["get_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -860,6 +1084,54 @@ export interface paths {
             cookie?: never;
         };
         get: operations["cardFile"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["get_3"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/{id}/qr": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["qr"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/passes/by-pass-no/{passNo}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: operations["verify_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -891,7 +1163,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_2"];
+        get: operations["get_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -939,7 +1211,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["list_2"];
+        get: operations["list_4"];
         put?: never;
         post?: never;
         delete?: never;
@@ -955,7 +1227,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_3"];
+        get: operations["get_5"];
         put?: never;
         post?: never;
         delete?: never;
@@ -987,7 +1259,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["qr"];
+        get: operations["qr_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1003,7 +1275,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["photo"];
+        get: operations["photo_1"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1035,7 +1307,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["verify_1"];
+        get: operations["verify_2"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1083,7 +1355,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        get: operations["get_4"];
+        get: operations["get_6"];
         put?: never;
         post?: never;
         delete?: never;
@@ -1160,6 +1432,35 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        UpdateVisitorInput: {
+            fullName: string;
+            company?: string;
+            phone?: string;
+            /** Format: email */
+            email?: string;
+            /** Format: int64 */
+            hostEmployeeId: number;
+        };
+        VisitorDto: {
+            /** Format: int64 */
+            id?: number;
+            visitorCode?: string;
+            fullName?: string;
+            idDocumentNo?: string;
+            idDocumentType?: string;
+            company?: string;
+            phone?: string;
+            email?: string;
+            visitorType?: string;
+            /** Format: int64 */
+            hostEmployeeId?: number;
+            hostEmployeeName?: string;
+            hostEmpId?: string;
+            hasPhoto?: boolean;
+            deleted?: boolean;
+            /** Format: date-time */
+            createdAt?: string;
+        };
         CreateCardRequest: {
             /** @enum {string} */
             requestType: "NEW" | "REPLACEMENT" | "RENEWAL";
@@ -1288,6 +1589,20 @@ export interface components {
         AreaIdsRequest: {
             areaIds?: number[];
         };
+        RegisterVisitorInput: {
+            fullName: string;
+            /** @enum {string} */
+            idDocumentType: "NIC" | "PASSPORT" | "DRIVING_LICENCE";
+            idDocumentNo: string;
+            /** @enum {string} */
+            visitorType: "GUEST" | "CONTRACTOR" | "VENDOR" | "INTERVIEWEE";
+            /** Format: int64 */
+            hostEmployeeId: number;
+            company?: string;
+            phone?: string;
+            /** Format: email */
+            email?: string;
+        };
         QueueJobRequest: {
             /** Format: int64 */
             cardId: number;
@@ -1329,6 +1644,74 @@ export interface components {
         };
         ReasonRequest: {
             reason: string;
+        };
+        IssuePassInput: {
+            /** Format: int64 */
+            visitorId: number;
+            /** Format: int64 */
+            hostEmployeeId: number;
+            /** Format: int64 */
+            accessLevelId: number;
+            purpose: string;
+            /** Format: date-time */
+            validFrom: string;
+            /** Format: date-time */
+            validUntil: string;
+        };
+        PassDetail: {
+            /** Format: int64 */
+            id?: number;
+            passNo?: string;
+            /** Format: int64 */
+            visitorId?: number;
+            visitorName?: string;
+            visitorCode?: string;
+            /** Format: int64 */
+            hostEmployeeId?: number;
+            hostName?: string;
+            hostEmpId?: string;
+            /** Format: int64 */
+            accessLevelId?: number;
+            accessLevelName?: string;
+            purpose?: string;
+            /** Format: date-time */
+            validFrom?: string;
+            /** Format: date-time */
+            validUntil?: string;
+            status?: string;
+            cancelledReason?: string;
+            /** Format: date-time */
+            issuedAt?: string;
+            issuedByUsername?: string;
+            /** Format: date-time */
+            createdAt?: string;
+        };
+        ExtendPassRequest: {
+            /** Format: date-time */
+            newUntil: string;
+            reason: string;
+        };
+        VisitLogDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            passId?: number;
+            passNo?: string;
+            visitorName?: string;
+            entryAreaName?: string;
+            /** Format: date-time */
+            checkInAt?: string;
+            /** Format: date-time */
+            checkOutAt?: string;
+            remarks?: string;
+        };
+        CheckInRequest: {
+            /** Format: int64 */
+            areaId?: number;
+        };
+        ExpireSweepResult: {
+            /** Format: int32 */
+            expiredCount?: number;
         };
         OpenDispatchRequest: {
             /** Format: int64 */
@@ -1489,6 +1872,52 @@ export interface components {
             size?: number;
             sort?: string[];
         };
+        PageResponseVisitorDto: {
+            content?: components["schemas"]["VisitorDto"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        DailyReportDto: {
+            /** Format: date */
+            visitDate?: string;
+            /** Format: int32 */
+            totalVisits?: number;
+            /** Format: int32 */
+            stillOnSite?: number;
+            /** Format: int32 */
+            distinctVisitors?: number;
+            /** Format: int32 */
+            contractorVisits?: number;
+            avgMinutesOnSite?: number;
+        };
+        OnSiteDto: {
+            /** Format: int64 */
+            visitLogId?: number;
+            visitorCode?: string;
+            visitorName?: string;
+            company?: string;
+            visitorType?: string;
+            passNo?: string;
+            passStatus?: string;
+            /** Format: date-time */
+            validUntil?: string;
+            hostName?: string;
+            hostEmpId?: string;
+            entryArea?: string;
+            /** Format: date-time */
+            checkInAt?: string;
+            /** Format: int32 */
+            minutesOnSite?: number;
+            passOverdue?: boolean;
+        };
         CardRequestSummary: {
             /** Format: int64 */
             id?: number;
@@ -1574,6 +2003,44 @@ export interface components {
             queuedAt?: string;
             /** Format: date-time */
             printedAt?: string;
+        };
+        PageResponsePassRow: {
+            content?: components["schemas"]["PassRow"][];
+            /** Format: int32 */
+            page?: number;
+            /** Format: int32 */
+            size?: number;
+            /** Format: int64 */
+            totalElements?: number;
+            /** Format: int32 */
+            totalPages?: number;
+            first?: boolean;
+            last?: boolean;
+        };
+        PassRow: {
+            /** Format: int64 */
+            id?: number;
+            passNo?: string;
+            visitorName?: string;
+            visitorCode?: string;
+            hostName?: string;
+            status?: string;
+            /** Format: date-time */
+            validFrom?: string;
+            /** Format: date-time */
+            validUntil?: string;
+        };
+        PassVerification: {
+            found?: boolean;
+            /** Format: int64 */
+            passId?: number;
+            passNo?: string;
+            status?: string;
+            usable?: boolean;
+            denialReason?: string;
+            visitorName?: string;
+            hostName?: string;
+            accessLevelName?: string;
         };
         DispatchRow: {
             /** Format: int64 */
@@ -1753,12 +2220,80 @@ export interface operations {
                     [name: string]: unknown;
                 };
                 content: {
-                    "*/*": components["schemas"]["CardRequestDetail"];
+                    "*/*": components["schemas"]["VisitorDto"];
                 };
             };
         };
     };
     update: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["UpdateVisitorInput"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    delete: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description No Content */
+            204: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content?: never;
+            };
+        };
+    };
+    get_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["CardRequestDetail"];
+                };
+            };
+        };
+    };
+    update_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1784,7 +2319,7 @@ export interface operations {
             };
         };
     };
-    delete: {
+    delete_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -1997,6 +2532,82 @@ export interface operations {
         };
     };
     list: {
+        parameters: {
+            query: {
+                search?: string;
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponseVisitorDto"];
+                };
+            };
+        };
+    };
+    register: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["RegisterVisitorInput"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    photo: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "multipart/form-data": {
+                    /** Format: binary */
+                    file: string;
+                };
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitorDto"];
+                };
+            };
+        };
+    };
+    list_1: {
         parameters: {
             query: {
                 status?: "DRAFT" | "SUBMITTED" | "UNDER_VERIFICATION" | "APPROVED" | "REJECTED" | "WITHDRAWN" | "CANCELLED";
@@ -2320,7 +2931,244 @@ export interface operations {
             };
         };
     };
-    list_1: {
+    list_2: {
+        parameters: {
+            query: {
+                status?: "ISSUED" | "ACTIVE" | "EXPIRED" | "SUSPENDED" | "CANCELLED" | "RETURNED";
+                pageable: components["schemas"]["Pageable"];
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PageResponsePassRow"];
+                };
+            };
+        };
+    };
+    issue: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["IssuePassInput"];
+            };
+        };
+        responses: {
+            /** @description Created */
+            201: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    suspend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    markReturned: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    reinstate: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    extend: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ExtendPassRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    checkOut: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitLogDto"];
+                };
+            };
+        };
+    };
+    checkIn: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: {
+            content: {
+                "application/json": components["schemas"]["CheckInRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["VisitLogDto"];
+                };
+            };
+        };
+    };
+    cancel_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["ReasonRequest"];
+            };
+        };
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    expireSweep: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["ExpireSweepResult"];
+                };
+            };
+        };
+    };
+    list_3: {
         parameters: {
             query: {
                 pageable: components["schemas"]["Pageable"];
@@ -2366,7 +3214,7 @@ export interface operations {
             };
         };
     };
-    markReturned: {
+    markReturned_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -2759,7 +3607,7 @@ export interface operations {
             };
         };
     };
-    suspend: {
+    suspend_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -2851,7 +3699,7 @@ export interface operations {
             };
         };
     };
-    reinstate: {
+    reinstate_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3131,6 +3979,48 @@ export interface operations {
             };
         };
     };
+    daily: {
+        parameters: {
+            query?: {
+                fromDate?: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["DailyReportDto"][];
+                };
+            };
+        };
+    };
+    onSite: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["OnSiteDto"][];
+                };
+            };
+        };
+    };
     timeline: {
         parameters: {
             query?: never;
@@ -3218,7 +4108,7 @@ export interface operations {
             };
         };
     };
-    get_1: {
+    get_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -3262,6 +4152,74 @@ export interface operations {
             };
         };
     };
+    get_3: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassDetail"];
+                };
+            };
+        };
+    };
+    qr: {
+        parameters: {
+            query?: {
+                size?: number;
+            };
+            header?: never;
+            path: {
+                id: number;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "image/png": string;
+                };
+            };
+        };
+    };
+    verify_1: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path: {
+                passNo: string;
+            };
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description OK */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "*/*": components["schemas"]["PassVerification"];
+                };
+            };
+        };
+    };
     counts: {
         parameters: {
             query?: never;
@@ -3284,7 +4242,7 @@ export interface operations {
             };
         };
     };
-    get_2: {
+    get_4: {
         parameters: {
             query?: never;
             header?: never;
@@ -3348,7 +4306,7 @@ export interface operations {
             };
         };
     };
-    list_2: {
+    list_4: {
         parameters: {
             query: {
                 employeeId?: number;
@@ -3372,7 +4330,7 @@ export interface operations {
             };
         };
     };
-    get_3: {
+    get_5: {
         parameters: {
             query?: never;
             header?: never;
@@ -3416,7 +4374,7 @@ export interface operations {
             };
         };
     };
-    qr: {
+    qr_1: {
         parameters: {
             query?: {
                 size?: number;
@@ -3440,7 +4398,7 @@ export interface operations {
             };
         };
     };
-    photo: {
+    photo_1: {
         parameters: {
             query?: never;
             header?: never;
@@ -3484,7 +4442,7 @@ export interface operations {
             };
         };
     };
-    verify_1: {
+    verify_2: {
         parameters: {
             query?: never;
             header?: never;
@@ -3544,7 +4502,7 @@ export interface operations {
             };
         };
     };
-    get_4: {
+    get_6: {
         parameters: {
             query?: never;
             header?: never;
