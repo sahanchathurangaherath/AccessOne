@@ -1,0 +1,192 @@
+{
+  "total": 37,
+  "passed": 37,
+  "failed": 0,
+  "tests": [
+    {
+      "name": "Backend Actuator Health is UP",
+      "status": "PASS",
+      "details": "{\"groups\":[\"liveness\",\"readiness\"],\"status\":\"UP\"}"
+    },
+    {
+      "name": "Login and /auth/me for System Admin (admin)",
+      "status": "PASS",
+      "details": "Role: SYSTEM_ADMIN"
+    },
+    {
+      "name": "Login and /auth/me for Employee (asilva)",
+      "status": "PASS",
+      "details": "Role: EMPLOYEE"
+    },
+    {
+      "name": "Login and /auth/me for HR Manager (nperera)",
+      "status": "PASS",
+      "details": "Role: HR_MANAGER"
+    },
+    {
+      "name": "Login and /auth/me for IT Admin (kjayasinghe)",
+      "status": "PASS",
+      "details": "Role: IT_ADMIN"
+    },
+    {
+      "name": "Login and /auth/me for Security Officer (rfernando)",
+      "status": "PASS",
+      "details": "Role: SECURITY_OFFICER"
+    },
+    {
+      "name": "Login and /auth/me for Print Supervisor (twickramaratne)",
+      "status": "PASS",
+      "details": "Role: PRINT_SUPERVISOR"
+    },
+    {
+      "name": "OpenAPI Spec reachable by System Admin",
+      "status": "PASS",
+      "details": "Status: 200"
+    },
+    {
+      "name": "Diagnostics metadata endpoint /meta/counts (200 OK)",
+      "status": "PASS",
+      "details": "{\"departments\":10,\"employees\":22,\"users\":10}"
+    },
+    {
+      "name": "Bad password login correctly rejected (401)",
+      "status": "PASS",
+      "details": "Login failed for admin: Status 401 - {\"detail\":\"Invalid username or password\",\"instance\":\"/api/v1/auth/login\",\"status\":401,\"title\":\"Authentication failed\",\"type\":\"https://accessone.lk/errors/authentication\",\"timestamp\":\"2026-08-09T06:21:35.681257600Z\"}"
+    },
+    {
+      "name": "Employee blocked from HR approval queue (403 Forbidden)",
+      "status": "PASS",
+      "details": "Status: 403"
+    },
+    {
+      "name": "HR Manager granted access to approval queue (200 OK)",
+      "status": "PASS",
+      "details": "Total elements: 1"
+    },
+    {
+      "name": "Employee list own requests (200 OK)",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Employee create DRAFT card request",
+      "status": "PASS",
+      "details": "{\"id\":37,\"requestNo\":\"REQ-2026-0039\",\"requestType\":\"NEW\",\"status\":\"DRAFT\",\"reason\":\"New employee ID card request for automated testing\",\"previousCardId\":null,\"employeeName\":\"Ajith Silva\",\"empId\":\"EMP0001\",\"designation\":\"Director of Corporate Operations\",\"departmentName\":\"Operations\",\"accessLevelName\":null,\"hasPhoto\":false,\"submittedAt\":null,\"closedAt\":null,\"createdAt\":\"2026-08-09T06:21:35.802246\",\"editable\":true,\"withdrawable\":false,\"deletable\":true,\"documents\":[]}"
+    },
+    {
+      "name": "Get DRAFT request details",
+      "status": "PASS",
+      "details": "Status: DRAFT"
+    },
+    {
+      "name": "Get request status timeline",
+      "status": "PASS",
+      "details": "Timeline entries: 1"
+    },
+    {
+      "name": "Update DRAFT request reason",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Upload request photo attachment",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Submit card request (Transitions state)",
+      "status": "PASS",
+      "details": "New Status: SUBMITTED"
+    },
+    {
+      "name": "Request status moved beyond DRAFT",
+      "status": "PASS",
+      "details": "Status: SUBMITTED"
+    },
+    {
+      "name": "HR fetch pending approvals queue",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "Rejection requires a mandatory non-empty reason",
+      "status": "PASS",
+      "details": "Status: 409"
+    },
+    {
+      "name": "HR Verify card request details",
+      "status": "PASS",
+      "details": "Status: undefined"
+    },
+    {
+      "name": "HR Approve card request",
+      "status": "PASS",
+      "details": "Status: undefined"
+    },
+    {
+      "name": "Request status transitioned to APPROVED",
+      "status": "PASS",
+      "details": "Status: APPROVED"
+    },
+    {
+      "name": "Approved request cannot be hard-deleted (Soft-delete / immutability rule enforced)",
+      "status": "PASS",
+      "details": "Status: 409, Response: \"{\\\"detail\\\":\\\"A submitted request cannot be deleted. Withdraw it instead -- the approval history has to survive.\\\",\\\"instance\\\":\\\"/api/v1/requests/37\\\",\\\"status\\\":409,\\\"title\\\":\\\"Rule violation\\\",\\\"type\\\":\\\"https://accessone.lk/errors/business-rule\\\",\\\"timestamp\\\":\\\"2026-08-09T06:21:36.164399300Z\\\",\\\"code\\\":\\\"NOT_DELETABLE\\\"}\""
+    },
+    {
+      "name": "IT Admin list departments",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "IT Admin create department",
+      "status": "PASS",
+      "details": "{\"id\":14,\"deptCode\":\"D-6165\",\"deptName\":\"Quantum Labs 6165\",\"description\":\"Automated test created department\",\"active\":true,\"employeeCount\":0,\"deletable\":true}"
+    },
+    {
+      "name": "IT Admin soft-deactivate department (preserves employees)",
+      "status": "PASS",
+      "details": "Active: false"
+    },
+    {
+      "name": "IT Admin list areas",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "IT Admin create restricted area",
+      "status": "PASS",
+      "details": "{\"id\":15,\"areaCode\":\"A-6165\",\"areaName\":\"Quantum Vault 6165\",\"building\":\"Tower C\",\"floorNo\":\"B2\",\"restricted\":true,\"active\":true,\"description\":\"High security server enclosure\",\"levelCount\":0}"
+    },
+    {
+      "name": "IT Admin list access levels",
+      "status": "PASS",
+      "details": ""
+    },
+    {
+      "name": "IT Admin create access level",
+      "status": "PASS",
+      "details": "{\"id\":11,\"levelCode\":\"L-6165\",\"levelName\":\"Quantum Clear 6165\",\"description\":\"Full access to Quantum labs\",\"active\":true,\"permittedAreas\":[]}"
+    },
+    {
+      "name": "IT Admin assign area permissions to access level",
+      "status": "PASS",
+      "details": "Permitted areas: 1"
+    },
+    {
+      "name": "IT Admin fetch Permission Matrix",
+      "status": "PASS",
+      "details": "Rows: N/A"
+    },
+    {
+      "name": "Rule-Test engine grants access for assigned level & area",
+      "status": "PASS",
+      "details": "{\"granted\":true,\"levelName\":\"Quantum Clear 6165\",\"areaName\":\"Quantum Vault 6165\",\"restrictedArea\":true,\"denialReason\":null}"
+    },
+    {
+      "name": "Rule-Test engine denies access for unmapped restricted area",
+      "status": "PASS",
+      "details": "{\"granted\":false,\"levelName\":\"Quantum Clear 6165\",\"areaName\":\"Finance Floor\",\"restrictedArea\":true,\"denialReason\":\"Quantum Clear 6165 does not include Finance Floor.\"}"
+    }
+  ]
+}
