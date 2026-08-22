@@ -42,13 +42,16 @@ public interface IdCardRepository extends JpaRepository<IdCard, Long> {
 
     /**
      * The lookup Phase 12 depends on for every entry attempt, so the
-     * employee has to come back in the same query -- a second query per
-     * scan is not acceptable on that path.
+     * employee, access level and its permitted areas all have to come back
+     * in the same query -- a second query per scan is not acceptable on
+     * that path, and AccessLevel.permits() walks the area set directly.
      */
     @Query("""
            select c from IdCard c
            join fetch c.employee e
            join fetch e.department
+           left join fetch c.accessLevel al
+           left join fetch al.permittedAreas
            where c.cardSerial = :serial
            """)
     Optional<IdCard> findBySerialWithEmployee(@Param("serial") String serial);
