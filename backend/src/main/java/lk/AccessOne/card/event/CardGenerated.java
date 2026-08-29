@@ -1,4 +1,16 @@
 package lk.AccessOne.card.event;
 
-/** Nobody subscribes yet -- Module 6 will, once print jobs exist. */
-public record CardGenerated(Long cardId, Long employeeId, String cardSerial) { }
+import lk.AccessOne.shared.event.DomainEvent;
+
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+/** Subscribed by notifications. */
+public record CardGenerated(
+        Long cardId, Long employeeId, String cardSerial,
+        LocalDateTime occurredAt) implements DomainEvent {
+
+    public CardGenerated(Long cardId, Long employeeId, String cardSerial) {
+        this(cardId, employeeId, cardSerial, LocalDateTime.now(ZoneOffset.UTC));
+    }
+}

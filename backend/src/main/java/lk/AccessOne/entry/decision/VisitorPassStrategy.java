@@ -52,9 +52,13 @@ public class VisitorPassStrategy implements AccessDecisionStrategy {
         String holder = pass.getVisitor().getFullName();
 
         if (maybeArea.isEmpty()) {
-            return AccessDecisionResult.denied(DenialReason.UNKNOWN_AREA,
-                    CredentialType.VISITOR_PASS, null, pass.getId(), null,
-                    pass.getPassNo(), holder, request.areaCode());
+            return AccessDecisionResult.builder()
+                    .denied(DenialReason.UNKNOWN_AREA)
+                    .pass(pass.getId())
+                    .credentialRef(pass.getPassNo())
+                    .holder(holder)
+                    .area(null, request.areaCode())
+                    .build();
         }
         Area area = maybeArea.get();
 
@@ -80,15 +84,23 @@ public class VisitorPassStrategy implements AccessDecisionStrategy {
             return deny(DenialReason.AREA_NOT_PERMITTED, pass, area);
         }
 
-        return AccessDecisionResult.granted(CredentialType.VISITOR_PASS,
-                null, pass.getId(), area.getId(),
-                pass.getPassNo(), holder, area.getAreaName());
+        return AccessDecisionResult.builder()
+                .granted()
+                .pass(pass.getId())
+                .credentialRef(pass.getPassNo())
+                .holder(holder)
+                .area(area.getId(), area.getAreaName())
+                .build();
     }
 
     private AccessDecisionResult deny(DenialReason reason, VisitorPass pass, Area area) {
-        return AccessDecisionResult.denied(reason, CredentialType.VISITOR_PASS,
-                null, pass.getId(), area.getId(),
-                pass.getPassNo(), pass.getVisitor().getFullName(), area.getAreaName());
+        return AccessDecisionResult.builder()
+                .denied(reason)
+                .pass(pass.getId())
+                .credentialRef(pass.getPassNo())
+                .holder(pass.getVisitor().getFullName())
+                .area(area.getId(), area.getAreaName())
+                .build();
     }
 
     private DenialReason mapPassDenial(VisitorPass pass, LocalDateTime at) {

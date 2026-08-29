@@ -59,9 +59,13 @@ public class EmployeeCardStrategy implements AccessDecisionStrategy {
         String holder = card.getPrintedName();
 
         if (maybeArea.isEmpty()) {
-            return AccessDecisionResult.denied(DenialReason.UNKNOWN_AREA,
-                    CredentialType.EMPLOYEE_CARD, card.getId(), null, null,
-                    card.getCardSerial(), holder, request.areaCode());
+            return AccessDecisionResult.builder()
+                    .denied(DenialReason.UNKNOWN_AREA)
+                    .card(card.getId())
+                    .credentialRef(card.getCardSerial())
+                    .holder(holder)
+                    .area(null, request.areaCode())
+                    .build();
         }
         Area area = maybeArea.get();
 
@@ -93,14 +97,22 @@ public class EmployeeCardStrategy implements AccessDecisionStrategy {
             return deny(DenialReason.AREA_NOT_PERMITTED, card, area);
         }
 
-        return AccessDecisionResult.granted(CredentialType.EMPLOYEE_CARD,
-                card.getId(), null, area.getId(),
-                card.getCardSerial(), holder, area.getAreaName());
+        return AccessDecisionResult.builder()
+                .granted()
+                .card(card.getId())
+                .credentialRef(card.getCardSerial())
+                .holder(holder)
+                .area(area.getId(), area.getAreaName())
+                .build();
     }
 
     private AccessDecisionResult deny(DenialReason reason, IdCard card, Area area) {
-        return AccessDecisionResult.denied(reason, CredentialType.EMPLOYEE_CARD,
-                card.getId(), null, area.getId(),
-                card.getCardSerial(), card.getPrintedName(), area.getAreaName());
+        return AccessDecisionResult.builder()
+                .denied(reason)
+                .card(card.getId())
+                .credentialRef(card.getCardSerial())
+                .holder(card.getPrintedName())
+                .area(area.getId(), area.getAreaName())
+                .build();
     }
 }

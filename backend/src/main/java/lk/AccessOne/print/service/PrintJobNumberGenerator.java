@@ -1,10 +1,7 @@
 package lk.AccessOne.print.service;
 
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
+import lk.AccessOne.shared.sequence.SequenceGenerator;
 import org.springframework.stereotype.Component;
-
-import java.time.LocalDate;
 
 /**
  * Same reasoning as CardSerialGenerator (Module 4): a database sequence,
@@ -17,13 +14,13 @@ import java.time.LocalDate;
 @Component
 public class PrintJobNumberGenerator {
 
-    @PersistenceContext
-    private EntityManager entityManager;
+    private final SequenceGenerator sequences;
+
+    public PrintJobNumberGenerator(SequenceGenerator sequences) {
+        this.sequences = sequences;
+    }
 
     public String next() {
-        Number value = (Number) entityManager
-                .createNativeQuery("SELECT NEXT VALUE FOR dbo.seq_print_job_no")
-                .getSingleResult();
-        return "PJ-%d-%04d".formatted(LocalDate.now().getYear(), value.longValue());
+        return sequences.next("dbo.seq_print_job_no", "PJ", 4);
     }
 }

@@ -1,14 +1,25 @@
 package lk.AccessOne.shared.audit;
 
 import lk.AccessOne.shared.enums.AuditAction;
+import lk.AccessOne.shared.event.DomainEvent;
 
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
+
+/** Published by every module (Observer pattern); AuditEventListener is the one subscriber. */
 public record AuditEvent(
         String entityName,
         Long entityId,
         AuditAction action,
         String oldValue,
-        String newValue
-) {
+        String newValue,
+        LocalDateTime occurredAt
+) implements DomainEvent {
+
+    public AuditEvent(String entityName, Long entityId, AuditAction action, String oldValue, String newValue) {
+        this(entityName, entityId, action, oldValue, newValue, LocalDateTime.now(ZoneOffset.UTC));
+    }
+
     public static AuditEvent created(String entityName, Long id, String newValue) {
         return new AuditEvent(entityName, id, AuditAction.CREATE, null, newValue);
     }
