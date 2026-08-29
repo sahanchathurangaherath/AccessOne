@@ -19,7 +19,15 @@ export default function ProductionReportsPage() {
 
       <div className="space-y-6">
         <Card>
-          <CardHeader><CardTitle>Reprint rate by department</CardTitle></CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Reprint rate by department</CardTitle>
+            <a
+              href="/api/v1/print/reports/reprint-rate/export"
+              className="text-sm text-credential underline-offset-4 hover:underline"
+            >
+              Export CSV
+            </a>
+          </CardHeader>
           <CardContent>
             {reprintRate.isLoading && <TableSkeleton rows={4} />}
             {reprintRate.isError && (
@@ -53,7 +61,15 @@ export default function ProductionReportsPage() {
         </Card>
 
         <Card>
-          <CardHeader><CardTitle>Daily throughput</CardTitle></CardHeader>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle>Daily throughput</CardTitle>
+            <a
+              href="/api/v1/print/reports/throughput/export"
+              className="text-sm text-credential underline-offset-4 hover:underline"
+            >
+              Export CSV
+            </a>
+          </CardHeader>
           <CardContent>
             {throughput.isLoading && <TableSkeleton rows={5} />}
             {throughput.isError && (

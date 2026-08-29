@@ -1,6 +1,6 @@
 const TONE: Record<string, "granted" | "denied" | "pending" | "neutral"> = {
-  ACTIVE: "granted", APPROVED: "granted", GRANTED: "granted", PASS: "granted",
-  REVOKED: "denied", REJECTED: "denied", DENIED: "denied",
+  ACTIVE: "granted", APPROVED: "granted", GRANTED: "granted", PASS: "granted", APPROVE: "granted",
+  REVOKED: "denied", REJECTED: "denied", DENIED: "denied", REJECT: "denied", REVOKE: "denied",
   CANCELLED: "denied", VOID: "denied", FAIL: "denied",
   SUBMITTED: "pending", UNDER_VERIFICATION: "pending", QUEUED: "pending",
   DRAFT: "neutral", PRINTED: "neutral", DISPATCHED: "neutral",

@@ -1,22 +1,10 @@
 {
   "permissions": {
-    "allow": [
-      "Bash(./mvnw.cmd -q test)",
-      "Bash(nohup ./mvnw.cmd -q spring-boot:run)",
-      "Bash(disown)",
-      "Bash(curl -s http://localhost:8080/api/v3/api-docs -o \"c:/Users/Sahan/Desktop/SLIIT/Y2S1/project/AccessOne/frontend/openapi.json\")",
-      "Bash(powershell -Command \"Get-Process -Name java -ErrorAction SilentlyContinue | Stop-Process -Force\")",
-      "Bash(awk -F'[ ,]+' '{tests+=$3; fail+=$5; err+=$7; skip+=$9} END {print \"Total:\", tests, \"Failures:\", fail, \"Errors:\", err, \"Skipped:\", skip}')",
-      "Bash(mv /tmp/phase10_stash/print_java/domain /tmp/phase10_stash/print_java/event /tmp/phase10_stash/print_java/repository /tmp/phase10_stash/print_java/service /tmp/phase10_stash/print_java/web backend/src/main/java/lk/AccessOne/print/)",
-      "Bash(mv /tmp/phase10_stash/print_test \"backend/src/test/java/lk/AccessOne/print\")",
-      "Bash(mv /tmp/phase10_stash/V9__print_job_sequence.sql \"backend/src/main/resources/db/migration/\")",
-      "Bash(git checkout *)",
-      "Bash(git config *)",
-      "Bash(npm run *)",
-      "Bash(mkdir -p screenshots)",
-      "Bash(npx --no-install playwright install chromium)",
-      "Bash(node playwright_check.mjs)",
-      "Bash(npm install *)"
+    "ask": [
+      "Bash(git commit)",
+      "Bash(git commit *)",
+      "Bash(git push)",
+      "Bash(git push *)"
     ]
   }
 }

@@ -16,6 +16,7 @@ import lk.AccessOne.print.web.dto.PrintJobRow;
 import lk.AccessOne.print.web.dto.ReprintRateDto;
 import lk.AccessOne.print.web.dto.ThroughputDto;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.enums.CardStatus;
 import lk.AccessOne.shared.enums.PrintJobType;
@@ -119,7 +120,7 @@ public class PrintJobService {
                 () -> card.moveTo(CardStatus.QUEUED_FOR_PRINT));
 
         events.publishEvent(AuditEvent.created("print_jobs", job.getId(),
-                "{\"job_no\":\"%s\",\"type\":\"INITIAL\"}".formatted(job.getJobNo())));
+                AuditValue.of().with("job_no", job.getJobNo()).with("type", "INITIAL").json()));
 
         return mapper.toDetail(job);
     }
@@ -182,8 +183,11 @@ public class PrintJobService {
                 () -> card.moveTo(CardStatus.QUEUED_FOR_PRINT));
 
         events.publishEvent(AuditEvent.created("print_jobs", reprint.getId(),
-                "{\"job_no\":\"%s\",\"reprint_of\":\"%s\",\"reason\":\"%s\"}"
-                    .formatted(reprint.getJobNo(), failed.getJobNo(), reason)));
+                AuditValue.of()
+                        .with("job_no", reprint.getJobNo())
+                        .with("reprint_of", failed.getJobNo())
+                        .with("reason", reason)
+                        .json()));
 
         return mapper.toDetail(reprint);
     }

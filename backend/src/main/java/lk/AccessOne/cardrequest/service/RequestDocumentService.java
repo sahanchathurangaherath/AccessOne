@@ -5,6 +5,7 @@ import lk.AccessOne.cardrequest.domain.RequestDocument;
 import lk.AccessOne.cardrequest.repository.RequestDocumentRepository;
 import lk.AccessOne.cardrequest.web.dto.DocumentSummary;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.DocumentType;
 import lk.AccessOne.shared.error.ResourceNotFoundException;
@@ -57,7 +58,7 @@ public class RequestDocumentService {
         documents.save(document);
 
         events.publishEvent(new AuditEvent("card_requests", requestId, AuditAction.UPDATE, null,
-                "{\"document_added\":\"%s\"}".formatted(type.name())));
+                AuditValue.of().with("document_added", type.name()).json()));
 
         return mapper.toDocument(document);
     }

@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { useAuth, type Role } from "@/lib/auth";
 import { ROLE_LABEL } from "@/lib/roles";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/notification-bell";
 
 type NavItem = { href: string; label: string; roles: Role[] };
 
@@ -25,6 +26,7 @@ const NAV: NavItem[] = [
   { href: "/security/passes", label: "Passes",   roles: ["SECURITY_OFFICER"] },
   { href: "/security/access", label: "Access log", roles: ["SECURITY_OFFICER"] },
   { href: "/admin",    label: "Administration", roles: ["SYSTEM_ADMIN"] },
+  { href: "/admin/audit", label: "Audit log",    roles: ["SYSTEM_ADMIN"] },
 ];
 
 export function AppShell({ children }: { children: React.ReactNode }) {
@@ -65,6 +67,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </nav>
 
           <div className="flex items-center gap-3">
+            <NotificationBell />
             <div className="text-right leading-tight">
               <div className="text-sm font-medium">{user.username}</div>
               <div className="text-xs text-slate">{ROLE_LABEL[user.role]}</div>

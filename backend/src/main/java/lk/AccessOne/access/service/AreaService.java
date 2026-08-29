@@ -6,6 +6,7 @@ import lk.AccessOne.access.repository.AreaRepository;
 import lk.AccessOne.access.web.dto.AreaDto;
 import lk.AccessOne.access.web.dto.AreaInput;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.error.BusinessRuleException;
 import lk.AccessOne.shared.service.EntityLookup;
@@ -49,7 +50,7 @@ public class AreaService {
         Area area = areas.save(new Area(input.areaCode(), input.areaName(), input.building(),
                 input.floorNo(), input.restricted(), input.description()));
         events.publishEvent(AuditEvent.created("areas", area.getId(),
-                "{\"area_code\":\"%s\"}".formatted(input.areaCode())));
+                AuditValue.of().with("area_code", input.areaCode()).json()));
         return mapper.toDto(area, 0);
     }
 
@@ -66,8 +67,9 @@ public class AreaService {
     public AreaDto deactivate(Long id) {
         Area area = lookup.require(areas, id, "Area");
         area.deactivate();
-        events.publishEvent(new AuditEvent("areas", id,
-                AuditAction.UPDATE, "{\"is_active\":true}", "{\"is_active\":false}"));
+        events.publishEvent(new AuditEvent("areas", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", true).json(),
+                AuditValue.of().with("is_active", false).json()));
         return mapper.toDto(area, (int) levels.countGrantingArea(id));
     }
 
@@ -75,8 +77,9 @@ public class AreaService {
     public AreaDto reactivate(Long id) {
         Area area = lookup.require(areas, id, "Area");
         area.reactivate();
-        events.publishEvent(new AuditEvent("areas", id,
-                AuditAction.UPDATE, "{\"is_active\":false}", "{\"is_active\":true}"));
+        events.publishEvent(new AuditEvent("areas", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", false).json(),
+                AuditValue.of().with("is_active", true).json()));
         return mapper.toDto(area, (int) levels.countGrantingArea(id));
     }
 

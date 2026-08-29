@@ -11,6 +11,7 @@ import lk.AccessOne.print.repository.PrintJobRepository;
 import lk.AccessOne.print.web.dto.DispatchDetail;
 import lk.AccessOne.print.web.dto.DispatchRow;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.enums.CardStatus;
 import lk.AccessOne.shared.enums.DispatchMethod;
@@ -72,7 +73,7 @@ public class DispatchService {
         DispatchRecord record = dispatches.save(DispatchRecord.open(job, method, remarks));
 
         events.publishEvent(AuditEvent.created("dispatch_records", record.getId(),
-                "{\"method\":\"%s\"}".formatted(method)));
+                AuditValue.of().with("method", method).json()));
         return mapper.toDetail(record);
     }
 

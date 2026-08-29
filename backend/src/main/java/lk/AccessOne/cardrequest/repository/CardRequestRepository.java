@@ -49,4 +49,14 @@ public interface CardRequestRepository extends JpaRepository<CardRequest, Long> 
     boolean existsByEmployeeIdAndStatusIn(Long employeeId, Collection<RequestStatus> statuses);
 
     List<CardRequest> findByEmployeeIdAndStatusIn(Long employeeId, Collection<RequestStatus> statuses);
+
+    long countByEmployeeIdAndStatusIn(Long employeeId, Collection<RequestStatus> statuses);
+
+    /** IT dashboard: approved but Module 4 has not generated a card for it yet. */
+    @Query("""
+           select count(r) from CardRequest r
+           where r.status = lk.AccessOne.shared.enums.RequestStatus.APPROVED
+             and not exists (select 1 from IdCard c where c.request = r)
+           """)
+    long countAwaitingCardGeneration();
 }

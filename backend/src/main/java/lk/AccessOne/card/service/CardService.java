@@ -13,6 +13,7 @@ import lk.AccessOne.card.web.dto.CardTimelineEntry;
 import lk.AccessOne.card.web.dto.CardVerification;
 import lk.AccessOne.print.repository.PrintJobRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
 import lk.AccessOne.shared.enums.AuditAction;
@@ -165,7 +166,7 @@ public class CardService {
     @Transactional
     public CardDetail revoke(Long id, String reason) {
         IdCard card = lookup.require(cards, id, "Card");
-        statusChanges.apply("id_cards", id, card::getStatus, () -> card.revoke(reason));
+        statusChanges.apply("id_cards", id, AuditAction.REVOKE, card::getStatus, () -> card.revoke(reason));
         events.publishEvent(new CardRevoked(id, card.getEmployee().getId(), reason));
         return findById(id);
     }
@@ -192,7 +193,7 @@ public class CardService {
         credential.regenerate(qr, payloads.qrHash(qr), payloads.nfcPayload(card), payloads.nfcFormat());
 
         events.publishEvent(new AuditEvent("card_qr_nfc_data", credential.getId(),
-                AuditAction.UPDATE, null, "{\"regenerated\":true}"));
+                AuditAction.UPDATE, null, AuditValue.of().with("regenerated", true).json()));
         return findById(id);
     }
 
@@ -204,8 +205,8 @@ public class CardService {
     @Transactional
     public void on(EmployeeExited event) {
         cards.findByEmployeeIdAndStatus(event.employeeId(), CardStatus.ACTIVE)
-             .forEach(card -> statusChanges.apply("id_cards", card.getId(), card::getStatus,
-                     () -> card.revoke("Employment ended: " + event.reason())));
+             .forEach(card -> statusChanges.apply("id_cards", card.getId(), AuditAction.REVOKE,
+                     card::getStatus, () -> card.revoke("Employment ended: " + event.reason())));
     }
 
     /** Module 6's own check on the same table, per the integration contract. */

@@ -16,6 +16,7 @@ import lk.AccessOne.identity.security.AccessOneUserDetails;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
 import lk.AccessOne.shared.enums.AuditAction;
@@ -132,7 +133,7 @@ public class CardRequestService {
 
         requests.save(request);
         events.publishEvent(AuditEvent.created("card_requests", request.getId(),
-                "{\"request_no\":\"%s\",\"status\":\"DRAFT\"}".formatted(request.getRequestNo())));
+                AuditValue.of().with("request_no", request.getRequestNo()).with("status", "DRAFT").json()));
 
         return mapper.toDetail(request);
     }

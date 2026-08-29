@@ -15,6 +15,7 @@ import lk.AccessOne.print.web.dto.ThroughputDto;
 import lk.AccessOne.shared.enums.PrintStatus;
 import lk.AccessOne.shared.web.ApiPaths;
 import lk.AccessOne.shared.web.PageResponse;
+import lk.AccessOne.shared.web.ReportCsv;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -108,5 +109,28 @@ public class PrintJobController {
     @GetMapping("/reports/throughput")
     public List<ThroughputDto> throughput() {
         return service.throughput();
+    }
+
+    @GetMapping("/reports/reprint-rate/export")
+    public ResponseEntity<byte[]> exportReprintRate(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate) {
+        List<List<String>> rows = service.reprintRate(fromDate).stream()
+                .map(r -> List.of(r.deptName(), String.valueOf(r.totalJobs()), String.valueOf(r.initialJobs()),
+                        String.valueOf(r.reprintJobs()), r.reprintRatePct().toString(), String.valueOf(r.qcFailures())))
+                .toList();
+        return ReportCsv.of("reprint-rate",
+                List.of("Department", "Total jobs", "Initial jobs", "Reprint jobs", "Reprint rate %", "QC failures"),
+                rows);
+    }
+
+    @GetMapping("/reports/throughput/export")
+    public ResponseEntity<byte[]> exportThroughput() {
+        List<List<String>> rows = service.throughput().stream()
+                .map(t -> List.of(t.printDate().toString(), String.valueOf(t.cardsPrinted()),
+                        String.valueOf(t.passed()), String.valueOf(t.failed()), t.avgHoursInQueue().toString()))
+                .toList();
+        return ReportCsv.of("print-throughput",
+                List.of("Date", "Printed", "Passed", "Failed", "Avg hours in queue"),
+                rows);
     }
 }

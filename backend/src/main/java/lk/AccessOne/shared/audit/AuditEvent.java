@@ -15,8 +15,17 @@ public record AuditEvent(
 
     public static AuditEvent statusChanged(String entityName, Long id,
                                            Object from, Object to) {
-        return new AuditEvent(entityName, id, AuditAction.STATUS_CHANGE,
-                "{\"status\":\"%s\"}".formatted(from),
-                "{\"status\":\"%s\"}".formatted(to));
+        return statusChanged(entityName, id, AuditAction.STATUS_CHANGE, from, to);
+    }
+
+    /**
+     * For the transitions the schema gives a sharper name than
+     * STATUS_CHANGE -- APPROVE, REJECT, REVOKE -- so the trail is
+     * filterable by what actually happened, not just which column moved.
+     */
+    public static AuditEvent statusChanged(String entityName, Long id, AuditAction action,
+                                           Object from, Object to) {
+        return new AuditEvent(entityName, id, action,
+                AuditValue.status(from), AuditValue.status(to));
     }
 }

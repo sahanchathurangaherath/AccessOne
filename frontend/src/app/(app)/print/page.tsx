@@ -5,6 +5,8 @@ import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { DataTable, type Column } from "@/components/data-table";
 import { StatusBadge } from "@/components/status-badge";
+import { StatTile, StatTileRow } from "@/components/stat-tile";
+import { dashboard } from "@/lib/dashboard";
 import { printJobs, type PrintJobRow } from "./_hooks/usePrint";
 
 function waitingSince(queuedAt: string) {
@@ -18,6 +20,7 @@ function waitingSince(queuedAt: string) {
 export default function PrintQueuePage() {
   const [page, setPage] = useState(0);
   const { data, isLoading, isError, refetch } = printJobs.useList({ page, size: 20, sort: "queuedAt,asc" });
+  const { data: stats } = dashboard.usePrint();
 
   const columns: Column<PrintJobRow>[] = [
     { key: "jobNo", header: "Job",
@@ -44,6 +47,13 @@ export default function PrintQueuePage() {
         title="Production"
         description="Run the print queue, quality checks and dispatch."
       />
+
+      <StatTileRow>
+        <StatTile label="Queued" value={stats?.queued ?? 0} />
+        <StatTile label="In progress" value={stats?.inProgress ?? 0} />
+        <StatTile label="Printed today" value={stats?.printedToday ?? 0} />
+        <StatTile label="Reprint rate" value={stats ? `${stats.reprintRatePct}%` : "—"} href="/print/reports" />
+      </StatTileRow>
 
       <DataTable
         columns={columns}

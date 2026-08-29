@@ -38,4 +38,6 @@ public interface AccessLevelRepository extends JpaRepository<AccessLevel, Long> 
 
     @Query("select count(l) from AccessLevel l join l.permittedAreas a where a.id = :areaId")
     long countGrantingArea(@Param("areaId") Long areaId);
+
+    long countByActiveTrue();
 }

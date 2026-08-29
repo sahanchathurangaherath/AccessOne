@@ -46,4 +46,13 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
            where j.id = :id
            """)
     Optional<PrintJob> findDetailById(@Param("id") Long id);
+
+    long countByStatus(PrintStatus status);
+
+    @Query(value = """
+           SELECT COUNT(*) FROM dbo.print_jobs
+           WHERE printed_at IS NOT NULL
+             AND CAST(printed_at AS DATE) = CAST(SYSUTCDATETIME() AS DATE)
+           """, nativeQuery = true)
+    long countPrintedToday();
 }

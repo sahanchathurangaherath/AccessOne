@@ -9,6 +9,7 @@ import lk.AccessOne.identity.repository.UserRepository;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.CurrentUserProvider;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.enums.AuditAction;
@@ -145,7 +146,7 @@ public class VisitorPassService {
                 qrBaseUrl + "/pass/" + passNo, actingUser()));
 
         events.publishEvent(AuditEvent.created("visitor_passes", pass.getId(),
-                "{\"pass_no\":\"%s\",\"valid_until\":\"%s\"}".formatted(passNo, input.validUntil())));
+                AuditValue.of().with("pass_no", passNo).with("valid_until", input.validUntil()).json()));
 
         return mapper.toDetail(pass);
     }
@@ -160,8 +161,8 @@ public class VisitorPassService {
         // Record both times, not just that a change happened. "Extended
         // by whom, from what, to what" is the question this answers.
         events.publishEvent(new AuditEvent("visitor_passes", passId, AuditAction.UPDATE,
-                "{\"valid_until\":\"%s\"}".formatted(before),
-                "{\"valid_until\":\"%s\",\"reason\":\"%s\"}".formatted(newUntil, reason)));
+                AuditValue.of().with("valid_until", before).json(),
+                AuditValue.of().with("valid_until", newUntil).with("reason", reason).json()));
 
         return mapper.toDetail(pass);
     }

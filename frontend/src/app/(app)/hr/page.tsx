@@ -6,8 +6,10 @@ import { toast } from "sonner";
 import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { DataTable, type Column } from "@/components/data-table";
+import { StatTile, StatTileRow } from "@/components/stat-tile";
 import { Button } from "@/components/ui/button";
 import { ApiError } from "@/lib/api";
+import { dashboard } from "@/lib/dashboard";
 import { AgeingIndicator } from "./_components/AgeingIndicator";
 import { useQueue, useBulkApprove, type PendingRequestRow } from "./_hooks/useApprovals";
 
@@ -27,6 +29,7 @@ export default function ApprovalQueuePage() {
 
   const { data, isLoading, isError, refetch } = useQueue({ ageing, page });
   const bulkApprove = useBulkApprove();
+  const { data: stats } = dashboard.useHr();
 
   function toggle(requestId: number) {
     setSelected((prev) => {
@@ -105,6 +108,22 @@ export default function ApprovalQueuePage() {
         title="Approvals"
         description="Verify card requests and record decisions."
       />
+
+      <StatTileRow>
+        <StatTile label="Pending" value={stats?.pending ?? 0} href="/hr" />
+        <StatTile
+          label="Overdue"
+          value={stats?.overdue ?? 0}
+          tone={stats && stats.overdue > 0 ? "denied" : "neutral"}
+          href="/hr"
+        />
+        <StatTile label="Decided this week" value={stats?.decidedThisWeek ?? 0} href="/hr/history" />
+        <StatTile
+          label="Avg. turnaround"
+          value={stats ? `${stats.avgTurnaroundHours}h` : "—"}
+          hint="This month"
+        />
+      </StatTileRow>
 
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div className="flex flex-wrap gap-1" role="tablist" aria-label="Filter by ageing">

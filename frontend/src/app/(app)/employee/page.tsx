@@ -5,8 +5,10 @@ import Link from "next/link";
 import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
+import { StatTile, StatTileRow } from "@/components/stat-tile";
 import { Button } from "@/components/ui/button";
 import { DataTable, type Column } from "@/components/data-table";
+import { dashboard } from "@/lib/dashboard";
 import { requests, type CardRequestSummary, type RequestStatus } from "./_hooks/useRequests";
 
 const FILTERS: { label: string; value?: RequestStatus }[] = [
@@ -37,6 +39,7 @@ export default function MyRequestsPage() {
   const [status, setStatus] = useState<RequestStatus | undefined>();
   const [page, setPage] = useState(0);
   const { data, isLoading, isError, refetch } = requests.useList({ status, page });
+  const { data: stats } = dashboard.useEmployee();
 
   return (
     <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
@@ -47,6 +50,15 @@ export default function MyRequestsPage() {
           <Button render={<Link href="/employee/requests/new">New request</Link>} />
         }
       />
+
+      <StatTileRow>
+        <StatTile label="Card status" value={stats?.cardStatus?.replaceAll("_", " ").toLowerCase() ?? "—"} />
+        <StatTile
+          label="Requests in progress"
+          value={stats?.requestsInProgress ?? 0}
+          tone={stats && stats.requestsInProgress > 0 ? "pending" : "neutral"}
+        />
+      </StatTileRow>
 
       <div className="mb-4 flex flex-wrap gap-1" role="tablist" aria-label="Filter by status">
         {FILTERS.map((f) => (
