@@ -13,6 +13,7 @@ import lk.AccessOne.shared.enums.CardStatus;
 import lk.AccessOne.shared.enums.CredentialType;
 import lk.AccessOne.shared.enums.DenialReason;
 import lk.AccessOne.shared.enums.Direction;
+import lk.AccessOne.shared.enums.EmploymentStatus;
 import lk.AccessOne.shared.enums.RequestType;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -96,5 +97,108 @@ class EmployeeCardStrategyTest {
         assertThat(decision.granted()).isFalse();
         assertThat(decision.denialReason()).isEqualTo(DenialReason.UNKNOWN_CREDENTIAL);
         assertThat(decision.holderName()).isNotBlank();
+    }
+
+    /** Every denial reason the schema defines for an employee card, so none is left unverified. */
+    @Test
+    void anAreaCodeThatDoesNotExistIsDenied() {
+        when(cards.findBySerialWithEmployee("ACO-2026-000001")).thenReturn(Optional.of(activeCard));
+        when(areas.findByAreaCode("A-NOWHERE")).thenReturn(Optional.empty());
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000001", "A-NOWHERE", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.UNKNOWN_AREA);
+    }
+
+    @Test
+    void aCardNotYetActivatedIsDenied() {
+        IdCard notActivated = freshCardWithLevelAndArea();   // still GENERATED
+        when(cards.findBySerialWithEmployee("ACO-2026-000001")).thenReturn(Optional.of(notActivated));
+        when(areas.findByAreaCode("A-LOBBY")).thenReturn(Optional.of(area));
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000001", "A-LOBBY", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.CARD_NOT_ACTIVE);
+    }
+
+    @Test
+    void anExitedEmployeesCardIsDeniedEvenThoughTheCardItselfIsStillActive() {
+        activeCard.getEmployee().recordExit(EmploymentStatus.RESIGNED, LocalDate.now());
+        when(cards.findBySerialWithEmployee("ACO-2026-000001")).thenReturn(Optional.of(activeCard));
+        when(areas.findByAreaCode("A-LOBBY")).thenReturn(Optional.of(area));
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000001", "A-LOBBY", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.EMPLOYEE_NOT_ACTIVE);
+    }
+
+    @Test
+    void aCardWithNoAccessLevelAssignedIsDenied() {
+        Employee employee = employeeWithNoLevel();
+        CardRequest request = CardRequest.draft("REQ-2026-9002", employee, RequestType.NEW, null, null, null, null);
+        IdCard card = IdCard.generate("ACO-2026-000002", request, employee, null, (short) 1, null);
+        card.moveTo(CardStatus.QUEUED_FOR_PRINT);
+        card.moveTo(CardStatus.PRINTED);
+        card.moveTo(CardStatus.DISPATCHED);
+        card.activate();
+
+        when(cards.findBySerialWithEmployee("ACO-2026-000002")).thenReturn(Optional.of(card));
+        when(areas.findByAreaCode("A-LOBBY")).thenReturn(Optional.of(area));
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000002", "A-LOBBY", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.NO_ACCESS_LEVEL);
+    }
+
+    @Test
+    void aDeactivatedAreaIsDenied() {
+        area.deactivate();
+        when(cards.findBySerialWithEmployee("ACO-2026-000001")).thenReturn(Optional.of(activeCard));
+        when(areas.findByAreaCode("A-LOBBY")).thenReturn(Optional.of(area));
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000001", "A-LOBBY", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.AREA_INACTIVE);
+    }
+
+    @Test
+    void anAreaTheAccessLevelDoesNotGrantIsDenied() {
+        Area serverRoom = new Area("A-SERVER", "Server Room", "Tower A", "B1", true, null);
+        // activeCard's level only grants A-LOBBY (see setUp) -- never granted A-SERVER.
+        when(cards.findBySerialWithEmployee("ACO-2026-000001")).thenReturn(Optional.of(activeCard));
+        when(areas.findByAreaCode("A-SERVER")).thenReturn(Optional.of(serverRoom));
+
+        AccessDecisionResult decision = strategy.evaluate(
+                AccessRequest.now("ACO-2026-000001", "A-SERVER", Direction.IN));
+
+        assertThat(decision.granted()).isFalse();
+        assertThat(decision.denialReason()).isEqualTo(DenialReason.AREA_NOT_PERMITTED);
+    }
+
+    private IdCard freshCardWithLevelAndArea() {
+        Department dept = new Department("FIN", "Finance", null);
+        Employee employee = new Employee("EMP001", "Nimal", "Perera", "982345678V",
+                "nimal@accessone.lk", null, "Software Engineer", dept, LocalDate.now());
+        CardRequest request = CardRequest.draft("REQ-2026-9001", employee, RequestType.NEW,
+                null, null, null, null);
+        AccessLevel level = new AccessLevel("AL-GEN", "General Staff", null);
+        level.grant(area);
+        return IdCard.generate("ACO-2026-000001", request, employee, level, (short) 1, null);
+    }
+
+    private Employee employeeWithNoLevel() {
+        Department dept = new Department("FIN", "Finance", null);
+        return new Employee("EMP002", "Sunil", "Bandara", "902345678V",
+                "sunil@accessone.lk", null, "Intern", dept, LocalDate.now());
     }
 }

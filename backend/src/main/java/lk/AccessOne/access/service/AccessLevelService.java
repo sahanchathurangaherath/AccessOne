@@ -16,6 +16,7 @@ import lk.AccessOne.access.web.dto.PermissionMatrix;
 import lk.AccessOne.identity.domain.User;
 import lk.AccessOne.identity.repository.UserRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.CurrentUserProvider;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.error.BusinessRuleException;
@@ -28,7 +29,6 @@ import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 @Service
 public class AccessLevelService {
@@ -77,7 +77,7 @@ public class AccessLevelService {
         AccessLevel level = levels.save(
                 new AccessLevel(input.levelCode(), input.levelName(), input.description()));
         events.publishEvent(AuditEvent.created("access_levels", level.getId(),
-                "{\"level_code\":\"%s\"}".formatted(input.levelCode())));
+                AuditValue.of().with("level_code", input.levelCode()).json()));
         return mapper.toDto(level);
     }
 
@@ -93,8 +93,9 @@ public class AccessLevelService {
     public AccessLevelDto deactivate(Long id) {
         AccessLevel level = lookup.require(levels.findWithAreas(id), "Access level", id);
         level.deactivate();
-        events.publishEvent(new AuditEvent("access_levels", id,
-                AuditAction.UPDATE, "{\"is_active\":true}", "{\"is_active\":false}"));
+        events.publishEvent(new AuditEvent("access_levels", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", true).json(),
+                AuditValue.of().with("is_active", false).json()));
         return mapper.toDto(level);
     }
 
@@ -102,8 +103,9 @@ public class AccessLevelService {
     public AccessLevelDto reactivate(Long id) {
         AccessLevel level = lookup.require(levels.findWithAreas(id), "Access level", id);
         level.reactivate();
-        events.publishEvent(new AuditEvent("access_levels", id,
-                AuditAction.UPDATE, "{\"is_active\":false}", "{\"is_active\":true}"));
+        events.publishEvent(new AuditEvent("access_levels", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", false).json(),
+                AuditValue.of().with("is_active", true).json()));
         return mapper.toDto(level);
     }
 
@@ -132,9 +134,9 @@ public class AccessLevelService {
     }
 
     private String codesJson(Set<Area> areaSet) {
-        return "{\"areas\":[%s]}".formatted(
-                areaSet.stream().map(a -> "\"%s\"".formatted(a.getAreaCode()))
-                       .collect(Collectors.joining(",")));
+        return AuditValue.of()
+                .withList("areas", areaSet.stream().map(Area::getAreaCode).toList())
+                .json();
     }
 
     // ---------- the permission matrix ----------
@@ -216,7 +218,7 @@ public class AccessLevelService {
 
         events.publishEvent(AuditEvent.created("card_access_assignments",
                 assignment.getId(),
-                "{\"card_id\":%d,\"level\":\"%s\"}".formatted(cardId, level.getLevelCode())));
+                AuditValue.of().with("card_id", cardId).with("level", level.getLevelCode()).json()));
 
         return mapper.toDto(assignment);
     }

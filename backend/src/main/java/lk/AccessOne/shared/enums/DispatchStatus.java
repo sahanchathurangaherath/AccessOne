@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Matches dispatch_records.status CHECK constraint. */
-public enum DispatchStatus {
+public enum DispatchStatus implements StatefulEnum<DispatchStatus> {
 
     PENDING, DISPATCHED, DELIVERED, RETURNED;
 
@@ -15,6 +15,7 @@ public enum DispatchStatus {
         RETURNED,   EnumSet.of(DISPATCHED)   // re-sent after a failed delivery
     );
 
+    @Override
     public boolean canTransitionTo(DispatchStatus target) {
         return ALLOWED.getOrDefault(this, EnumSet.noneOf(DispatchStatus.class))
                       .contains(target);

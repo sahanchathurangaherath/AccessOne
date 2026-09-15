@@ -69,4 +69,19 @@ public interface VisitorPassRepository extends JpaRepository<VisitorPass, Long> 
     List<VisitorPass> findLapsed(@Param("now") LocalDateTime now);
 
     long countByVisitorId(Long visitorId);
+
+    /**
+     * Still-live passes lapsing inside the window -- used both for the
+     * security dashboard tile and for the host-notification sweep. Only
+     * ISSUED/ACTIVE passes count: one already expired, cancelled or
+     * returned is not "about to" do anything.
+     */
+    @Query("""
+           select p from VisitorPass p
+           join fetch p.visitor v
+           join fetch p.hostEmployee
+           where p.status in ('ISSUED', 'ACTIVE')
+             and p.validUntil between :from and :to
+           """)
+    List<VisitorPass> findExpiringBetween(@Param("from") LocalDateTime from, @Param("to") LocalDateTime to);
 }

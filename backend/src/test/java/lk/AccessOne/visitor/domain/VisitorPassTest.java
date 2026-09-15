@@ -133,4 +133,42 @@ class VisitorPassTest {
         assertThatThrownBy(() -> pass.markReturned())
                 .isInstanceOf(InvalidStateTransitionException.class);
     }
+
+    /**
+     * isUsableAt() is inclusive at both ends: !isBefore(from) && !isAfter(until).
+     * The instant a pass starts and the instant it ends are both still
+     * usable -- a visitor who scans at exactly 09:00 on a 09:00-17:00 pass
+     * must not be turned away.
+     */
+    @Test
+    void aPassIsUsableAtTheExactStartOfItsWindow() {
+        LocalDateTime from = LocalDateTime.now().plusMinutes(30);
+        VisitorPass pass = passWithWindow(from, from.plusHours(2));
+
+        assertThat(pass.isUsableAt(from)).isTrue();
+    }
+
+    @Test
+    void aPassIsUsableAtTheExactEndOfItsWindow() {
+        LocalDateTime until = LocalDateTime.now().plusHours(2);
+        VisitorPass pass = passWithWindow(until.minusHours(2), until);
+
+        assertThat(pass.isUsableAt(until)).isTrue();
+    }
+
+    @Test
+    void aPassIsNotUsableOneInstantBeforeItsWindowOpens() {
+        LocalDateTime from = LocalDateTime.now().plusMinutes(30);
+        VisitorPass pass = passWithWindow(from, from.plusHours(2));
+
+        assertThat(pass.isUsableAt(from.minusNanos(1))).isFalse();
+    }
+
+    @Test
+    void aPassIsNotUsableOneInstantAfterItsWindowCloses() {
+        LocalDateTime until = LocalDateTime.now().plusHours(2);
+        VisitorPass pass = passWithWindow(until.minusHours(2), until);
+
+        assertThat(pass.isUsableAt(until.plusNanos(1))).isFalse();
+    }
 }

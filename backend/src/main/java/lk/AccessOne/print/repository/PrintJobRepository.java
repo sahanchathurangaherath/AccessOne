@@ -30,7 +30,6 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
            join fetch c.employee e
            join fetch e.department
            where (:status is null or j.status = :status)
-           order by j.queuedAt asc
            """,
            countQuery = """
            select count(j) from PrintJob j
@@ -46,4 +45,13 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
            where j.id = :id
            """)
     Optional<PrintJob> findDetailById(@Param("id") Long id);
+
+    long countByStatus(PrintStatus status);
+
+    @Query(value = """
+           SELECT COUNT(*) FROM dbo.print_jobs
+           WHERE printed_at IS NOT NULL
+             AND CAST(printed_at AS DATE) = CAST(SYSUTCDATETIME() AS DATE)
+           """, nativeQuery = true)
+    long countPrintedToday();
 }

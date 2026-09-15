@@ -61,4 +61,7 @@ public interface IdCardRepository extends JpaRepository<IdCard, Long> {
 
     /** For EmployeeExited: every card that is still capable of opening a door. */
     List<IdCard> findByEmployeeIdAndStatus(Long employeeId, CardStatus status);
+
+    /** The employee dashboard tile: whatever card is current for this person. */
+    Optional<IdCard> findFirstByEmployeeIdOrderByIssueDateDesc(Long employeeId);
 }

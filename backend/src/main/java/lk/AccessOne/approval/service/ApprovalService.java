@@ -25,6 +25,7 @@ import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.CurrentUserProvider;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
+import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.EmploymentStatus;
 import lk.AccessOne.shared.enums.RequestStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
@@ -132,7 +133,7 @@ public class ApprovalService {
 
         requireEmployeeStillActive(request);
 
-        statusChanges.apply("approvals", approval.getId(),
+        statusChanges.apply("approvals", approval.getId(), AuditAction.APPROVE,
                 approval::getDecision, () -> approval.approve(actingUser()));
 
         statusChanges.apply("card_requests", request.getId(),
@@ -154,7 +155,7 @@ public class ApprovalService {
         Approval approval = load(requestId);
         CardRequest request = approval.getRequest();
 
-        statusChanges.apply("approvals", approval.getId(),
+        statusChanges.apply("approvals", approval.getId(), AuditAction.REJECT,
                 approval::getDecision, () -> approval.reject(actingUser(), reason));
 
         statusChanges.apply("card_requests", request.getId(),

@@ -5,7 +5,7 @@ import java.util.Map;
 import java.util.Set;
 
 /** Matches print_jobs.status CHECK constraint. */
-public enum PrintStatus {
+public enum PrintStatus implements StatefulEnum<PrintStatus> {
 
     QUEUED, IN_PROGRESS, PRINTED, QC_PASSED, QC_FAILED, CANCELLED;
 
@@ -17,6 +17,7 @@ public enum PrintStatus {
         // is a new job, never a reopening of this one.
     );
 
+    @Override
     public boolean canTransitionTo(PrintStatus target) {
         return ALLOWED.getOrDefault(this, EnumSet.noneOf(PrintStatus.class))
                       .contains(target);

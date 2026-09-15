@@ -14,7 +14,7 @@ import java.util.Set;
  *
  * Matches visitor_passes.status CHECK constraint.
  */
-public enum PassStatus {
+public enum PassStatus implements StatefulEnum<PassStatus> {
 
     ISSUED, ACTIVE, EXPIRED, SUSPENDED, CANCELLED, RETURNED;
 
@@ -22,9 +22,14 @@ public enum PassStatus {
         ISSUED,    EnumSet.of(ACTIVE, EXPIRED, SUSPENDED, CANCELLED),
         ACTIVE,    EnumSet.of(EXPIRED, SUSPENDED, RETURNED, CANCELLED),
         SUSPENDED, EnumSet.of(ACTIVE, CANCELLED, EXPIRED),
-        EXPIRED,   EnumSet.of(RETURNED)          // the badge still comes back
+        // EXPIRED -> ACTIVE: an extension that pushes validUntil back into
+        // the future reopens the pass. This used to be a direct field
+        // assignment in VisitorPass.changeWindow() that bypassed the check
+        // entirely -- Phase 14 found it and routed it through here instead.
+        EXPIRED,   EnumSet.of(RETURNED, ACTIVE)
     );
 
+    @Override
     public boolean canTransitionTo(PassStatus target) {
         return ALLOWED.getOrDefault(this, EnumSet.noneOf(PassStatus.class))
                       .contains(target);

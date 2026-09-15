@@ -4,7 +4,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-public enum RequestStatus {
+public enum RequestStatus implements StatefulEnum<RequestStatus> {
 
     DRAFT, SUBMITTED, UNDER_VERIFICATION, APPROVED, REJECTED, WITHDRAWN, CANCELLED;
 
@@ -15,6 +15,7 @@ public enum RequestStatus {
         REJECTED,           EnumSet.of(SUBMITTED)
     );
 
+    @Override
     public boolean canTransitionTo(RequestStatus target) {
         return ALLOWED.getOrDefault(this, EnumSet.noneOf(RequestStatus.class))
                       .contains(target);

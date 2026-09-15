@@ -108,8 +108,13 @@ public class SecurityConfig {
                 // Read-only carve-out first: Module 5 (visitor passes) must show what an
                 // access level permits when issuing a pass, but must not manage levels --
                 // that stays IT_ADMIN/SYSTEM_ADMIN only, below.
+                // HR_MANAGER also needs read-only access to departments for employee provisioning.
                 .requestMatchers(HttpMethod.GET, "/api/v1/config/access-levels/**")
                     .hasAnyRole("IT_ADMIN", "SECURITY_OFFICER", "SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/config/areas/**")
+                    .hasAnyRole("IT_ADMIN", "SECURITY_OFFICER", "SYSTEM_ADMIN")
+                .requestMatchers(HttpMethod.GET, "/api/v1/config/departments/**")
+                    .hasAnyRole("HR_MANAGER", "IT_ADMIN", "SYSTEM_ADMIN")
                 .requestMatchers("/api/v1/config/**")
                     .hasAnyRole("IT_ADMIN", "SYSTEM_ADMIN")
 
@@ -128,6 +133,11 @@ public class SecurityConfig {
                 // --- shared: access decisions, logs, alerts, blacklist ---
                 .requestMatchers("/api/v1/access/**", "/api/v1/alerts/**", "/api/v1/blacklist/**")
                     .hasAnyRole("SECURITY_OFFICER", "SYSTEM_ADMIN")
+
+                // --- employee provisioning: HR creates the authoritative record;
+                // scoped narrower than /admin/** below, which stays SYSTEM_ADMIN-only ---
+                .requestMatchers(HttpMethod.POST, "/api/v1/admin/employees/provision")
+                    .hasAnyRole("HR_MANAGER", "SYSTEM_ADMIN")
 
                 // --- administration ---
                 .requestMatchers("/api/v1/admin/**").hasRole("SYSTEM_ADMIN")

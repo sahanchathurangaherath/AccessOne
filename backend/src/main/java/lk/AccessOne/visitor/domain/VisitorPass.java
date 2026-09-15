@@ -151,7 +151,7 @@ public class VisitorPass extends AuditableEntity {
         }
         this.validUntil = newUntil;
         if (status == PassStatus.EXPIRED && newUntil.isAfter(now())) {
-            this.status = PassStatus.ACTIVE;      // reopened by the extension
+            move(PassStatus.ACTIVE);      // reopened by the extension
         }
     }
 

@@ -99,7 +99,7 @@ public class Approval extends AuditableEntity {
      * holds history.
      */
     public void reopen() {
-        this.decision = Decision.PENDING;
+        move(Decision.PENDING);
         this.rejectionReason = null;
         this.decidedBy = null;
         this.decidedAt = null;

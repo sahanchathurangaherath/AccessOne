@@ -3,6 +3,7 @@ package lk.AccessOne.visitor.web;
 import jakarta.validation.Valid;
 import lk.AccessOne.shared.web.ApiPaths;
 import lk.AccessOne.shared.web.PageResponse;
+import lk.AccessOne.shared.web.ReportCsv;
 import lk.AccessOne.visitor.service.VisitLogService;
 import lk.AccessOne.visitor.service.VisitorService;
 import lk.AccessOne.visitor.web.dto.DailyReportDto;
@@ -87,5 +88,18 @@ public class VisitorController {
     public List<DailyReportDto> daily(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate) {
         return visitLogService.dailySummary(fromDate == null ? LocalDateTime.now().minusDays(30) : fromDate);
+    }
+
+    @GetMapping("/reports/daily/export")
+    public org.springframework.http.ResponseEntity<byte[]> exportDaily(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime fromDate) {
+        List<List<String>> rows = daily(fromDate).stream()
+                .map(r -> List.of(r.visitDate().toString(), String.valueOf(r.totalVisits()),
+                        String.valueOf(r.stillOnSite()), String.valueOf(r.distinctVisitors()),
+                        String.valueOf(r.contractorVisits()), r.avgMinutesOnSite().toString()))
+                .toList();
+        return ReportCsv.of("daily-visitors",
+                List.of("Date", "Total visits", "Still on site", "Distinct visitors", "Contractor visits", "Avg minutes on site"),
+                rows);
     }
 }

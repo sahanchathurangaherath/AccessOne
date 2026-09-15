@@ -20,7 +20,6 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
              and (:decision is null or l.decision = :decision)
              and (:from is null or l.accessTime >= :from)
              and (:to is null or l.accessTime <= :to)
-           order by l.accessTime desc
            """,
            countQuery = """
            select count(l) from AccessLog l
@@ -64,4 +63,11 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
         String getDenialReason();
         long getCnt();
     }
+
+    /** The security dashboard tile. Reconciles against the same SQL run directly in SSMS. */
+    @Query(value = """
+           SELECT COUNT(*) FROM dbo.access_logs
+           WHERE decision = 'DENIED' AND CAST(access_time AS DATE) = CAST(SYSUTCDATETIME() AS DATE)
+           """, nativeQuery = true)
+    long countDeniedToday();
 }

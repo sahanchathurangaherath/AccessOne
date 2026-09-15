@@ -11,7 +11,7 @@ import java.util.Set;
  * There is deliberately no EXPIRED state: employee cards carry no expiry
  * date, and validity is controlled by status and revocation.
  */
-public enum CardStatus {
+public enum CardStatus implements StatefulEnum<CardStatus> {
 
     GENERATED,
     QUEUED_FOR_PRINT,
@@ -40,6 +40,7 @@ public enum CardStatus {
         REVOKED,          EnumSet.of(REPLACED)
     );
 
+    @Override
     public boolean canTransitionTo(CardStatus target) {
         return ALLOWED.getOrDefault(this, EnumSet.noneOf(CardStatus.class))
                       .contains(target);

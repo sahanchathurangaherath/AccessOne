@@ -1,22 +1,44 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
-} from "@/components/ui/select";
 import { Field } from "@/components/form/field";
-import { FormShell } from "@/components/form/form-shell";
 import { FileUploadField } from "@/components/form/file-upload-field";
 import { applyServerErrors } from "@/lib/forms";
+import { useAuth } from "@/lib/auth";
+import { ROLE_LABEL } from "@/lib/roles";
+import { cn } from "@/lib/utils";
 import {
-  requests, useUploadPhoto,
-  type CardRequestDetail, type RequestType,
+  IdCard,
+  RefreshCw,
+  Clock,
+  ShieldCheck,
+  Wifi,
+  User,
+  CheckCircle2,
+  AlertCircle,
+  Camera,
+  ChevronRight,
+  ChevronLeft,
+  Check,
+  Send,
+  Save,
+  Info,
+  Building2,
+  BadgeCheck,
+  Sparkles,
+} from "lucide-react";
+import {
+  requests,
+  useUploadPhoto,
+  useSubmitRequest,
+  type CardRequestDetail,
+  type RequestType,
 } from "../_hooks/useRequests";
 
 const schema = z
@@ -27,52 +49,139 @@ const schema = z
   })
   .refine((v) => v.requestType !== "REPLACEMENT" || !!v.reason?.trim(), {
     path: ["reason"],
-    message: "Say why the card is being replaced",
+    message: "Please state why the replacement card is required",
   })
   .refine((v) => v.requestType !== "REPLACEMENT" || !!v.previousCardId, {
     path: ["previousCardId"],
-    message: "Enter the id of the card being replaced",
+    message: "Please enter the numeric ID of the previous card",
   });
 
 type FormValues = z.infer<typeof schema>;
 
-const TYPE_LABEL: Record<RequestType, string> = {
-  NEW: "New card",
-  REPLACEMENT: "Replacement (lost, damaged or stolen)",
-  RENEWAL: "Renewal",
+const WORKSPACE_STEPS = [
+  { id: 0, title: "Identification & Type", desc: "Select badge issuance category" },
+  { id: 1, title: "Card Specification", desc: "Access level & justification" },
+  { id: 2, title: "Biometric & Review", desc: "Upload photo & verify badge" },
+];
+
+type TypeOption = {
+  type: RequestType;
+  title: string;
+  badge: string;
+  description: string;
+  icon: typeof IdCard;
+  colorClass: string;
+  bgActiveClass: string;
 };
 
-/**
- * The two refine() rules above mirror chk_card_requests_reason and the
- * service's own check on CardRequest -- zod for instant feedback, the
- * service so no API caller can bypass it, the database as the final
- * authority. Three layers saying the same thing on purpose, not duplication.
- */
+const TYPE_OPTIONS: TypeOption[] = [
+  {
+    type: "NEW",
+    title: "Initial New Badge",
+    badge: "New Hire / First Card",
+    description: "For new employees or those claiming their initial corporate RFID credential.",
+    icon: IdCard,
+    colorClass: "text-blue-600",
+    bgActiveClass: "border-credential bg-blue-50/50 ring-2 ring-credential/20 shadow-xs",
+  },
+  {
+    type: "REPLACEMENT",
+    title: "Card Replacement",
+    badge: "Lost / Damaged",
+    description: "Replace a lost, broken, stolen, or malfunctioning smart access badge.",
+    icon: RefreshCw,
+    colorClass: "text-amber-600",
+    bgActiveClass: "border-amber-600 bg-amber-50/50 ring-2 ring-amber-500/20 shadow-xs",
+  },
+  {
+    type: "RENEWAL",
+    title: "Validity Renewal",
+    badge: "Contract Extension",
+    description: "Extend validity period for renewed contracts or periodic security reissuance.",
+    icon: Clock,
+    colorClass: "text-emerald-600",
+    bgActiveClass: "border-emerald-600 bg-emerald-50/50 ring-2 ring-emerald-500/20 shadow-xs",
+  },
+];
+
 export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
   const router = useRouter();
+  const { user } = useAuth();
+  const [currentStep, setCurrentStep] = useState(0);
   const [formError, setFormError] = useState<string | null>(null);
   const [photoFile, setPhotoFile] = useState<File | null>(null);
+  const [previewUrl, setPreviewUrl] = useState<string | null>(
+    existing?.hasPhoto ? `/api/v1/requests/${existing.id}/photo` : null
+  );
 
   const create = requests.useCreate();
   const update = requests.useUpdate();
   const uploadPhoto = useUploadPhoto();
+  const submitRequest = useSubmitRequest();
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
     defaultValues: {
       requestType: (existing?.requestType as RequestType) ?? "NEW",
-      reason: existing?.reason ?? undefined,
+      reason: existing?.reason ?? "",
       previousCardId: existing?.previousCardId ?? undefined,
     },
   });
 
   const requestType = form.watch("requestType");
+  const reasonText = form.watch("reason") ?? "";
+  const previousCardId = form.watch("previousCardId");
   const isReplacement = requestType === "REPLACEMENT";
-  const busy = create.isPending || update.isPending || uploadPhoto.isPending;
+  const busy =
+    create.isPending || update.isPending || uploadPhoto.isPending || submitRequest.isPending;
 
-  async function onSubmit(values: FormValues) {
+  // Sync photo file changes to preview URL
+  useEffect(() => {
+    if (photoFile) {
+      const url = URL.createObjectURL(photoFile);
+      setPreviewUrl(url);
+      return () => URL.revokeObjectURL(url);
+    } else if (existing?.hasPhoto) {
+      setPreviewUrl(`/api/v1/requests/${existing.id}/photo`);
+    } else {
+      setPreviewUrl(null);
+    }
+  }, [photoFile, existing]);
+
+  // Display metadata
+  const displayName = existing?.employeeName ?? user?.username ?? "Corporate Employee";
+  const displayRole = user?.role ? ROLE_LABEL[user.role] : "Staff Member";
+  const displayEmpId =
+    existing?.empId ?? (user?.employeeId ? `EMP-${user.employeeId}` : "EMP-001");
+  const displayDept = existing?.departmentName ?? "Headquarters / Operations";
+
+  // Step 1 Validation -> Proceed to Step 2
+  const handleNextFromStep1 = async () => {
+    const valid = await form.trigger(["requestType"]);
+    if (valid) {
+      setFormError(null);
+      setCurrentStep(1);
+    }
+  };
+
+  // Step 2 Validation -> Proceed to Step 3
+  const handleNextFromStep2 = async () => {
+    const fieldsToValidate: (keyof FormValues)[] = ["requestType"];
+    if (isReplacement) {
+      fieldsToValidate.push("reason", "previousCardId");
+    }
+    const valid = await form.trigger(fieldsToValidate);
+    if (valid) {
+      setFormError(null);
+      setCurrentStep(2);
+    }
+  };
+
+  // Save as Draft
+  const handleSaveDraft = async () => {
     setFormError(null);
     try {
+      const values = form.getValues();
       const body = {
         requestType: values.requestType,
         reason: values.reason?.trim() || undefined,
@@ -86,77 +195,601 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
       if (photoFile) {
         await uploadPhoto.mutateAsync({ id: saved.id, file: photoFile });
       }
+
       router.push(`/employee/requests/${saved.id}`);
     } catch (error) {
       const message = applyServerErrors(error, form.setError);
       if (message) setFormError(message);
     }
-  }
+  };
+
+  // Save and Submit directly for HR verification
+  const handleSubmitFinal = async () => {
+    setFormError(null);
+    try {
+      const valid = await form.trigger();
+      if (!valid) return;
+
+      const values = form.getValues();
+      const body = {
+        requestType: values.requestType,
+        reason: values.reason?.trim() || undefined,
+        previousCardId: isReplacement ? values.previousCardId : undefined,
+      };
+
+      const saved = existing
+        ? await update.mutateAsync({ id: existing.id, body })
+        : await create.mutateAsync(body);
+
+      if (photoFile) {
+        await uploadPhoto.mutateAsync({ id: saved.id, file: photoFile });
+      }
+
+      // Automatically transition from DRAFT to SUBMITTED
+      await submitRequest.mutateAsync(saved.id);
+      router.push("/employee");
+    } catch (error) {
+      const message = applyServerErrors(error, form.setError);
+      if (message) setFormError(message);
+    }
+  };
 
   return (
-    <FormShell
-      onSubmit={form.handleSubmit(onSubmit)}
-      formError={formError}
-      isPending={busy}
-      submitLabel={existing ? "Save changes" : "Create draft"}
-      onCancel={() => router.back()}
-    >
-      <Field label="Request type" name="requestType">
-        <Select
-          value={form.watch("requestType")}
-          onValueChange={(v) => form.setValue("requestType", v as RequestType, { shouldValidate: true })}
-        >
-          <SelectTrigger id="requestType" className="w-full">
-            <SelectValue placeholder="Choose a request type" />
-          </SelectTrigger>
-          <SelectContent>
-            {(Object.keys(TYPE_LABEL) as RequestType[]).map((t) => (
-              <SelectItem key={t} value={t}>{TYPE_LABEL[t]}</SelectItem>
-            ))}
-          </SelectContent>
-        </Select>
-      </Field>
+    <div className="w-full space-y-6">
+      {/* ─── 1. TOP STEPPER INDICATOR (Microfinance Lifecycle Style) ─── */}
+      <div className="rounded-2xl border border-rule bg-surface p-4 sm:p-6 shadow-xs">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          {WORKSPACE_STEPS.map((step, idx) => {
+            const isCompleted = idx < currentStep;
+            const isActive = idx === currentStep;
+            return (
+              <div
+                key={step.id}
+                className="flex items-center flex-1 last:flex-none cursor-pointer group"
+                onClick={() => {
+                  if (idx < currentStep) setCurrentStep(idx);
+                }}
+              >
+                <div
+                  className={cn(
+                    "step-dot transition-all duration-200",
+                    isCompleted && "step-dot-completed",
+                    isActive && "step-dot-active scale-105",
+                    idx > currentStep && "step-dot-inactive"
+                  )}
+                >
+                  {isCompleted ? <Check className="h-4 w-4" /> : idx + 1}
+                </div>
+                <div className="ml-3 min-w-0">
+                  <p
+                    className={cn(
+                      "text-xs font-bold leading-none tracking-tight",
+                      isActive
+                        ? "text-credential"
+                        : isCompleted
+                        ? "text-emerald-700"
+                        : "text-slate-400"
+                    )}
+                  >
+                    {step.title}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-500 hidden md:block">
+                    {step.desc}
+                  </p>
+                </div>
+                {idx < WORKSPACE_STEPS.length - 1 && (
+                  <div
+                    className={cn(
+                      "step-line mx-4 hidden sm:block",
+                      isCompleted && "step-line-completed"
+                    )}
+                  />
+                )}
+              </div>
+            );
+          })}
+        </div>
+      </div>
 
-      {isReplacement && (
-        <Field
-          label="Card being replaced (card id)"
-          name="previousCardId"
-          required
-          error={form.formState.errors.previousCardId?.message}
-        >
-          <Input
-            id="previousCardId"
-            type="number"
-            aria-invalid={!!form.formState.errors.previousCardId}
-            {...form.register("previousCardId", { valueAsNumber: true })}
-          />
-        </Field>
+      {/* Global Form Error Alert */}
+      {formError && (
+        <div className="rounded-xl border border-red-200 bg-red-50/90 p-4 text-xs font-medium text-red-700 flex items-start gap-2.5 animate-fade-in shadow-xs">
+          <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+          <p className="flex-1">{formError}</p>
+        </div>
       )}
 
-      <Field
-        label="Reason"
-        name="reason"
-        required={isReplacement}
-        error={form.formState.errors.reason?.message}
-      >
-        <Textarea
-          id="reason"
-          maxLength={255}
-          placeholder={isReplacement ? "e.g. Original card lost while travelling" : "Optional"}
-          aria-invalid={!!form.formState.errors.reason}
-          {...form.register("reason")}
-        />
-      </Field>
+      {/* ─── 2. STEP CONTENT PANELS ─── */}
+      <div className="grid gap-8 lg:grid-cols-12 items-start">
+        {/* Main Step Workspace Panel */}
+        <div className="lg:col-span-7 xl:col-span-8 space-y-6">
+          {/* STEP 0: Identification & Request Type */}
+          {currentStep === 0 && (
+            <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
+              {/* Employee Pre-Verified Identity Card */}
+              <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-4 sm:p-5 shadow-2xs">
+                <div className="flex items-center justify-between border-b border-blue-100 pb-3 mb-3">
+                  <div className="flex items-center gap-2">
+                    <BadgeCheck className="h-4 w-4 text-credential" />
+                    <span className="text-[11px] font-bold uppercase tracking-wider text-credential">
+                      Verified Directory Record
+                    </span>
+                  </div>
+                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/80 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                    ACTIVE EMPLOYEE
+                  </span>
+                </div>
 
-      <FileUploadField
-        label="Photo"
-        name="photo"
-        accept="image/jpeg,image/png"
-        maxBytes={2 * 1024 * 1024}
-        hint="JPEG or PNG, up to 2 MB. Required before you can submit."
-        onChange={setPhotoFile}
-        existingLabel={existing?.hasPhoto ? "A photo is already attached." : undefined}
-      />
-    </FormShell>
+                <div className="flex items-center gap-4">
+                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-credential text-white text-base font-bold shadow-xs">
+                    {displayName.slice(0, 2).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <h3 className="text-sm font-bold text-ink truncate">{displayName}</h3>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+                      <span className="identifier font-semibold text-slate-700">{displayEmpId}</span>
+                      <span>•</span>
+                      <span className="flex items-center gap-1">
+                        <Building2 className="h-3 w-3 text-slate-400" />
+                        {displayDept}
+                      </span>
+                      <span>•</span>
+                      <span className="text-credential font-medium">{displayRole}</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Request Type Selector */}
+              <div className="space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                    Select Card Issuance Type <span className="text-red-500">*</span>
+                  </label>
+                  <span className="text-[11px] text-slate-400">Step 1 of 3</span>
+                </div>
+
+                <div className="grid gap-3.5 sm:grid-cols-3">
+                  {TYPE_OPTIONS.map((opt) => {
+                    const Icon = opt.icon;
+                    const isSelected = requestType === opt.type;
+                    return (
+                      <button
+                        key={opt.type}
+                        type="button"
+                        onClick={() => {
+                          form.setValue("requestType", opt.type, { shouldValidate: true });
+                        }}
+                        className={cn(
+                          "relative flex flex-col items-start rounded-2xl border p-4 text-left transition-all cursor-pointer select-none",
+                          isSelected
+                            ? opt.bgActiveClass
+                            : "border-rule bg-white hover:border-slate-300 hover:bg-slate-50/80"
+                        )}
+                      >
+                        <div className="flex w-full items-center justify-between mb-3">
+                          <div
+                            className={cn(
+                              "flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 transition-colors",
+                              isSelected && "bg-white shadow-2xs"
+                            )}
+                          >
+                            <Icon className={cn("h-4.5 w-4.5", opt.colorClass)} />
+                          </div>
+                          {isSelected && (
+                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-credential text-white shadow-xs">
+                              <Check className="h-3.5 w-3.5" />
+                            </div>
+                          )}
+                        </div>
+                        <span className="text-xs font-bold text-ink">{opt.title}</span>
+                        <span className="mt-0.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                          {opt.badge}
+                        </span>
+                        <span className="mt-2 text-[11px] text-slate-500 leading-snug">
+                          {opt.description}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* STEP 1: Card Specification & Justification */}
+          {currentStep === 1 && (
+            <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-rule pb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-ink">Card Specification & Notes</h3>
+                  <p className="text-xs text-slate-500">
+                    Provide reason and any replacement context for HR & IT authorization
+                  </p>
+                </div>
+                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-credential">
+                  {requestType} CARD
+                </span>
+              </div>
+
+              {/* Conditional Replacement Warning & Input */}
+              {isReplacement && (
+                <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 space-y-3 animate-fade-in">
+                  <div className="flex items-center gap-2 text-amber-800">
+                    <RefreshCw className="h-4 w-4" />
+                    <h4 className="text-xs font-bold uppercase tracking-wider">
+                      Replacement Authorization Required
+                    </h4>
+                  </div>
+                  <p className="text-xs text-amber-700 leading-relaxed">
+                    Under corporate policy, issuance of a replacement badge will automatically deactivate
+                    and revoke access rights from the previous card upon physical badge handover.
+                  </p>
+
+                  <Field
+                    label="Previous Card Numeric ID"
+                    name="previousCardId"
+                    required
+                    hint="Enter the numeric ID printed on your previous badge or available in IT logs"
+                    error={form.formState.errors.previousCardId?.message}
+                  >
+                    <div className="relative">
+                      <Input
+                        id="previousCardId"
+                        type="number"
+                        placeholder="e.g. 1042"
+                        className="bg-white pl-8 h-10 text-sm rounded-xl"
+                        value={previousCardId ?? ""}
+                        onChange={(e) => {
+                          const val = e.target.value ? Number(e.target.value) : undefined;
+                          form.setValue("previousCardId", val, { shouldValidate: true });
+                        }}
+                        aria-invalid={!!form.formState.errors.previousCardId}
+                      />
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                        #
+                      </span>
+                    </div>
+                  </Field>
+                </div>
+              )}
+
+              {/* Reason / Justification Field */}
+              <Field
+                label={
+                  isReplacement
+                    ? "Detailed Reason for Replacement *"
+                    : "Additional Request Notes / Justification (Optional)"
+                }
+                name="reason"
+                required={isReplacement}
+                hint={
+                  isReplacement
+                    ? "Specify the circumstances of loss or card malfunction for the security log."
+                    : "Optional instructions for card printing or facility access."
+                }
+                error={form.formState.errors.reason?.message}
+              >
+                <div className="relative">
+                  <Textarea
+                    id="reason"
+                    maxLength={255}
+                    placeholder={
+                      isReplacement
+                        ? "e.g. Card was misplaced in transit on Friday; incident reported to line manager."
+                        : "e.g. Requires standard headquarters RFID access and secure server room clearance."
+                    }
+                    className="min-h-28 resize-none bg-white text-sm rounded-xl"
+                    aria-invalid={!!form.formState.errors.reason}
+                    {...form.register("reason")}
+                  />
+                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>Clear and accurate details expedite HR approval.</span>
+                    <span className="font-mono">{reasonText.length} / 255</span>
+                  </div>
+                </div>
+              </Field>
+            </div>
+          )}
+
+          {/* STEP 2: Biometric Photo & Verification Review */}
+          {currentStep === 2 && (
+            <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
+              <div className="flex items-center justify-between border-b border-rule pb-4">
+                <div>
+                  <h3 className="text-sm font-bold text-ink">Biometric Identification & Final Review</h3>
+                  <p className="text-xs text-slate-500">
+                    Upload your official portrait and review card layout before final submission
+                  </p>
+                </div>
+                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+                  Step 3 of 3
+                </span>
+              </div>
+
+              {/* Photo Upload Dropzone */}
+              <div className="space-y-3">
+                <FileUploadField
+                  label="Official ID Portrait Photo"
+                  name="photo"
+                  accept="image/jpeg,image/png"
+                  maxBytes={2 * 1024 * 1024}
+                  hint="JPEG or PNG format, maximum 2 MB. Required for physical smart badge printing."
+                  onChange={setPhotoFile}
+                  existingLabel={existing?.hasPhoto ? "Current badge photo on file" : undefined}
+                  existingPreviewUrl={previewUrl ?? undefined}
+                />
+              </div>
+
+              {/* Pre-Submission Verification Checklist */}
+              <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-5 space-y-3">
+                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-credential" />
+                  Pre-Submission Review Checklist
+                </h4>
+                <div className="grid gap-2 sm:grid-cols-2 text-xs text-slate-600">
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    <span>
+                      Type: <strong>{requestType}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    <span>
+                      Employee: <strong>{displayName}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    <span>
+                      ID Number: <strong>{displayEmpId}</strong>
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                    <span>
+                      Photo: <strong>{photoFile || previewUrl ? "Attached" : "Pending"}</strong>
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ─── 3. STICKY BOTTOM ACTION TOOLBAR (Microfinance Style) ─── */}
+          <div className="rounded-2xl border border-rule bg-white/95 backdrop-blur-md p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 sticky bottom-4 z-10">
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              {currentStep > 0 ? (
+                <button
+                  type="button"
+                  onClick={() => setCurrentStep((prev) => prev - 1)}
+                  disabled={busy}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Previous</span>
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => router.push("/employee")}
+                  disabled={busy}
+                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  <span>Cancel</span>
+                </button>
+              )}
+
+              <button
+                type="button"
+                onClick={handleSaveDraft}
+                disabled={busy}
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+              >
+                <Save className="h-4 w-4 text-slate-500" />
+                <span>Save Draft</span>
+              </button>
+            </div>
+
+            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+              {currentStep === 0 && (
+                <button
+                  type="button"
+                  onClick={handleNextFromStep1}
+                  disabled={busy}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
+                >
+                  <span>Continue to Specifications</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {currentStep === 1 && (
+                <button
+                  type="button"
+                  onClick={handleNextFromStep2}
+                  disabled={busy}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
+                >
+                  <span>Continue to Biometrics</span>
+                  <ChevronRight className="h-4 w-4" />
+                </button>
+              )}
+
+              {currentStep === 2 && (
+                <button
+                  type="button"
+                  onClick={handleSubmitFinal}
+                  disabled={busy}
+                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-sm transition-all cursor-pointer w-full sm:w-auto"
+                >
+                  <Send className="h-4 w-4" />
+                  <span>Submit for HR Verification</span>
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Side Preview & Guidelines Column (Right) */}
+        <div className="lg:col-span-5 xl:col-span-4 space-y-6">
+          {/* Live ID Badge Mockup Card */}
+          <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Camera className="h-4 w-4 text-credential" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Live Badge Preview
+                </h3>
+              </div>
+              <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-credential">
+                CR80 Smart Card
+              </span>
+            </div>
+
+            {/* Card Mockup Visualizer */}
+            <div className="relative mx-auto w-full max-w-[320px] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none transition-all hover:shadow-lg">
+              {/* Top Header Ribbon */}
+              <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-3.5 py-2 text-white">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-blue-200" />
+                  <span className="identifier text-[9px] font-bold tracking-[0.2em] text-white">
+                    ACCESSONE ID
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Wifi className="h-3 w-3 rotate-90 text-blue-200" />
+                  <span className="text-[8px] font-semibold uppercase tracking-wider text-blue-100">
+                    SMART PASS
+                  </span>
+                </div>
+              </div>
+
+              {/* Card Content */}
+              <div className="flex gap-3.5 p-3.5">
+                {/* Photo Area */}
+                <div className="relative flex-shrink-0">
+                  {previewUrl ? (
+                    <img
+                      src={previewUrl}
+                      alt="Badge portrait preview"
+                      className="h-24 w-20 rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-24 w-20 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                      <User className="h-7 w-7 stroke-1" />
+                      <span className="mt-1 text-[9px] font-semibold">NO PHOTO</span>
+                    </div>
+                  )}
+                  {/* EMV Chip Simulation */}
+                  <div className="absolute -bottom-1.5 -right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                    <div className="h-2 w-3 border border-amber-400/60 rounded-xs" />
+                  </div>
+                </div>
+
+                {/* Details Area */}
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="truncate text-xs font-bold text-ink leading-tight">
+                    {displayName}
+                  </p>
+                  <p className="truncate text-[11px] font-semibold text-credential">
+                    {displayRole}
+                  </p>
+                  <div className="pt-2">
+                    <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">
+                      {displayEmpId}
+                    </span>
+                  </div>
+                  <div className="pt-1">
+                    <span className="inline-block rounded-sm bg-blue-50 px-1.5 py-0.5 text-[9px] font-medium text-blue-700">
+                      {requestType} CARD
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <p className="text-center text-[11px] text-slate-400">
+              Visual preview of physical RFID smart badge
+            </p>
+          </div>
+
+          {/* Photo Standards & Compliance Checklist */}
+          <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-3">
+            <div className="flex items-center gap-2">
+              <Info className="h-4 w-4 text-credential" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Photo Requirements
+              </h3>
+            </div>
+
+            <ul className="space-y-2 text-xs text-slate-600">
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+                <span>Recent color passport portrait against plain background</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+                <span>Full frontal facial view with neutral expression</span>
+              </li>
+              <li className="flex items-start gap-2">
+                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+                <span>Max size 2MB (JPG or PNG format)</span>
+              </li>
+            </ul>
+          </div>
+
+          {/* Process Timeline Card */}
+          <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-3">
+            <div className="flex items-center gap-2">
+              <Sparkles className="h-4 w-4 text-slate-600" />
+              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                Lifecycle Stages
+              </h3>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-credential text-white text-[11px] font-bold">
+                  1
+                </div>
+                <div>
+                  <p className="font-semibold text-ink">Draft & Biometrics</p>
+                  <p className="text-[11px] text-slate-500">Attach photo & submit</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
+                  2
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-700">HR Verification</p>
+                  <p className="text-[11px] text-slate-500">Identity & eligibility review</p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
+                  3
+                </div>
+                <div>
+                  <p className="font-semibold text-slate-700">Printing & Activation</p>
+                  <p className="text-[11px] text-slate-500">Dispatched & RFID enabled</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 }
+
+

@@ -1,6 +1,5 @@
 package lk.AccessOne.visitor.service;
 
-import jakarta.persistence.EntityManager;
 import lk.AccessOne.access.domain.AccessLevel;
 import lk.AccessOne.access.repository.AccessLevelRepository;
 import lk.AccessOne.card.service.QrCodeService;
@@ -9,11 +8,13 @@ import lk.AccessOne.identity.repository.UserRepository;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.CurrentUserProvider;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.PassStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
+import lk.AccessOne.shared.sequence.SequenceGenerator;
 import lk.AccessOne.shared.service.EntityLookup;
 import lk.AccessOne.shared.web.PageResponse;
 import lk.AccessOne.visitor.domain.Visitor;
@@ -54,7 +55,7 @@ public class VisitorPassService {
     private final StatusChangeSupport statusChanges;
     private final CurrentUserProvider currentUser;
     private final ApplicationEventPublisher events;
-    private final EntityManager entityManager;
+    private final SequenceGenerator sequences;
     private final String qrBaseUrl;
 
     public VisitorPassService(VisitorRepository visitors, VisitorPassRepository passes,
@@ -62,7 +63,7 @@ public class VisitorPassService {
                                AccessLevelRepository accessLevels, UserRepository users,
                                QrCodeService qrCodes, VisitorMapper mapper, EntityLookup lookup,
                                StatusChangeSupport statusChanges, CurrentUserProvider currentUser,
-                               ApplicationEventPublisher events, EntityManager entityManager,
+                               ApplicationEventPublisher events, SequenceGenerator sequences,
                                @Value("${accessone.credentials.qr-base-url}") String qrBaseUrl) {
         this.visitors = visitors;
         this.passes = passes;
@@ -76,7 +77,7 @@ public class VisitorPassService {
         this.statusChanges = statusChanges;
         this.currentUser = currentUser;
         this.events = events;
-        this.entityManager = entityManager;
+        this.sequences = sequences;
         this.qrBaseUrl = qrBaseUrl;
     }
 
@@ -145,7 +146,7 @@ public class VisitorPassService {
                 qrBaseUrl + "/pass/" + passNo, actingUser()));
 
         events.publishEvent(AuditEvent.created("visitor_passes", pass.getId(),
-                "{\"pass_no\":\"%s\",\"valid_until\":\"%s\"}".formatted(passNo, input.validUntil())));
+                AuditValue.of().with("pass_no", passNo).with("valid_until", input.validUntil()).json()));
 
         return mapper.toDetail(pass);
     }
@@ -160,8 +161,8 @@ public class VisitorPassService {
         // Record both times, not just that a change happened. "Extended
         // by whom, from what, to what" is the question this answers.
         events.publishEvent(new AuditEvent("visitor_passes", passId, AuditAction.UPDATE,
-                "{\"valid_until\":\"%s\"}".formatted(before),
-                "{\"valid_until\":\"%s\",\"reason\":\"%s\"}".formatted(newUntil, reason)));
+                AuditValue.of().with("valid_until", before).json(),
+                AuditValue.of().with("valid_until", newUntil).with("reason", reason).json()));
 
         return mapper.toDetail(pass);
     }
@@ -199,10 +200,7 @@ public class VisitorPassService {
     }
 
     private String nextPassNo() {
-        Number n = (Number) entityManager
-                .createNativeQuery("SELECT NEXT VALUE FOR dbo.seq_pass_no")
-                .getSingleResult();
-        return "VP-%d-%04d".formatted(java.time.LocalDate.now().getYear(), n.longValue());
+        return sequences.next("dbo.seq_pass_no", "VP", 4);
     }
 
     private User actingUser() {

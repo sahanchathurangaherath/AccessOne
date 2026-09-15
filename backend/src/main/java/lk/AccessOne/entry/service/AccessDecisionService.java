@@ -26,6 +26,12 @@ import java.util.List;
  * The single decision entry point. Both credential types (Strategy
  * pattern) resolve through this one method, and the caller does no
  * branching at all.
+ *
+ * Also a Facade over the whole access-decision subsystem: {@code evaluate}
+ * hides strategy selection, credential lookup, blacklist checking,
+ * access-level evaluation, log writing and event publication behind one
+ * call. The Entry Point Simulator, and any future physical reader
+ * integration, needs to know nothing except this method.
  */
 @Service
 public class AccessDecisionService {
@@ -54,12 +60,18 @@ public class AccessDecisionService {
 
         CredentialType type = inferType(request.credentialRef());
 
-        AccessDecisionResult decision = strategies.stream()
+        AccessDecisionStrategy strategy = strategies.stream()
                 .filter(s -> s.supports(type))
                 .findFirst()
-                .map(s -> s.evaluate(request))
-                .orElseGet(() -> AccessDecisionResult.unknownCredential(
-                        type, request.credentialRef(), null, "Unknown area"));
+                // A missing strategy is a deployment mistake -- a credential
+                // type with nothing registered to evaluate it -- not a
+                // credential the system has never seen. Those are different
+                // failures and unknownCredential() already covers the second
+                // one; silently reusing it here would hide the first.
+                .orElseThrow(() -> new IllegalStateException(
+                        "No AccessDecisionStrategy registered for credential type " + type));
+
+        AccessDecisionResult decision = strategy.evaluate(request);
 
         AccessLog log = accessLogs.save(AccessLog.from(decision, request));
 

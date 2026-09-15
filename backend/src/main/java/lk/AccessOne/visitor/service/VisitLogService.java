@@ -5,6 +5,7 @@ import lk.AccessOne.access.repository.AreaRepository;
 import lk.AccessOne.identity.domain.User;
 import lk.AccessOne.identity.repository.UserRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.CurrentUserProvider;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.enums.AuditAction;
@@ -92,7 +93,7 @@ public class VisitLogService {
         }
 
         events.publishEvent(AuditEvent.created("visit_logs", log.getId(),
-                "{\"pass_no\":\"%s\"}".formatted(pass.getPassNo())));
+                AuditValue.of().with("pass_no", pass.getPassNo()).json()));
         return mapper.toDto(log);
     }
 
@@ -102,7 +103,7 @@ public class VisitLogService {
         log.checkOut(remarks);
 
         events.publishEvent(new AuditEvent("visit_logs", log.getId(),
-                AuditAction.UPDATE, null, "{\"checked_out\":true}"));
+                AuditAction.UPDATE, null, AuditValue.of().with("checked_out", true).json()));
         return mapper.toDto(log);
     }
 

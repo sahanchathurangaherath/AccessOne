@@ -7,6 +7,7 @@ import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.organisation.web.dto.DepartmentDto;
 import lk.AccessOne.organisation.web.dto.DepartmentInput;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.EmploymentStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
@@ -53,7 +54,7 @@ public class DepartmentService {
         Department department = departments.save(
                 new Department(input.deptCode(), input.deptName(), input.description()));
         events.publishEvent(AuditEvent.created("departments", department.getId(),
-                "{\"dept_code\":\"%s\"}".formatted(input.deptCode())));
+                AuditValue.of().with("dept_code", input.deptCode()).json()));
         return mapper.toDto(department, 0);
     }
 
@@ -74,8 +75,9 @@ public class DepartmentService {
         // Not a refusal -- a warning the caller has to acknowledge. The
         // count goes back in the response so the UI can say how many.
         department.deactivate();
-        events.publishEvent(new AuditEvent("departments", id,
-                AuditAction.UPDATE, "{\"is_active\":true}", "{\"is_active\":false}"));
+        events.publishEvent(new AuditEvent("departments", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", true).json(),
+                AuditValue.of().with("is_active", false).json()));
         return mapper.toDto(department, staff);
     }
 
@@ -83,8 +85,9 @@ public class DepartmentService {
     public DepartmentDto reactivate(Long id) {
         Department department = lookup.require(departments, id, "Department");
         department.reactivate();
-        events.publishEvent(new AuditEvent("departments", id,
-                AuditAction.UPDATE, "{\"is_active\":false}", "{\"is_active\":true}"));
+        events.publishEvent(new AuditEvent("departments", id, AuditAction.UPDATE,
+                AuditValue.of().with("is_active", false).json(),
+                AuditValue.of().with("is_active", true).json()));
         return mapper.toDto(department, employees.countByDepartmentId(id));
     }
 

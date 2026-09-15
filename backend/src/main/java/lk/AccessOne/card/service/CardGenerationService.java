@@ -12,6 +12,7 @@ import lk.AccessOne.cardrequest.domain.CardRequest;
 import lk.AccessOne.cardrequest.repository.CardRequestRepository;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.error.BusinessRuleException;
 import lk.AccessOne.shared.service.EntityLookup;
@@ -86,7 +87,7 @@ public class CardGenerationService {
         linkReplacementIfAny(request, card);
 
         events.publishEvent(AuditEvent.created("id_cards", card.getId(),
-                "{\"card_serial\":\"%s\",\"version\":%d}".formatted(card.getCardSerial(), version)));
+                AuditValue.of().with("card_serial", card.getCardSerial()).with("version", version).json()));
         events.publishEvent(new CardGenerated(card.getId(), employee.getId(), card.getCardSerial()));
 
         return mapper.toDetail(card, credentials.findByCardId(card.getId()).orElse(null));

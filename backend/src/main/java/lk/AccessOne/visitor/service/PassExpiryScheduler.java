@@ -6,6 +6,7 @@ import jakarta.persistence.StoredProcedureQuery;
 import lk.AccessOne.shared.audit.AuditEvent;
 import lk.AccessOne.shared.enums.PassStatus;
 import lk.AccessOne.visitor.domain.VisitorPass;
+import lk.AccessOne.visitor.event.PassExpiringSoon;
 import lk.AccessOne.visitor.repository.VisitLogRepository;
 import lk.AccessOne.visitor.repository.VisitorPassRepository;
 import org.springframework.context.ApplicationEventPublisher;
@@ -57,6 +58,24 @@ public class PassExpiryScheduler {
             // Do not leave an expired visitor on the on-site board forever.
             visitLogs.findOpenForPass(pass.getId()).ifPresent(log ->
                     log.closeAt(pass.getValidUntil(), "Auto-closed on pass expiry"));
+        }
+    }
+
+    /**
+     * A pass about to lapse, not one that already has -- the host still
+     * has time to see the visitor out. The window is exactly as wide as
+     * the sweep's own cadence (5 minutes), so consecutive runs tile the
+     * timeline with no gap and no overlap: a pass reaches this window in
+     * exactly one run, never zero and never two.
+     */
+    @Scheduled(fixedDelayString = "PT5M")
+    @Transactional
+    public void notifyExpiringPasses() {
+        LocalDateTime now = LocalDateTime.now(ZoneOffset.UTC);
+        for (VisitorPass pass : passes.findExpiringBetween(now.plusMinutes(25), now.plusMinutes(30))) {
+            events.publishEvent(new PassExpiringSoon(
+                    pass.getId(), pass.getHostEmployee().getId(),
+                    pass.getVisitor().getFullName(), pass.getValidUntil()));
         }
     }
 

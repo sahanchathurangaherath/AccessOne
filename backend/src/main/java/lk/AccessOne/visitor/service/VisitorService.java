@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.error.BusinessRuleException;
 import lk.AccessOne.shared.service.EntityLookup;
@@ -74,7 +75,7 @@ public class VisitorService {
                 input.company(), input.phone(), input.email()));
 
         events.publishEvent(AuditEvent.created("visitors", visitor.getId(),
-                "{\"visitor_code\":\"%s\"}".formatted(visitor.getVisitorCode())));
+                AuditValue.of().with("visitor_code", visitor.getVisitorCode()).json()));
         return mapper.toDto(visitor);
     }
 
@@ -108,8 +109,9 @@ public class VisitorService {
 
         if (passCount > 0) {
             visitor.softDelete();
-            events.publishEvent(new AuditEvent("visitors", visitorId,
-                    AuditAction.UPDATE, "{\"is_deleted\":false}", "{\"is_deleted\":true}"));
+            events.publishEvent(new AuditEvent("visitors", visitorId, AuditAction.UPDATE,
+                    AuditValue.of().with("is_deleted", false).json(),
+                    AuditValue.of().with("is_deleted", true).json()));
             return;
         }
         visitors.delete(visitor);

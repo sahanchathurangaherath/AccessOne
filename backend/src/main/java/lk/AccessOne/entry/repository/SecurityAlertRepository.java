@@ -39,4 +39,6 @@ public interface SecurityAlertRepository extends JpaRepository<SecurityAlert, Lo
              AND sa.created_at >= :since
            """, nativeQuery = true)
     long countOpenRepeatedDenialAlerts(@Param("ref") String ref, @Param("since") LocalDateTime since);
+
+    long countByStatus(AlertStatus status);
 }

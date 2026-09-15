@@ -1,6 +1,5 @@
 package lk.AccessOne.cardrequest.service;
 
-import jakarta.persistence.EntityManager;
 import lk.AccessOne.access.domain.AccessLevel;
 import lk.AccessOne.access.repository.AccessLevelRepository;
 import lk.AccessOne.cardrequest.domain.CardRequest;
@@ -16,12 +15,14 @@ import lk.AccessOne.identity.security.AccessOneUserDetails;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
+import lk.AccessOne.shared.audit.AuditValue;
 import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.RequestStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
 import lk.AccessOne.shared.security.OwnershipGuard;
+import lk.AccessOne.shared.sequence.SequenceGenerator;
 import lk.AccessOne.shared.service.EntityLookup;
 import lk.AccessOne.shared.storage.FileStorageService;
 import lk.AccessOne.shared.web.PageResponse;
@@ -33,7 +34,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -49,7 +49,7 @@ public class CardRequestService {
     private final FileStorageService storage;
     private final CardRequestMapper mapper;
     private final ApplicationEventPublisher events;
-    private final EntityManager entityManager;
+    private final SequenceGenerator sequences;
     private final EntityLookup lookup;
     private final OwnershipGuard guard;
     private final StatusChangeSupport statusChanges;
@@ -58,7 +58,7 @@ public class CardRequestService {
     public CardRequestService(CardRequestRepository requests, EmployeeRepository employees,
                                AccessLevelRepository accessLevels, UserRepository users,
                                FileStorageService storage, CardRequestMapper mapper,
-                               ApplicationEventPublisher events, EntityManager entityManager,
+                               ApplicationEventPublisher events, SequenceGenerator sequences,
                                EntityLookup lookup, OwnershipGuard guard,
                                StatusChangeSupport statusChanges, TimelineService timelineService) {
         this.requests = requests;
@@ -68,7 +68,7 @@ public class CardRequestService {
         this.storage = storage;
         this.mapper = mapper;
         this.events = events;
-        this.entityManager = entityManager;
+        this.sequences = sequences;
         this.lookup = lookup;
         this.guard = guard;
         this.statusChanges = statusChanges;
@@ -132,7 +132,7 @@ public class CardRequestService {
 
         requests.save(request);
         events.publishEvent(AuditEvent.created("card_requests", request.getId(),
-                "{\"request_no\":\"%s\",\"status\":\"DRAFT\"}".formatted(request.getRequestNo())));
+                AuditValue.of().with("request_no", request.getRequestNo()).with("status", "DRAFT").json()));
 
         return mapper.toDetail(request);
     }
@@ -193,10 +193,7 @@ public class CardRequestService {
     // ---------- helpers ----------
 
     private String nextRequestNo() {
-        Number next = (Number) entityManager
-                .createNativeQuery("SELECT NEXT VALUE FOR dbo.seq_card_request_no")
-                .getSingleResult();
-        return "REQ-%d-%04d".formatted(LocalDate.now().getYear(), next.longValue());
+        return sequences.next("dbo.seq_card_request_no", "REQ", 4);
     }
 
     CardRequest loadOwned(Long id) {

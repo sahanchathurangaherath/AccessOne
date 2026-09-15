@@ -3,52 +3,288 @@
 <head>
   <meta charset="UTF-8"/>
   <style>
-    /* CR80 -- the ISO standard for an ID card */
-    @page { size: 85.6mm 54mm; margin: 0; }
-    /* Fallback order matters: for each character the renderer tries these
-       left to right until one has the glyph, which is how a Sinhala or
-       Tamil name in the middle of an otherwise-Latin layout still resolves
-       correctly without the template knowing which script it's printing. */
-    body  { margin: 0; font-family: "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", sans-serif; }
+    /* CR80 -- ISO/IEC 7810 ID-1 standard for physical identity cards (85.6mm x 53.98mm) */
+    @page { 
+      size: 85.6mm 53.98mm; 
+      margin: 0; 
+    }
 
-    /* Without border-box, .card's 0.3mm border adds to its declared
-       85.6mm x 54mm, overflowing the @page box by 0.6mm both ways and
-       spilling a blank second page. */
-    *           { box-sizing: border-box; }
+    * { 
+      box-sizing: border-box; 
+      margin: 0; 
+      padding: 0; 
+    }
 
-    .card       { width: 85.6mm; height: 54mm; position: relative;
-                  background: #FFFFFF; border: 0.3mm solid #DFE3E8; }
-    .band       { height: 8mm; background: #1F4B8E; color: #FFFFFF;
-                  font-size: 3mm; letter-spacing: 0.6mm; padding: 2.4mm 4mm 0; }
-    .photo      { position: absolute; top: 11mm; left: 4mm;
-                  width: 20mm; height: 25mm; object-fit: cover;
-                  border: 0.2mm solid #DFE3E8; }
-    .details    { position: absolute; top: 11mm; left: 27mm; right: 25mm; }
-    .name       { font-size: 4mm; font-weight: 600; }
-    .role       { font-size: 3mm; color: #5A6472; margin-top: 0.8mm; }
-    .dept       { font-size: 3mm; color: #5A6472; }
-    .identifier { font-family: "Noto Sans Mono", monospace; font-size: 3mm; }
-    .qr         { position: absolute; bottom: 4mm; right: 4mm;
-                  width: 19mm; height: 19mm; }
-    .serial     { position: absolute; bottom: 4mm; left: 4mm; font-size: 2.6mm; }
+    body { 
+      margin: 0; 
+      padding: 0;
+      width: 85.6mm;
+      height: 53.98mm;
+      background: #FFFFFF;
+      font-family: "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", sans-serif; 
+      color: #0F172A;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    .card { 
+      width: 85.6mm; 
+      height: 53.98mm; 
+      position: relative;
+      background: #FFFFFF; 
+      overflow: hidden;
+    }
+
+    /* ─── Top Corporate Header Band ─── */
+    .header-band { 
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 85.6mm;
+      height: 9.5mm; 
+      background: #0F294D; 
+      color: #FFFFFF;
+      padding: 2.2mm 4mm 0 4mm;
+    }
+
+    .org-title {
+      font-size: 2.8mm; 
+      font-weight: 700;
+      letter-spacing: 0.6mm; 
+      color: #FFFFFF;
+      text-transform: uppercase;
+      display: inline-block;
+    }
+
+    .badge-type {
+      position: absolute;
+      right: 4mm;
+      top: 2.2mm;
+      font-size: 1.8mm;
+      font-weight: 700;
+      letter-spacing: 0.3mm;
+      color: #38BDF8;
+      background: #1E3A5F;
+      padding: 0.6mm 1.6mm;
+      border-radius: 0.6mm;
+      text-transform: uppercase;
+    }
+
+    .header-accent {
+      position: absolute;
+      top: 9.5mm;
+      left: 0;
+      width: 85.6mm;
+      height: 0.6mm;
+      background: #0284C7;
+    }
+
+    /* ─── Photo Frame & Security Visuals ─── */
+    .photo-container {
+      position: absolute;
+      top: 12.5mm;
+      left: 4mm;
+      width: 21mm;
+      height: 26mm;
+      border: 0.35mm solid #CBD5E1;
+      border-radius: 1mm;
+      background: #F1F5F9;
+      overflow: hidden;
+    }
+
+    .photo-img {
+      width: 21mm;
+      height: 26mm;
+      object-fit: cover;
+      display: block;
+    }
+
+    .photo-placeholder {
+      width: 21mm;
+      height: 26mm;
+      background: #E2E8F0;
+      text-align: center;
+      padding-top: 7mm;
+    }
+
+    .photo-placeholder-icon {
+      font-size: 7mm;
+      color: #94A3B8;
+    }
+
+    .chip-indicator {
+      position: absolute;
+      top: 40mm;
+      left: 4mm;
+      width: 21mm;
+      height: 4.5mm;
+      background: #F8FAFC;
+      border: 0.2mm solid #E2E8F0;
+      border-radius: 0.6mm;
+      padding: 0.8mm 1.5mm;
+      font-size: 1.7mm;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: 0.2mm;
+      text-align: center;
+    }
+
+    /* ─── Middle Column: Cardholder Information ─── */
+    .details { 
+      position: absolute; 
+      top: 12.5mm; 
+      left: 27.5mm; 
+      width: 36mm;
+    }
+
+    .name { 
+      font-size: 3.6mm; 
+      font-weight: 700; 
+      color: #0F172A;
+      line-height: 1.15;
+      margin-bottom: 1mm;
+      word-wrap: break-word;
+    }
+
+    .designation { 
+      font-size: 2.5mm; 
+      font-weight: 600;
+      color: #0284C7; 
+      line-height: 1.2;
+      margin-bottom: 0.8mm;
+      word-wrap: break-word;
+    }
+
+    .department { 
+      font-size: 2.3mm; 
+      font-weight: 500;
+      color: #475569; 
+      line-height: 1.2;
+      margin-bottom: 1.6mm;
+    }
+
+    .emp-id-badge {
+      display: inline-block;
+      background: #F1F5F9;
+      border: 0.25mm solid #CBD5E1;
+      border-radius: 0.8mm;
+      padding: 0.5mm 1.8mm;
+      font-family: "Noto Sans Mono", monospace;
+      font-size: 2.4mm;
+      font-weight: 700;
+      color: #1E293B;
+      letter-spacing: 0.3mm;
+    }
+
+    /* ─── Right Column: Secure Verification QR Code ─── */
+    .qr-container {
+      position: absolute;
+      top: 12.5mm;
+      right: 4mm;
+      width: 17mm;
+      text-align: center;
+    }
+
+    .qr-box {
+      width: 17mm;
+      height: 17mm;
+      border: 0.25mm solid #CBD5E1;
+      border-radius: 0.8mm;
+      padding: 0.6mm;
+      background: #FFFFFF;
+    }
+
+    .qr-img {
+      width: 15.6mm;
+      height: 15.6mm;
+      display: block;
+    }
+
+    .qr-caption {
+      margin-top: 1mm;
+      font-size: 1.6mm;
+      font-weight: 700;
+      color: #64748B;
+      letter-spacing: 0.25mm;
+      text-transform: uppercase;
+      text-align: center;
+    }
+
+    /* ─── Bottom Security Microprint Footer ─── */
+    .footer-band {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 85.6mm;
+      height: 6mm;
+      background: #F8FAFC;
+      border-top: 0.25mm solid #E2E8F0;
+      padding: 1.4mm 4mm 0 4mm;
+    }
+
+    .serial-no {
+      font-family: "Noto Sans Mono", monospace;
+      font-size: 2.2mm;
+      font-weight: 700;
+      color: #334155;
+      letter-spacing: 0.2mm;
+      float: left;
+    }
+
+    .security-tag {
+      font-size: 1.8mm;
+      font-weight: 600;
+      color: #059669;
+      letter-spacing: 0.2mm;
+      text-transform: uppercase;
+      float: right;
+    }
   </style>
 </head>
 <body>
   <div class="card">
-    <div class="band">CEYLON METRO HOLDINGS</div>
+    <!-- Top Corporate Header -->
+    <div class="header-band">
+      <span class="org-title">CEYLON METRO HOLDINGS</span>
+      <span class="badge-type">SMART ID</span>
+    </div>
+    <div class="header-accent"></div>
 
-    <img class="photo" th:src="${photoDataUri}" alt=""/>
-
-    <div class="details">
-      <div class="name"       th:text="${card.printedName}">Name</div>
-      <div class="role"       th:text="${card.printedDesignation}">Designation</div>
-      <div class="dept"       th:text="${card.printedDepartment}">Department</div>
-      <div class="identifier" th:text="${card.empId}"
-           style="margin-top:2mm">EMP0000</div>
+    <!-- Photo Container -->
+    <div class="photo-container">
+      <img th:if="${photoDataUri != '' and photoDataUri != null}" class="photo-img" th:src="${photoDataUri}" alt="Portrait"/>
+      <div th:unless="${photoDataUri != '' and photoDataUri != null}" class="photo-placeholder">
+        <span class="photo-placeholder-icon">&#128100;</span>
+      </div>
     </div>
 
-    <img class="qr" th:src="${qrDataUri}" alt=""/>
-    <div class="serial identifier" th:text="${card.cardSerial}">ACO-2026-000001</div>
+    <!-- Chip & RFID Indicator -->
+    <div class="chip-indicator">
+      13.56 MHz RFID
+    </div>
+
+    <!-- Cardholder Profile -->
+    <div class="details">
+      <div class="name" th:text="${card.printedName}">Employee Name</div>
+      <div class="designation" th:text="${card.printedDesignation}">Job Title</div>
+      <div class="department" th:text="${card.printedDepartment}">Department Name</div>
+      <div>
+        <span class="emp-id-badge" th:text="${card.empId}">EMP0000</span>
+      </div>
+    </div>
+
+    <!-- Verification QR Code -->
+    <div class="qr-container">
+      <div class="qr-box">
+        <img class="qr-img" th:src="${qrDataUri}" alt="Verification QR Code"/>
+      </div>
+      <div class="qr-caption">Scan to Verify</div>
+    </div>
+
+    <!-- Security Footer -->
+    <div class="footer-band">
+      <span class="serial-no" th:text="${card.cardSerial}">ACO-2026-000001</span>
+      <span class="security-tag">&#x25CF; AUTHORIZED PASS</span>
+    </div>
   </div>
 </body>
 </html>
