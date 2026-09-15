@@ -20,7 +20,6 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
              and (:decision is null or l.decision = :decision)
              and (:from is null or l.accessTime >= :from)
              and (:to is null or l.accessTime <= :to)
-           order by l.accessTime desc
            """,
            countQuery = """
            select count(l) from AccessLog l

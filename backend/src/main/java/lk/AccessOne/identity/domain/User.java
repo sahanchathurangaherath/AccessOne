@@ -78,6 +78,10 @@ public class User extends AuditableEntity {
         this.failedLoginAttempts = 0;
     }
 
+    public void changePassword(String newPasswordHash) {
+        this.passwordHash = newPasswordHash;
+    }
+
     public String getUsername() { return username; }
     public String getPasswordHash() { return passwordHash; }
     public Employee getEmployee() { return employee; }

@@ -1,4 +1,5 @@
 import { Label } from "@/components/ui/label";
+import { AlertCircle } from "lucide-react";
 
 type FieldProps = {
   label: string;
@@ -15,15 +16,36 @@ export function Field({ label, name, error, hint, required, children }: FieldPro
   const hintId = `${name}-hint`;
   return (
     <div className="space-y-1.5">
-      <Label htmlFor={name}>
-        {label}
-        {required && <span className="ml-0.5 text-denied" aria-hidden="true">*</span>}
-      </Label>
+      <div className="flex items-center justify-between">
+        <Label
+          htmlFor={name}
+          className="text-xs font-semibold uppercase tracking-wider text-slate-700"
+        >
+          {label}
+          {required && (
+            <span className="ml-1 font-bold text-red-500" aria-hidden="true">
+              *
+            </span>
+          )}
+        </Label>
+      </div>
       {children}
-      {hint && <p id={hintId} className="text-xs text-slate">{hint}</p>}
+      {hint && (
+        <p id={hintId} className="text-xs text-slate-500">
+          {hint}
+        </p>
+      )}
       {error && (
-        <p id={errorId} role="alert" className="text-sm text-denied">{error}</p>
+        <p
+          id={errorId}
+          role="alert"
+          className="flex items-center gap-1.5 text-xs font-medium text-red-600 animate-fade-in"
+        >
+          <AlertCircle className="h-3.5 w-3.5 shrink-0" />
+          <span>{error}</span>
+        </p>
       )}
     </div>
   );
 }
+

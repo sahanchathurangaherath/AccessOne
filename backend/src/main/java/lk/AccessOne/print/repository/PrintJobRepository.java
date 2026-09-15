@@ -30,7 +30,6 @@ public interface PrintJobRepository extends JpaRepository<PrintJob, Long> {
            join fetch c.employee e
            join fetch e.department
            where (:status is null or j.status = :status)
-           order by j.queuedAt asc
            """,
            countQuery = """
            select count(j) from PrintJob j

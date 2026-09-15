@@ -5,93 +5,583 @@ import Link from "next/link";
 import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { StatusBadge } from "@/components/status-badge";
-import { StatTile, StatTileRow } from "@/components/stat-tile";
-import { Button } from "@/components/ui/button";
-import { DataTable, type Column } from "@/components/data-table";
+import { FullPageSpinner, ErrorState } from "@/components/states";
 import { dashboard } from "@/lib/dashboard";
+import { useAuth } from "@/lib/auth";
+import { ROLE_LABEL } from "@/lib/roles";
+import { formatDate, cn } from "@/lib/utils";
+import {
+  IdCard,
+  Plus,
+  ShieldCheck,
+  Wifi,
+  User,
+  AlertCircle,
+  FileEdit,
+  ChevronDown,
+  ChevronUp,
+  ArrowRight,
+  RefreshCw,
+  AlertTriangle,
+  History,
+  Info,
+  Check,
+} from "lucide-react";
 import { requests, type CardRequestSummary, type RequestStatus } from "./_hooks/useRequests";
 
-const FILTERS: { label: string; value?: RequestStatus }[] = [
-  { label: "All" },
-  { label: "Draft", value: "DRAFT" },
-  { label: "Submitted", value: "SUBMITTED" },
-  { label: "Under verification", value: "UNDER_VERIFICATION" },
-  { label: "Approved", value: "APPROVED" },
-  { label: "Rejected", value: "REJECTED" },
+const STEPPER_STAGES: {
+  key: string;
+  label: string;
+  description: string;
+  statuses: RequestStatus[];
+}[] = [
+  { key: "draft", label: "Draft Created", description: "Details saved", statuses: ["DRAFT"] },
+  { key: "submitted", label: "Submitted", description: "Sent to HR", statuses: ["SUBMITTED"] },
+  { key: "review", label: "HR Verification", description: "Reviewing credentials", statuses: ["UNDER_VERIFICATION"] },
+  { key: "approved", label: "Approved & Queued", description: "Print queue", statuses: ["APPROVED"] },
+  { key: "active", label: "Badge Active", description: "Ready / Issued", statuses: [] },
 ];
 
-const columns: Column<CardRequestSummary>[] = [
-  { key: "requestNo", header: "Request",
-    render: (r) => <span className="identifier">{r.requestNo}</span> },
-  { key: "type", header: "Type",
-    render: (r) => <span className="text-slate">{r.requestType.toLowerCase()}</span> },
-  { key: "status", header: "Status",
-    render: (r) => <StatusBadge status={r.status} /> },
-  { key: "submitted", header: "Submitted",
-    render: (r) => (
-      <span className="identifier text-slate">
-        {r.submittedAt ? new Date(r.submittedAt).toLocaleDateString() : "—"}
-      </span>
-    ) },
-];
+function getStepIndex(status: RequestStatus, cardStatus: string | null): number {
+  if (cardStatus === "ACTIVE") return 4;
+  if (status === "APPROVED") return 3;
+  if (status === "UNDER_VERIFICATION") return 2;
+  if (status === "SUBMITTED") return 1;
+  return 0;
+}
 
-export default function MyRequestsPage() {
-  const [status, setStatus] = useState<RequestStatus | undefined>();
-  const [page, setPage] = useState(0);
-  const { data, isLoading, isError, refetch } = requests.useList({ status, page });
+export default function EmployeePortalPage() {
+  const { user } = useAuth();
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const { data: requestList, isLoading, isError, refetch } = requests.useList({ page: 0 });
   const { data: stats } = dashboard.useEmployee();
+
+  if (isLoading) return <FullPageSpinner />;
+  if (isError) {
+    return (
+      <ErrorState
+        body="Could not load your ID badge and request dashboard. Please check your network connection and try again."
+        onRetry={() => void refetch()}
+      />
+    );
+  }
+
+  const allRequests: CardRequestSummary[] = requestList?.content ?? [];
+
+  // Identify the primary active / in-flight request
+  const activeRequest = allRequests.find(
+    (r) =>
+      r.status === "DRAFT" ||
+      r.status === "SUBMITTED" ||
+      r.status === "UNDER_VERIFICATION" ||
+      r.status === "APPROVED" ||
+      r.status === "REJECTED"
+  ) ?? null;
+
+  // Closed or previous requests for collapsible history
+  const historyRequests = allRequests.filter(
+    (r) => r.id !== activeRequest?.id
+  );
+
+  const hasActiveCard = stats?.cardStatus === "ACTIVE";
+  const isDraft = activeRequest?.status === "DRAFT";
+  const isPipeline = activeRequest && ["SUBMITTED", "UNDER_VERIFICATION", "APPROVED"].includes(activeRequest.status);
+  const isRejected = activeRequest?.status === "REJECTED";
+  const currentStep = activeRequest ? getStepIndex(activeRequest.status, stats?.cardStatus ?? null) : -1;
+
+  const displayName = activeRequest?.employeeName ?? user?.username ?? "Employee";
+  const displayEmpId = activeRequest?.empId ?? (user?.employeeId ? `EMP-${user.employeeId}` : "EMP-001");
+  const displayRole = user?.role ? ROLE_LABEL[user.role] : "Staff Member";
+
+  // Context-aware single primary action in header
+  let headerAction = null;
+  if (isDraft) {
+    headerAction = (
+      <Link
+        href={`/employee/requests/${activeRequest.id}/edit`}
+        className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+      >
+        <FileEdit className="h-4 w-4" />
+        <span>Resume Draft & Upload</span>
+      </Link>
+    );
+  } else if (isPipeline) {
+    headerAction = (
+      <Link
+        href={`/employee/requests/${activeRequest.id}`}
+        className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+      >
+        <ArrowRight className="h-4 w-4" />
+        <span>Track In-Progress Request</span>
+      </Link>
+    );
+  } else if (isRejected) {
+    headerAction = (
+      <Link
+        href={`/employee/requests/${activeRequest.id}/edit`}
+        className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2 text-xs font-semibold text-white shadow-xs transition-all"
+      >
+        <RefreshCw className="h-4 w-4" />
+        <span>Edit & Resubmit</span>
+      </Link>
+    );
+  } else {
+    headerAction = (
+      <Link
+        href="/employee/requests/new"
+        className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+      >
+        <Plus className="h-4 w-4" />
+        <span>{hasActiveCard ? "Request Replacement ID" : "Start Initial ID Application"}</span>
+      </Link>
+    );
+  }
 
   return (
     <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
-      <PageHeader
-        title="My requests"
-        description="Raise a card request and follow its progress."
-        actions={
-          <Button render={<Link href="/employee/requests/new">New request</Link>} />
-        }
-      />
-
-      <StatTileRow>
-        <StatTile label="Card status" value={stats?.cardStatus?.replaceAll("_", " ").toLowerCase() ?? "—"} />
-        <StatTile
-          label="Requests in progress"
-          value={stats?.requestsInProgress ?? 0}
-          tone={stats && stats.requestsInProgress > 0 ? "pending" : "neutral"}
+      <div className="space-y-6">
+        {/* Page Header */}
+        <PageHeader
+          title="Employee ID & Access Dashboard"
+          description="Manage your corporate credentials, monitor real-time issuance milestones, and report badge changes."
+          actions={headerAction}
         />
-      </StatTileRow>
 
-      <div className="mb-4 flex flex-wrap gap-1" role="tablist" aria-label="Filter by status">
-        {FILTERS.map((f) => (
+        {/* 1. TOP SECTION: Digital ID Card Preview / Active Identity Hub */}
+        <div className="grid gap-6 lg:grid-cols-12 items-stretch">
+          {/* Active Card Preview Visualizer */}
+          <div className="lg:col-span-6 xl:col-span-5 rounded-2xl border border-rule bg-surface p-6 shadow-xs flex flex-col justify-between space-y-5">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-2">
+                <IdCard className="h-4 w-4 text-credential" />
+                <h2 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Physical Smart ID Badge
+                </h2>
+              </div>
+              <div className="flex items-center gap-1.5">
+                <span
+                  className={cn(
+                    "inline-flex items-center gap-1 rounded-full px-2.5 py-0.5 text-xs font-bold",
+                    hasActiveCard
+                      ? "bg-emerald-50 text-emerald-700 border border-emerald-200"
+                      : stats?.cardStatus === "SUSPENDED"
+                      ? "bg-amber-50 text-amber-700 border border-amber-200"
+                      : "bg-slate-100 text-slate-600 border border-slate-200"
+                  )}
+                >
+                  <span
+                    className={cn(
+                      "h-1.5 w-1.5 rounded-full",
+                      hasActiveCard ? "bg-emerald-600 animate-pulse" : "bg-slate-400"
+                    )}
+                  />
+                  {stats?.cardStatus?.replaceAll("_", " ") ?? "NO ACTIVE CARD"}
+                </span>
+              </div>
+            </div>
+
+            {/* Smart Badge Graphic */}
+            <div className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none transition-transform hover:scale-[1.01]">
+              <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-2.5 text-white">
+                <div className="flex items-center gap-1.5">
+                  <ShieldCheck className="h-4 w-4 text-blue-200" />
+                  <span className="identifier text-[10px] font-bold tracking-[0.2em] text-white">
+                    CEYLON METRO
+                  </span>
+                </div>
+                <div className="flex items-center gap-1">
+                  <Wifi className="h-3 w-3 rotate-90 text-blue-200" />
+                  <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-100">
+                    SECURE RFID
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex gap-4 p-4">
+                {/* Photo */}
+                <div className="relative flex-shrink-0">
+                  {hasActiveCard && activeRequest?.id ? (
+                    <img
+                      src={`/api/v1/requests/${activeRequest.id}/photo`}
+                      alt={displayName}
+                      className="h-24 w-20 rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => {
+                        (e.currentTarget as HTMLElement).style.display = "none";
+                      }}
+                    />
+                  ) : (
+                    <div className="flex h-24 w-20 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                      <User className="h-8 w-8 stroke-1" />
+                      <span className="mt-1 text-[9px] font-semibold">PHOTO</span>
+                    </div>
+                  )}
+                  {/* EMV Chip */}
+                  <div className="absolute -bottom-1.5 -right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                    <div className="h-2 w-3 border border-amber-400/60 rounded-xs" />
+                  </div>
+                </div>
+
+                {/* Details */}
+                <div className="min-w-0 flex-1 space-y-1">
+                  <p className="truncate text-sm font-bold text-ink leading-tight">
+                    {displayName}
+                  </p>
+                  <p className="truncate text-xs font-semibold text-credential">
+                    {displayRole}
+                  </p>
+                  <div className="pt-2">
+                    <span className="identifier rounded bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-800">
+                      {displayEmpId}
+                    </span>
+                  </div>
+                  <div className="pt-1">
+                    <span className="text-[10px] text-slate-400 font-medium">
+                      Door Access: Multi-Zone
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Card Action Controls */}
+            <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-rule">
+              {hasActiveCard ? (
+                <>
+                  <Link
+                    href="/employee/requests/new"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-rule bg-white px-3 py-2 text-xs font-semibold text-slate-700 hover:bg-slate-50 transition-colors shadow-2xs"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5 text-credential" />
+                    Request Replacement / Renewal
+                  </Link>
+                  <Link
+                    href="/employee/requests/new"
+                    className="inline-flex items-center gap-1.5 rounded-xl border border-red-200 bg-red-50/50 px-3 py-2 text-xs font-semibold text-red-700 hover:bg-red-100/60 transition-colors"
+                  >
+                    <AlertTriangle className="h-3.5 w-3.5 text-red-600" />
+                    Report Lost or Stolen
+                  </Link>
+                </>
+              ) : (
+                <div className="flex items-center justify-between w-full text-xs text-slate-500">
+                  <span>No active physical badge on record.</span>
+                  {!activeRequest && (
+                    <Link
+                      href="/employee/requests/new"
+                      className="font-bold text-credential hover:underline"
+                    >
+                      Start Card Request →
+                    </Link>
+                  )}
+                </div>
+              )}
+            </div>
+          </div>
+
+          {/* Quick Overview / Policy Summary Card */}
+          <div className="lg:col-span-6 xl:col-span-7 rounded-2xl border border-rule bg-surface p-6 shadow-xs flex flex-col justify-between space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <Info className="h-4 w-4 text-blue-600" />
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Access & Identity Guidelines
+                </h3>
+              </div>
+              <p className="text-xs text-slate-600 leading-relaxed">
+                Your AccessOne smart badge grants physical entry to authorized zones across Ceylon Metro headquarters and regional campuses. Keep your card visible at all times within corporate premises.
+              </p>
+            </div>
+
+            {/* Quick Badges / Feature Cards */}
+            <div className="grid gap-3 sm:grid-cols-3">
+              <div className="rounded-xl border border-rule bg-paper/50 p-3">
+                <p className="text-[10px] font-bold uppercase text-slate-400">Card Type</p>
+                <p className="mt-1 text-xs font-bold text-ink">Smart RFID CR80</p>
+                <p className="text-[10px] text-slate-500">Contactless 13.56MHz</p>
+              </div>
+
+              <div className="rounded-xl border border-rule bg-paper/50 p-3">
+                <p className="text-[10px] font-bold uppercase text-slate-400">Lost Card Policy</p>
+                <p className="mt-1 text-xs font-bold text-ink">Instant Revoke</p>
+                <p className="text-[10px] text-slate-500">Immediate badge voiding</p>
+              </div>
+
+              <div className="rounded-xl border border-rule bg-paper/50 p-3">
+                <p className="text-[10px] font-bold uppercase text-slate-400">Turnaround</p>
+                <p className="mt-1 text-xs font-bold text-ink">24–48 Hours</p>
+                <p className="text-[10px] text-slate-500">Print queue & dispatch</p>
+              </div>
+            </div>
+
+            <div className="rounded-xl bg-blue-50/70 border border-blue-200/80 p-3 text-xs text-slate-700 flex items-start gap-2.5">
+              <ShieldCheck className="h-4 w-4 text-credential shrink-0 mt-0.5" />
+              <div>
+                <span className="font-semibold text-credential">Corporate Security Reminder: </span>
+                Never share or loan your card. If misplaced, report immediately to deactivate RFID door credentials.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* 2. MIDDLE SECTION: Request Stepper & Lifecycle Container */}
+        {activeRequest ? (
+          <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6">
+            {/* Header of Stepper Container */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-rule">
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="identifier text-xs font-bold text-credential bg-blue-50 px-2 py-0.5 rounded-md">
+                    {activeRequest.requestNo}
+                  </span>
+                  <StatusBadge status={activeRequest.status} />
+                  {isDraft && (
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+                      Uncommitted Draft
+                    </span>
+                  )}
+                  {isPipeline && (
+                    <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-blue-700">
+                      In Review Pipeline
+                    </span>
+                  )}
+                </div>
+                <h2 className="mt-1.5 text-base font-bold text-ink">
+                  {isDraft
+                    ? `Draft ${activeRequest.requestType} Request Workspace`
+                    : `${activeRequest.requestType} ID Card Request Tracker`}
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Initiated on {formatDate(activeRequest.createdAt)}
+                  {activeRequest.submittedAt && ` · Submitted on ${formatDate(activeRequest.submittedAt)}`}
+                </p>
+              </div>
+
+              {/* Strict Conditional Action Button (No Mixing) */}
+              <div className="flex items-center gap-2">
+                {isDraft && (
+                  <Link
+                    href={`/employee/requests/${activeRequest.id}/edit`}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+                  >
+                    <FileEdit className="h-3.5 w-3.5" />
+                    <span>Edit Draft & Upload</span>
+                  </Link>
+                )}
+
+                {isPipeline && (
+                  <Link
+                    href={`/employee/requests/${activeRequest.id}`}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-3.5 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+                  >
+                    <ArrowRight className="h-3.5 w-3.5" />
+                    <span>View In-Progress Request</span>
+                  </Link>
+                )}
+
+                {isRejected && (
+                  <Link
+                    href={`/employee/requests/${activeRequest.id}/edit`}
+                    className="inline-flex items-center gap-1.5 rounded-xl bg-red-600 hover:bg-red-700 px-3.5 py-2 text-xs font-semibold text-white shadow-xs transition-all"
+                  >
+                    <RefreshCw className="h-3.5 w-3.5" />
+                    <span>Edit & Resubmit</span>
+                  </Link>
+                )}
+              </div>
+            </div>
+
+            {/* Rejection Banner */}
+            {isRejected && (
+              <div className="rounded-xl border border-red-200 bg-red-50/80 p-4 text-sm text-red-800 flex items-start gap-3 animate-fade-in">
+                <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+                <div className="space-y-1">
+                  <p className="font-bold">Revision Required by HR Reviewer</p>
+                  <p className="text-xs text-red-700 leading-snug">
+                    Your request requires updates before it can be approved. Please edit the draft, check uploaded photos or documents, and resubmit.
+                  </p>
+                  <div className="pt-2">
+                    <Link
+                      href={`/employee/requests/${activeRequest.id}/edit`}
+                      className="inline-flex items-center gap-1 font-semibold text-xs text-red-800 bg-white border border-red-300 px-3 py-1.5 rounded-lg shadow-2xs hover:bg-red-50"
+                    >
+                      <RefreshCw className="h-3.5 w-3.5" />
+                      Edit Details & Resubmit Request
+                    </Link>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* Compact Connected Milestone Stepper */}
+            <div className="space-y-6 pt-2 pb-1">
+              <div className="relative">
+                {/* Connecting track line */}
+                <div className="hidden sm:block absolute top-4 left-[10%] right-[10%] h-0.5 bg-slate-200 -z-0">
+                  <div
+                    className="h-full bg-emerald-500 transition-all duration-300"
+                    style={{ width: `${(Math.min(currentStep, 4) / 4) * 100}%` }}
+                  />
+                </div>
+
+                {/* 5 Spaced Step Nodes */}
+                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-2 relative z-10">
+                  {STEPPER_STAGES.map((step, idx) => {
+                    const isDone = currentStep > idx;
+                    const isCurrent = currentStep === idx;
+                    return (
+                      <div
+                        key={step.key}
+                        className="flex flex-col items-center text-center p-2 rounded-xl transition-all"
+                      >
+                        <div
+                          className={cn(
+                            "flex h-8 w-8 items-center justify-center rounded-full text-xs font-bold transition-all bg-white mb-2 shadow-2xs",
+                            isDone
+                              ? "bg-emerald-600 text-white shadow-xs ring-4 ring-emerald-50"
+                              : isCurrent
+                              ? "bg-credential text-white shadow-xs ring-4 ring-blue-100"
+                              : "bg-slate-100 text-slate-400 border border-slate-200"
+                          )}
+                        >
+                          {isDone ? <Check className="h-4 w-4" /> : idx + 1}
+                        </div>
+                        <p
+                          className={cn(
+                            "text-xs font-bold leading-tight",
+                            isCurrent
+                              ? "text-credential font-extrabold"
+                              : isDone
+                              ? "text-slate-800"
+                              : "text-slate-400"
+                          )}
+                        >
+                          {step.label}
+                        </p>
+                        <p className="mt-0.5 text-[11px] text-slate-500 leading-snug">
+                          {step.description}
+                        </p>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Dynamic Single-Line Milestone Guidance */}
+              <div className="rounded-xl border border-slate-200/80 bg-slate-50/70 px-4 py-2.5 flex items-center justify-between text-xs text-slate-600">
+                <div className="flex items-center gap-2">
+                  <Info className="h-3.5 w-3.5 text-credential shrink-0" />
+                  <span>
+                    {isDraft
+                      ? "Pre-submission mode: Complete your details and attach a photo to send for HR verification."
+                      : activeRequest.status === "SUBMITTED"
+                      ? "Your card request has been submitted to HR. Verification in progress."
+                      : activeRequest.status === "UNDER_VERIFICATION"
+                      ? "HR is reviewing your records and identity documents."
+                      : activeRequest.status === "APPROVED"
+                      ? "Approved by HR. Card is queued for physical printing and RFID flashing."
+                      : "Card lifecycle is active."}
+                  </span>
+                </div>
+                <span className="text-[11px] font-semibold text-slate-400 hidden sm:inline">
+                  Step {currentStep + 1} of 5
+                </span>
+              </div>
+            </div>
+          </div>
+        ) : (
+          /* Empty In-Progress State */
+          <div className="rounded-2xl border border-dashed border-rule bg-surface p-8 text-center shadow-xs space-y-3">
+            <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-2xl bg-blue-50 text-credential">
+              <IdCard className="h-6 w-6" />
+            </div>
+            <h3 className="text-sm font-bold text-ink">
+              {hasActiveCard ? "No Pending Card Requests" : "Welcome to AccessOne — ID Badge Application"}
+            </h3>
+            <p className="max-w-md mx-auto text-xs text-slate-500">
+              {hasActiveCard
+                ? "Your corporate RFID badge is active. You can request a replacement or renewal whenever needed."
+                : "You do not currently have a smart ID badge. Start your application to provide your photo and details for HR verification."}
+            </p>
+            <div className="pt-2">
+              <Link
+                href="/employee/requests/new"
+                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl bg-credential text-white text-xs font-semibold hover:bg-credential/90 shadow-xs transition-colors"
+              >
+                <Plus className="h-4 w-4" />
+                {hasActiveCard ? "Request Replacement Badge" : "Start Initial ID Application"}
+              </Link>
+            </div>
+          </div>
+        )}
+
+        {/* 3. BOTTOM SECTION: Past Request History & Audit Trail */}
+        <div className="rounded-2xl border border-rule bg-surface shadow-xs overflow-hidden">
           <button
-            key={f.label}
-            role="tab"
-            aria-selected={status === f.value}
-            onClick={() => { setStatus(f.value); setPage(0); }}
-            className={`rounded-card px-3 py-1.5 text-sm ${
-              status === f.value
-                ? "bg-credential/10 font-medium text-credential"
-                : "text-slate hover:bg-paper"
-            }`}
+            type="button"
+            onClick={() => setHistoryOpen(!historyOpen)}
+            className="w-full flex items-center justify-between p-5 text-left hover:bg-slate-50/80 transition-colors cursor-pointer"
           >
-            {f.label}
+            <div className="flex items-center gap-2.5">
+              <History className="h-4 w-4 text-slate-500" />
+              <div>
+                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                  Past Request History & Audit Trail ({historyRequests.length})
+                </h3>
+                <p className="text-[11px] text-slate-500">
+                  Immutable record of past issued badges, previous replacements, and closed requests
+                </p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+              <span>{historyOpen ? "Hide Audit History" : "View Audit History"}</span>
+              {historyOpen ? (
+                <ChevronUp className="h-4 w-4" />
+              ) : (
+                <ChevronDown className="h-4 w-4" />
+              )}
+            </div>
           </button>
-        ))}
-      </div>
 
-      <DataTable
-        columns={columns}
-        page={data}
-        isLoading={isLoading}
-        isError={isError}
-        onRetry={() => void refetch()}
-        rowHref={(r) => `/employee/requests/${r.id}`}
-        onPageChange={setPage}
-        empty={{
-          title: "No requests yet",
-          body: "Raise a request when you need a new ID card, or to replace a lost one.",
-          action: <Button render={<Link href="/employee/requests/new">New request</Link>} />,
-        }}
-      />
+          {historyOpen && (
+            <div className="border-t border-rule p-5 animate-fade-in">
+              {historyRequests.length === 0 ? (
+                <p className="text-center text-xs text-slate-500 py-4">
+                  No previous closed or archived requests found in audit history.
+                </p>
+              ) : (
+                <div className="divide-y divide-rule">
+                  {historyRequests.map((r) => (
+                    <div
+                      key={r.id}
+                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3.5"
+                    >
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="identifier text-xs font-semibold text-credential">
+                            {r.requestNo}
+                          </span>
+                          <StatusBadge status={r.status} />
+                        </div>
+                        <p className="text-xs text-slate-600 mt-0.5">
+                          {r.requestType} Request · Submitted on {formatDate(r.submittedAt)}
+                        </p>
+                      </div>
+
+                      <Link
+                        href={`/employee/requests/${r.id}`}
+                        className="inline-flex items-center gap-1 text-xs font-semibold text-credential hover:underline"
+                      >
+                        Inspect Record →
+                      </Link>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      </div>
     </RequireRole>
   );
 }
+
