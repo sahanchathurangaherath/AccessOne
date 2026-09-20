@@ -47,6 +47,27 @@ export const useVerify = () => approvals.useAction("verify");
 export const useApprove = () => approvals.useAction("approve");
 export const useComment = () => approvals.useAction("comments");
 
+export function useDeleteComment() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { requestId: number; commentId: number }) =>
+      http.del<ApprovalDetail>(`/approvals/${vars.requestId}/comments/${vars.commentId}`),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: approvals.keys.all }),
+  });
+}
+
+export function useRemovePendingRequest() {
+  const queryClient = useQueryClient();
+  return useMutation({
+    mutationFn: (vars: { requestId: number; reason?: string }) =>
+      http.post<void>(`/approvals/${vars.requestId}/cancel`, { reason: vars.reason }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: approvals.keys.all });
+      queryClient.invalidateQueries({ queryKey: ["approvals"] });
+    },
+  });
+}
+
 export function useReject() {
   const queryClient = useQueryClient();
   return useMutation({

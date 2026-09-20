@@ -33,11 +33,14 @@ export function useUnreadCount() {
   });
 }
 
-export function useNotificationList(enabled: boolean) {
+export function useNotificationList(unreadOnly?: boolean) {
   return useQuery({
-    queryKey: keys.list,
-    queryFn: () => http.get<PageResponse<NotificationDto>>("/notifications?size=10"),
-    enabled,
+    queryKey: ["notifications", "list", { unreadOnly: !!unreadOnly }],
+    queryFn: () =>
+      http.get<PageResponse<NotificationDto>>(
+        `/notifications?size=20${unreadOnly ? "&unreadOnly=true" : ""}`
+      ),
+    refetchInterval: 60_000,
   });
 }
 

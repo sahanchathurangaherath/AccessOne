@@ -29,8 +29,9 @@ public class NotificationController {
 
     @GetMapping
     public PageResponse<NotificationDto> list(
+            @org.springframework.web.bind.annotation.RequestParam(required = false) Boolean unreadOnly,
             @PageableDefault(size = 20, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable) {
-        return service.list(pageable);
+        return service.list(unreadOnly, pageable);
     }
 
     @GetMapping("/unread")

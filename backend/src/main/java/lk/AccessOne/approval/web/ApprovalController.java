@@ -82,6 +82,17 @@ public class ApprovalController {
         return service.comment(requestId, body.text());
     }
 
+    @DeleteMapping("/{requestId}/comments/{commentId}")
+    public ApprovalDetail deleteComment(@PathVariable Long requestId, @PathVariable Long commentId) {
+        return service.deleteComment(requestId, commentId);
+    }
+
+    @PostMapping("/{requestId}/cancel")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void cancelPendingRequest(@PathVariable Long requestId, @RequestBody(required = false) DecisionRequest body) {
+        service.removePendingRequest(requestId, body != null ? body.reason() : null);
+    }
+
     @PostMapping("/bulk-approve")
     public BulkResult bulkApprove(@RequestBody @Valid BulkApproveRequest body) {
         return service.bulkApprove(body.requestIds());

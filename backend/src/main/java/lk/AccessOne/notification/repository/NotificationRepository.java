@@ -12,7 +12,9 @@ import java.util.Optional;
 
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
 
-    Page<Notification> findByUserIdOrderByCreatedAtDesc(Long userId, Pageable pageable);
+    Page<Notification> findByUserId(Long userId, Pageable pageable);
+
+    Page<Notification> findByUserIdAndReadFalse(Long userId, Pageable pageable);
 
     long countByUserIdAndReadFalse(Long userId);
 

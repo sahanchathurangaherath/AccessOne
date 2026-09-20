@@ -274,16 +274,17 @@ export function QuickReviewDrawer({
                     </div>
 
                     <div className="flex gap-3.5 p-3.5">
-                      <div className="relative flex-shrink-0">
+                      <div className="relative flex-shrink-0 h-24 w-20">
                         <img
                           src={`/api/v1/requests/${approval.requestId}/photo`}
                           alt={approval.employeeName}
                           className="h-24 w-20 rounded-lg border border-slate-200 object-cover shadow-xs"
                           onError={(e) => {
-                            (e.currentTarget as HTMLElement).style.display = "none";
+                            (e.target as HTMLImageElement).src =
+                              "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='96' viewBox='0 0 80 96'%3E%3Crect width='80' height='96' fill='%23f8fafc'/%3E%3Ccircle cx='40' cy='36' r='14' fill='%23cbd5e1'/%3E%3Cpath d='M20 78 C20 58, 60 58, 60 78' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='88' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='8' font-weight='700' fill='%2394a3b8'%3EPHOTO%3C/text%3E%3C/svg%3E";
                           }}
                         />
-                        <div className="absolute -bottom-1.5 -right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                        <div className="absolute bottom-1.5 right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
                           <div className="h-2 w-3 border border-amber-400/60 rounded-xs" />
                         </div>
                       </div>

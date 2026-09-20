@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useParams } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { RequireRole } from "@/components/require-role";
 import { DetailHeader } from "@/components/detail-header";
@@ -11,14 +11,17 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusTimeline } from "@/components/status-timeline";
+import { Trash2 } from "lucide-react";
 import { ApiError } from "@/lib/api";
 import {
   approvals, useVerify, useApprove, useReject, useComment,
+  useDeleteComment, useRemovePendingRequest,
 } from "../../_hooks/useApprovals";
 
 export default function ApprovalDecisionPage() {
   const params = useParams<{ id: string }>();
   const requestId = Number(params.id);
+  const router = useRouter();
 
   const { data: approval, isLoading, isError, refetch } = approvals.useDetail(requestId);
   const { data: timeline } = approvals.useTimeline(requestId);
@@ -27,9 +30,12 @@ export default function ApprovalDecisionPage() {
   const approve = useApprove();
   const reject = useReject();
   const comment = useComment();
+  const deleteComment = useDeleteComment();
+  const removePendingRequest = useRemovePendingRequest();
 
   const [confirmVerify, setConfirmVerify] = useState(false);
   const [confirmApprove, setConfirmApprove] = useState(false);
+  const [confirmRemove, setConfirmRemove] = useState(false);
   const [rejectReason, setRejectReason] = useState("");
   const [showReject, setShowReject] = useState(false);
   const [commentText, setCommentText] = useState("");
@@ -80,8 +86,29 @@ export default function ApprovalDecisionPage() {
     try {
       await comment.mutateAsync({ id: requestId, body: { text: commentText.trim() } });
       setCommentText("");
+      toast.success("Comment added");
     } catch (error) {
       toast.error(error instanceof ApiError ? error.problem.detail : "Could not add the comment");
+    }
+  }
+
+  async function onDeleteComment(commentId: number) {
+    try {
+      await deleteComment.mutateAsync({ requestId, commentId });
+      toast.success("Comment deleted");
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.problem.detail : "Could not delete comment");
+    }
+  }
+
+  async function onRemoveDuplicate() {
+    setConfirmRemove(false);
+    try {
+      await removePendingRequest.mutateAsync({ requestId, reason: "Duplicate or incorrectly raised request removed by HR" });
+      toast.success("Pending request removed from queue");
+      router.push("/hr");
+    } catch (error) {
+      toast.error(error instanceof ApiError ? error.problem.detail : "Could not remove request");
     }
   }
 
@@ -113,24 +140,26 @@ export default function ApprovalDecisionPage() {
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>Supporting documents</CardTitle></CardHeader>
+            <CardHeader>
+              <CardTitle>Documents</CardTitle>
+            </CardHeader>
             <CardContent>
               {approval.documents.length === 0 && (
-                <p className="text-sm text-slate">No documents uploaded.</p>
+                <p className="text-sm text-slate">No documents attached to this request.</p>
               )}
               {approval.documents.length > 0 && (
-                <ul className="divide-y divide-rule">
-                  {approval.documents.map((doc) => (
-                    <li key={doc.id} className="py-2 text-sm">
+                <ul className="divide-y divide-rule text-sm">
+                  {approval.documents.map((d) => (
+                    <li key={d.id} className="flex justify-between py-2">
                       <a
-                        href={`/api/v1/requests/${requestId}/documents/${doc.id}/download`}
-                        className="font-medium text-credential underline-offset-4 hover:underline"
+                        href={`/api/v1/requests/${requestId}/documents/${d.id}/download`}
+                        className="text-credential underline-offset-4 hover:underline"
                       >
-                        {doc.fileName}
+                        {d.fileName}
                       </a>
                       <p className="text-xs text-slate">
-                        {doc.documentType.replaceAll("_", " ").toLowerCase()} ·{" "}
-                        {(doc.fileSizeBytes / 1024).toFixed(0)} KB
+                        {d.documentType.replaceAll("_", " ").toLowerCase()} ·{" "}
+                        {(d.fileSizeBytes / 1024).toFixed(0)} KB
                       </p>
                     </li>
                   ))}
@@ -146,11 +175,23 @@ export default function ApprovalDecisionPage() {
                 <p className="text-sm text-slate">No comments yet.</p>
               )}
               {approval.comments.map((c) => (
-                <div key={c.id} className="border-b border-rule pb-2 text-sm last:border-0">
-                  <p>{c.text}</p>
-                  <p className="identifier text-xs text-slate">
-                    {c.commentedBy} · {fmt(c.commentedAt)}
-                  </p>
+                <div key={c.id} className="flex items-start justify-between gap-2 border-b border-rule pb-2 text-sm last:border-0">
+                  <div className="flex-1">
+                    <p>{c.text}</p>
+                    <p className="identifier text-xs text-slate">
+                      {c.commentedBy} · {fmt(c.commentedAt)}
+                    </p>
+                  </div>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    className="h-7 w-7 p-0 text-slate-400 hover:text-red-600 transition-colors"
+                    title="Delete comment added in error"
+                    onClick={() => void onDeleteComment(c.id)}
+                    disabled={deleteComment.isPending}
+                  >
+                    <Trash2 className="h-3.5 w-3.5" />
+                  </Button>
                 </div>
               ))}
               <div className="flex gap-2 pt-2">
@@ -180,7 +221,7 @@ export default function ApprovalDecisionPage() {
 
         <div className="space-y-3">
           <Card>
-            <CardHeader><CardTitle>Decision</CardTitle></CardHeader>
+            <CardHeader><CardTitle>Decision & Actions</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-2">
               {/* Never derive these from the decision string on the
                   frontend -- canVerify/canDecide come from the same
@@ -227,6 +268,17 @@ export default function ApprovalDecisionPage() {
                 </div>
               )}
 
+              {(approval.canVerify || approval.canDecide) && (
+                <Button
+                  variant="ghost"
+                  className="text-xs text-red-600 hover:bg-red-50 hover:text-red-700 mt-2"
+                  onClick={() => setConfirmRemove(true)}
+                  disabled={removePendingRequest.isPending}
+                >
+                  Remove / Cancel Request
+                </Button>
+              )}
+
               {!approval.canVerify && !approval.canDecide && (
                 <p className="text-sm text-slate">This decision is concluded.</p>
               )}
@@ -234,6 +286,17 @@ export default function ApprovalDecisionPage() {
           </Card>
         </div>
       </div>
+
+      <ConfirmDialog
+        open={confirmRemove}
+        onOpenChange={setConfirmRemove}
+        title="Remove this pending request?"
+        body="This cancels and removes the duplicate or incorrectly raised request from the active queue."
+        confirmLabel="Remove Request"
+        destructive
+        onConfirm={() => void onRemoveDuplicate()}
+        isPending={removePendingRequest.isPending}
+      />
 
       <ConfirmDialog
         open={confirmVerify}

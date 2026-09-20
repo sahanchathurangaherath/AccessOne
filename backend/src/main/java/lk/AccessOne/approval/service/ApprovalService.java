@@ -176,6 +176,26 @@ public class ApprovalService {
         return mapper.toDetail(approval);
     }
 
+    @Transactional
+    public ApprovalDetail deleteComment(Long requestId, Long commentId) {
+        Approval approval = load(requestId);
+        approval.removeComment(commentId);
+        return mapper.toDetail(approval);
+    }
+
+    @Transactional
+    public void removePendingRequest(Long requestId, String reason) {
+        Approval approval = load(requestId);
+        CardRequest request = approval.getRequest();
+
+        statusChanges.apply("card_requests", request.getId(),
+                request::getStatus, () -> request.transitionTo(RequestStatus.CANCELLED));
+
+        statusChanges.apply("approvals", approval.getId(), AuditAction.REJECT,
+                approval::getDecision, () -> approval.reject(actingUser(),
+                        reason != null && !reason.isBlank() ? reason : "Duplicate or incorrectly raised request removed by HR"));
+    }
+
     // ---------- bulk approval ----------
 
     @Transactional

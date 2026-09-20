@@ -57,7 +57,7 @@ export default function PrintQueuePage() {
   const [statusFilter, setStatusFilter] = useState("");
   const [typeFilter, setTypeFilter] = useState("");
   
-  const { data, isLoading, isError, refetch } = printJobs.useList({ sort: "queuedAt,asc" });
+  const { data, isLoading, isError, refetch } = printJobs.useList({ size: 100, sort: "queuedAt,desc" });
   const { data: stats } = dashboard.usePrint();
 
   const rawRows: PrintJobRow[] = data?.content ?? [];

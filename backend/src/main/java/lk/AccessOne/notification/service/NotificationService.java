@@ -29,10 +29,12 @@ public class NotificationService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<NotificationDto> list(Pageable pageable) {
-        return PageResponse.of(
-                notifications.findByUserIdOrderByCreatedAtDesc(currentUser.currentUserId(), pageable),
-                NotificationService::toDto);
+    public PageResponse<NotificationDto> list(Boolean unreadOnly, Pageable pageable) {
+        Long userId = currentUser.currentUserId();
+        org.springframework.data.domain.Page<Notification> page = (unreadOnly != null && unreadOnly)
+                ? notifications.findByUserIdAndReadFalse(userId, pageable)
+                : notifications.findByUserId(userId, pageable);
+        return PageResponse.of(page, NotificationService::toDto);
     }
 
     @Transactional(readOnly = true)

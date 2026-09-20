@@ -33,7 +33,7 @@ export function CardPreview({ card }: { card: CardDetail }) {
         {/* Card Body */}
         <div className="flex gap-4 p-3.5">
           {/* Employee Photo */}
-          <div className="relative flex-shrink-0">
+          <div className="relative flex-shrink-0 h-[105px] w-[82px]">
             <img
               src={`/api/v1/cards/${card.id}/photo`}
               alt={card.printedName}
@@ -45,7 +45,7 @@ export function CardPreview({ card }: { card: CardDetail }) {
               className="h-[105px] w-[82px] rounded-lg border border-slate-200 object-cover shadow-xs"
             />
             {/* Smart EMV Chip simulation */}
-            <div className="absolute -bottom-2 -right-2 h-5 w-6 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+            <div className="absolute bottom-1.5 right-1.5 h-5 w-6 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
               <div className="h-3 w-4 border border-amber-400/60 rounded-xs" />
             </div>
           </div>

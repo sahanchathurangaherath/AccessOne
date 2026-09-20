@@ -112,6 +112,10 @@ public class Approval extends AuditableEntity {
         comment.attachTo(this);
     }
 
+    public boolean removeComment(Long commentId) {
+        return comments.removeIf(c -> c.getId() != null && c.getId().equals(commentId));
+    }
+
     // ---------- guards ----------
 
     /**

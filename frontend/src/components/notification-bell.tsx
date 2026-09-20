@@ -91,7 +91,7 @@ export function NotificationBell() {
   const [open, setOpen] = useState(false);
   const [filterUnreadOnly, setFilterUnreadOnly] = useState(false);
   const { data: unread } = useUnreadCount();
-  const { data: list, isLoading } = useNotificationList(open);
+  const { data: list, isLoading, isError, refetch } = useNotificationList(filterUnreadOnly);
   const markRead = useMarkRead();
   const markAllRead = useMarkAllRead();
 
@@ -191,7 +191,19 @@ export function NotificationBell() {
             </div>
           )}
 
-          {!isLoading && displayList.length === 0 && (
+          {isError && (
+            <div className="p-8 text-center text-xs text-rose-500">
+              <p className="font-semibold">Failed to load alerts</p>
+              <button
+                onClick={() => void refetch()}
+                className="mt-2 text-[11px] underline hover:text-rose-700"
+              >
+                Retry
+              </button>
+            </div>
+          )}
+
+          {!isLoading && !isError && displayList.length === 0 && (
             <div className="flex flex-col items-center justify-center p-8 text-center text-xs text-slate-400">
               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-400 mb-2">
                 <Inbox className="h-5 w-5" />
