@@ -21,6 +21,8 @@ import lk.AccessOne.shared.audit.TimelineService;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.RequestStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
+import lk.AccessOne.shared.error.ResourceNotFoundException;
+import lk.AccessOne.card.service.CardPhoto;
 import lk.AccessOne.shared.security.OwnershipGuard;
 import lk.AccessOne.shared.sequence.SequenceGenerator;
 import lk.AccessOne.shared.service.EntityLookup;
@@ -34,6 +36,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 
 @Service
@@ -99,6 +103,22 @@ public class CardRequestService {
                         e.status() != null ? e.status() : e.action(),
                         e.changedBy(), e.changedAt(), e.note()))
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public CardPhoto photo(Long id) {
+        CardRequest request = lookup.require(requests, id, "Card request");
+        guard.requireOwnerOr(request.getEmployee().getId(), "Card request", id, PRIVILEGED_ROLES);
+        if (request.getPhotoPath() == null || request.getPhotoPath().isBlank()) {
+            throw new ResourceNotFoundException("Photo for card request", id);
+        }
+        try {
+            byte[] bytes = Files.readAllBytes(storage.resolve(request.getPhotoPath()));
+            String contentType = request.getPhotoPath().endsWith(".png") ? "image/png" : "image/jpeg";
+            return new CardPhoto(bytes, contentType);
+        } catch (IOException e) {
+            throw new BusinessRuleException("STORAGE_FAILED", "Could not read the photo.");
+        }
     }
 
     // ---------- write ----------

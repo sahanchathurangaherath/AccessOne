@@ -208,15 +208,15 @@ export default function PrintQueuePage() {
         {/* Top Header & Contextual Navigation Tabs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-rule pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-ink">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-ink">
                 Card Production & Print Queue
               </h1>
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-credential border border-blue-200/60">
+              <span className="badge-topic text-[10px]">
                 Print Operations
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600">
               Manage thermal badge printing, holographic laminating, quality inspection, and courier dispatch.
             </p>
           </div>

@@ -36,17 +36,21 @@ export function RuleTestPanel({ levels, areas }: { levels: AccessLevelDto[]; are
 
   return (
     <div className="rounded-2xl border border-rule bg-surface p-6 shadow-xs space-y-5">
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 border-b border-rule pb-4">
-        <div>
-          <h2 className="text-sm font-bold text-ink flex items-center gap-2">
-            <Sparkles className="h-4 w-4 text-credential" />
-            Live Access Rule Simulator & Diagnostics Engine
-          </h2>
-          <p className="mt-0.5 text-xs text-slate-500">
-            Simulate a physical badge scan at a door turnstile without requiring a physical RFID card.
-          </p>
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 border-b border-rule pb-4">
+        <div className="flex items-start gap-3">
+          <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100 mt-0.5">
+            <Sparkles className="h-4.5 w-4.5" />
+          </div>
+          <div>
+            <h2 className="topic-title text-ink">
+              Live Access Rule Simulator & Diagnostics Engine
+            </h2>
+            <p className="mt-0.5 text-xs text-slate-500">
+              Simulate a physical badge scan at a door turnstile without requiring a physical RFID card.
+            </p>
+          </div>
         </div>
-        <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-wider text-slate-600 self-start sm:self-auto">
+        <span className="badge-topic self-start sm:self-center">
           Decision Engine Sandbox
         </span>
       </div>

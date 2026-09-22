@@ -10,30 +10,34 @@ import { StatusBadge } from "@/components/status-badge";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { ApiError } from "@/lib/api";
-import { cn, formatDate } from "@/lib/utils";
+import { cn } from "@/lib/utils";
 import { useDispatchDetail, useDispatch, useHandover, useMarkReturned } from "../../_hooks/usePrint";
 import {
   ArrowLeft,
   Truck,
   User,
-  Cpu,
   Clock,
-  Calendar,
   CheckCircle2,
   AlertTriangle,
   Send,
-  Sparkles,
   ShieldCheck,
-  Building2,
-  Mail,
   FileSignature,
   FileCheck,
   RotateCcw,
   KeyRound,
+  IdCard,
 } from "lucide-react";
+
+function DetailRow({ label, value, mono = false }: { label: string; value: React.ReactNode; mono?: boolean }) {
+  return (
+    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between py-2 border-b border-rule/60 last:border-0 gap-1">
+      <span className="text-xs font-medium text-slate">{label}</span>
+      <span className={cn("text-xs font-semibold text-ink", mono && "identifier")}>{value}</span>
+    </div>
+  );
+}
 
 export default function DispatchDetailPage() {
   const params = useParams<{ id: string }>();
@@ -89,155 +93,120 @@ export default function DispatchDetailPage() {
           <div className="flex items-center gap-3">
             <Link
               href="/print/dispatch"
-              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rule bg-surface text-slate-600 hover:bg-slate-50 shadow-2xs transition-colors"
+              className="inline-flex h-9 w-9 items-center justify-center rounded-xl border border-rule bg-surface text-slate hover:bg-paper hover:text-ink shadow-2xs transition-colors"
             >
               <ArrowLeft className="h-4 w-4" />
             </Link>
             <div>
               <div className="flex items-center gap-2">
-                <span className="font-mono text-xs font-bold text-slate-500">MANIFEST #{record.id}</span>
+                <span className="identifier text-xs font-semibold text-slate">MANIFEST #{record.id}</span>
                 <StatusBadge status={record.status} />
               </div>
               <h1 className="text-xl font-bold tracking-tight text-ink mt-0.5">
                 {record.employeeName}
-                <span className="text-sm font-normal text-slate-400 ml-2">({record.empId})</span>
-                <span className="text-sm font-mono text-slate-500 ml-2">&bull; {record.cardSerial}</span>
+                <span className="text-sm font-normal text-slate ml-2">({record.empId})</span>
+                <span className="text-sm identifier text-slate ml-2">· {record.cardSerial}</span>
               </h1>
             </div>
           </div>
 
           <div className="flex items-center gap-2">
-            <div className="rounded-xl border border-rule bg-surface px-3 py-1.5 text-xs text-slate-600 font-medium shadow-2xs">
-              Job: <strong className="text-ink font-mono">{record.jobNo}</strong>
+            <div className="rounded-xl border border-rule bg-surface px-3 py-1.5 text-xs text-slate font-medium shadow-2xs">
+              Job: <strong className="text-ink identifier">{record.jobNo}</strong>
             </div>
           </div>
         </div>
 
         {/* ─── MAIN CONTENT: 2-COLUMN LAYOUT ─── */}
         <div className="grid gap-6 lg:grid-cols-3">
-          {/* Left Column (2 Cols): Manifest Specification & Card Identity */}
+          {/* Left Column (2 Cols): Details & Delivery Audit Trail */}
           <div className="space-y-6 lg:col-span-2">
-            {/* PHYSICAL DISPATCH MANIFEST CARD */}
-            <div className="relative overflow-hidden rounded-2xl border border-rule bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 text-white shadow-md">
-              <div className="absolute -right-12 -bottom-12 h-64 w-64 rounded-full bg-blue-500/20 blur-3xl" />
-              <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-emerald-500/10 blur-3xl" />
-
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wider text-blue-300 uppercase border border-blue-400/30">
-                      <Truck className="h-3 w-3" /> {methodLabel}
-                    </span>
-                    {record.status === "DELIVERED" ? (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-emerald-500/20 px-2 py-0.5 text-[11px] font-bold text-emerald-300 border border-emerald-400/30">
-                        <CheckCircle2 className="h-3 w-3" /> Live & Active at Gates
+            {/* Manifest Details Card */}
+            <Card>
+              <CardHeader className="border-b border-rule pb-3">
+                <CardTitle className="text-sm font-bold text-ink flex items-center gap-2">
+                  <IdCard className="h-4 w-4 text-credential" />
+                  <span>Dispatch Specification</span>
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="p-5 space-y-1">
+                <DetailRow label="Recipient Employee" value={`${record.employeeName} (${record.empId})`} />
+                <DetailRow label="Smart Card Serial" value={record.cardSerial} mono />
+                <DetailRow label="Associated Print Job" value={record.jobNo} mono />
+                <DetailRow label="Delivery Method" value={methodLabel} />
+                <DetailRow
+                  label="Gate Status"
+                  value={
+                    record.status === "DELIVERED" ? (
+                      <span className="inline-flex items-center gap-1 text-emerald-600 font-semibold">
+                        <CheckCircle2 className="h-3.5 w-3.5" /> Live & Active at Gates
                       </span>
                     ) : (
-                      <span className="inline-flex items-center gap-1 rounded-md bg-amber-500/20 px-2 py-0.5 text-[11px] font-bold text-amber-300 border border-amber-400/30">
-                        <Clock className="h-3 w-3" /> Awaiting Handover
+                      <span className="inline-flex items-center gap-1 text-amber-600 font-semibold">
+                        <Clock className="h-3.5 w-3.5" /> Awaiting Handover
                       </span>
-                    )}
-                  </div>
+                    )
+                  }
+                />
+              </CardContent>
+            </Card>
 
-                  <div>
-                    <h2 className="text-2xl font-black tracking-tight text-white">{record.employeeName}</h2>
-                    <p className="text-xs font-mono text-slate-300 tracking-wider mt-0.5">
-                      CARD: {record.cardSerial} &bull; RECIPIENT ID: {record.empId}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700/60 text-xs">
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase tracking-wider font-semibold">
-                        Print Job Number
-                      </span>
-                      <span className="font-semibold text-slate-100 font-mono">{record.jobNo}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase tracking-wider font-semibold">
-                        Routing Method
-                      </span>
-                      <span className="font-semibold text-blue-300">{methodLabel}</span>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Handover Seal Graphic */}
-                <div className="flex flex-col items-center justify-center p-3.5 rounded-xl bg-white/95 text-slate-950 shadow-lg border border-white/20 self-center sm:self-auto flex-shrink-0 w-28 h-28">
-                  <div className="h-10 w-10 rounded-full bg-blue-50 text-credential flex items-center justify-center mb-1">
-                    <KeyRound className="h-5 w-5" />
-                  </div>
-                  <span className="text-[9px] font-mono font-bold tracking-widest text-slate-800 text-center uppercase">
-                    {record.status === "DELIVERED" ? "ACTIVATED" : "IN TRANSIT"}
-                  </span>
-                </div>
-              </div>
-            </div>
-
-            {/* DELIVERY TIMELINE & AUDIT DETAILS */}
-            <Card className="rounded-2xl border-rule bg-surface shadow-xs">
-              <CardHeader className="border-b border-rule/60 pb-3">
+            {/* Delivery Timeline & Audit Details Card */}
+            <Card>
+              <CardHeader className="border-b border-rule pb-3">
                 <CardTitle className="text-sm font-bold text-ink flex items-center gap-2">
                   <FileCheck className="h-4 w-4 text-credential" />
                   <span>Dispatch Manifest & Delivery Audit Trail</span>
                 </CardTitle>
               </CardHeader>
-              <CardContent className="p-5 space-y-4 text-xs sm:text-sm">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="rounded-xl border border-rule bg-paper p-3.5 space-y-1">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Dispatched Timestamp
-                    </span>
-                    <div className="flex items-center gap-2 font-semibold text-ink">
-                      <Send className="h-4 w-4 text-slate-400" />
-                      <span>{record.dispatchedAt ? new Date(record.dispatchedAt).toLocaleString() : "Not dispatched yet"}</span>
-                    </div>
-                  </div>
-
-                  <div className="rounded-xl border border-rule bg-paper p-3.5 space-y-1">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Card Handover & Activation
-                    </span>
-                    <div className="flex items-center gap-2 font-semibold text-ink">
-                      <CheckCircle2 className="h-4 w-4 text-slate-400" />
-                      <span>{record.handedOverAt ? new Date(record.handedOverAt).toLocaleString() : "Awaiting recipient acknowledgment"}</span>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
-                  <div className="rounded-xl border border-rule bg-paper p-3.5 space-y-1">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Received & Acknowledged By
-                    </span>
-                    <p className="font-semibold text-ink">
-                      {record.receivedByName ? (
-                        <span className="flex items-center gap-1.5">
-                          <User className="h-4 w-4 text-credential" />
-                          <span>{record.receivedByName}</span>
-                        </span>
-                      ) : (
-                        <span className="text-slate-400">Pending recipient confirmation</span>
-                      )}
-                    </p>
-                  </div>
-
-                  <div className="rounded-xl border border-rule bg-paper p-3.5 space-y-1">
-                    <span className="text-[11px] font-bold text-slate-500 uppercase tracking-wider block">
-                      Manifest Created At
-                    </span>
-                    <p className="font-semibold text-ink font-mono text-xs">
-                      {new Date(record.createdAt).toLocaleString()}
-                    </p>
-                  </div>
-                </div>
-
+              <CardContent className="p-5 space-y-1">
+                <DetailRow
+                  label="Manifest Created At"
+                  value={new Date(record.createdAt).toLocaleString()}
+                />
+                <DetailRow
+                  label="Dispatched Timestamp"
+                  value={
+                    record.dispatchedAt ? (
+                      <span className="flex items-center gap-1.5">
+                        <Send className="h-3.5 w-3.5 text-slate" />
+                        <span>{new Date(record.dispatchedAt).toLocaleString()}</span>
+                      </span>
+                    ) : (
+                      <span className="text-slate italic">Not dispatched yet</span>
+                    )
+                  }
+                />
+                <DetailRow
+                  label="Handover & Gate Activation"
+                  value={
+                    record.handedOverAt ? (
+                      <span className="flex items-center gap-1.5 text-emerald-700">
+                        <CheckCircle2 className="h-3.5 w-3.5 text-emerald-600" />
+                        <span>{new Date(record.handedOverAt).toLocaleString()}</span>
+                      </span>
+                    ) : (
+                      <span className="text-slate italic">Awaiting recipient acknowledgment</span>
+                    )
+                  }
+                />
+                <DetailRow
+                  label="Received & Acknowledged By"
+                  value={
+                    record.receivedByName ? (
+                      <span className="flex items-center gap-1.5">
+                        <User className="h-3.5 w-3.5 text-credential" />
+                        <span>{record.receivedByName}</span>
+                      </span>
+                    ) : (
+                      <span className="text-slate italic">Pending confirmation</span>
+                    )
+                  }
+                />
                 {record.remarks && (
-                  <div className="rounded-xl bg-slate-100 border border-slate-300 p-3.5 space-y-1">
-                    <span className="text-[11px] font-bold text-slate-700 uppercase tracking-wider block">
-                      Delivery Remarks / Return Note
-                    </span>
-                    <p className="text-xs text-slate-900 leading-relaxed">{record.remarks}</p>
+                  <div className="mt-3 rounded-xl bg-paper border border-rule p-3 text-xs space-y-1">
+                    <span className="text-slate font-semibold block">Delivery Remarks / Return Note</span>
+                    <p className="text-ink leading-relaxed">{record.remarks}</p>
                   </div>
                 )}
               </CardContent>
@@ -246,8 +215,8 @@ export default function DispatchDetailPage() {
 
           {/* Right Column (1 Col): Handover & Activation Actions */}
           <div className="space-y-4">
-            <Card className="rounded-2xl border-rule bg-surface shadow-xs overflow-hidden">
-              <CardHeader className="bg-slate-50/70 border-b border-rule/60 pb-3">
+            <Card>
+              <CardHeader className="border-b border-rule pb-3">
                 <CardTitle className="text-sm font-bold text-ink flex items-center gap-2">
                   <ShieldCheck className="h-4 w-4 text-credential" />
                   <span>Handover & Door Activation</span>
@@ -257,7 +226,7 @@ export default function DispatchDetailPage() {
                 {/* 1. DISPATCH (PENDING) */}
                 {record.status === "PENDING" && (
                   <div className="space-y-2">
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate">
                       Card is packaged and ready. Mark dispatched to send via {methodLabel}.
                     </p>
                     <Button
@@ -274,10 +243,10 @@ export default function DispatchDetailPage() {
                 {/* 2. RECORD HANDOVER (DISPATCHED) */}
                 {record.status === "DISPATCHED" && !showReturn && (
                   <div className="space-y-3">
-                    <div className="rounded-xl bg-emerald-50/80 border border-emerald-200/80 p-3 text-xs text-emerald-900 space-y-1">
+                    <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-3 text-xs text-emerald-900 space-y-1">
                       <span className="font-bold flex items-center gap-1">
                         <KeyRound className="h-3.5 w-3.5 text-emerald-600" />
-                        Door Access Activation Boundary:
+                        Door Access Activation:
                       </span>
                       <p className="text-[11px] text-emerald-800 leading-relaxed">
                         Recording handover immediately activates this card at turnstiles for {record.employeeName}.
@@ -285,15 +254,15 @@ export default function DispatchDetailPage() {
                     </div>
 
                     <div className="space-y-1.5">
-                      <label className="text-xs font-bold text-slate-700 flex items-center gap-1.5">
-                        <FileSignature className="h-3.5 w-3.5 text-slate-400" />
-                        <span>Upload Signed Acknowledgment Slip (Optional)</span>
+                      <label className="text-xs font-semibold text-ink flex items-center gap-1.5">
+                        <FileSignature className="h-3.5 w-3.5 text-slate" />
+                        <span>Upload Signed Acknowledgment (Optional)</span>
                       </label>
                       <input
                         type="file"
                         accept="image/jpeg,image/png,application/pdf"
                         onChange={(e) => setSignature(e.target.files?.[0] ?? null)}
-                        className="text-xs text-slate-500 file:mr-2.5 file:rounded-xl file:border file:border-rule file:bg-paper file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-slate-700 hover:file:bg-slate-100 cursor-pointer w-full"
+                        className="text-xs text-slate file:mr-2.5 file:rounded-xl file:border file:border-rule file:bg-paper file:px-3 file:py-1.5 file:text-xs file:font-semibold file:text-ink hover:file:bg-slate-100 cursor-pointer w-full"
                       />
                     </div>
 
@@ -308,10 +277,10 @@ export default function DispatchDetailPage() {
 
                     <Button
                       variant="outline"
-                      className="w-full rounded-xl border-rule text-slate-700 hover:bg-slate-50 font-semibold text-xs h-9 gap-1.5"
+                      className="w-full rounded-xl border-rule text-slate hover:bg-paper hover:text-ink font-semibold text-xs h-9 gap-1.5"
                       onClick={() => setShowReturn(true)}
                     >
-                      <AlertTriangle className="h-3.5 w-3.5 text-slate-400" />
+                      <AlertTriangle className="h-3.5 w-3.5 text-slate" />
                       <span>Mark Returned Undelivered</span>
                     </Button>
                   </div>
@@ -365,7 +334,7 @@ export default function DispatchDetailPage() {
                 {/* 3. RE-DISPATCH (RETURNED) */}
                 {record.status === "RETURNED" && (
                   <div className="space-y-2 pt-1">
-                    <p className="text-xs text-slate-600">
+                    <p className="text-xs text-slate">
                       This package was returned undelivered. Click below to re-dispatch to the employee.
                     </p>
                     <Button
@@ -381,7 +350,7 @@ export default function DispatchDetailPage() {
 
                 {/* 4. DELIVERED SUMMARY */}
                 {record.status === "DELIVERED" && (
-                  <div className="rounded-xl bg-emerald-50 border border-emerald-200/70 p-4 text-xs text-emerald-950 space-y-1.5">
+                  <div className="rounded-xl bg-emerald-50 border border-emerald-200 p-4 text-xs text-emerald-950 space-y-1.5">
                     <div className="flex items-center gap-1.5 font-bold text-emerald-800">
                       <CheckCircle2 className="h-4 w-4 text-emerald-600" />
                       <span>Card Successfully Activated</span>
@@ -394,16 +363,18 @@ export default function DispatchDetailPage() {
               </CardContent>
             </Card>
 
-            {/* Quick Helper Note */}
-            <div className="rounded-2xl border border-rule bg-slate-50/70 p-4 text-xs text-slate-600 space-y-1.5">
-              <span className="font-bold text-ink flex items-center gap-1">
-                <Sparkles className="h-3.5 w-3.5 text-credential" />
-                Security Rule Compliance:
-              </span>
-              <p className="text-slate-500 leading-relaxed">
-                Handover signatures and delivery receipts are permanently archived in the employee credential lifecycle audit trail.
-              </p>
-            </div>
+            {/* Security Compliance Note Card */}
+            <Card className="border-dashed">
+              <CardContent className="p-4 text-xs text-slate space-y-1.5">
+                <span className="font-semibold text-ink flex items-center gap-1.5">
+                  <ShieldCheck className="h-3.5 w-3.5 text-credential" />
+                  Audit Trail Compliance
+                </span>
+                <p className="text-[11px] leading-relaxed">
+                  Handover timestamps and recipient acknowledgment records are permanently archived for physical access compliance.
+                </p>
+              </CardContent>
+            </Card>
           </div>
         </div>
 
@@ -446,4 +417,3 @@ export default function DispatchDetailPage() {
     </RequireRole>
   );
 }
-

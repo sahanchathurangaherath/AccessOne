@@ -151,16 +151,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           collapsed ? "justify-center px-2" : "justify-between"
         )}
       >
-        <Link href="/" className="flex items-center gap-2.5 overflow-hidden">
-          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-credential text-white shadow-xs">
-            <ShieldCheck className="h-5 w-5" />
+        <Link href="/" className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-credential text-white shadow-xs">
+            <ShieldCheck className="h-6 w-6" />
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="identifier text-sm font-bold tracking-wider text-ink">
+              <span className="identifier text-base font-bold tracking-wider text-ink">
                 ACCESSONE
               </span>
-              <span className="text-[10px] font-medium text-slate">
+              <span className="text-xs font-medium text-slate-500">
                 ID & Access Control
               </span>
             </div>
@@ -171,9 +171,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* Navigation List */}
       <nav className="flex-1 overflow-y-auto px-3 py-4 space-y-5">
         {visibleGroups.map((group) => (
-          <div key={group.title} className="space-y-1">
+          <div key={group.title} className="space-y-1.5">
             {!collapsed && (
-              <p className="px-3 text-[10px] font-bold uppercase tracking-wider text-slate-400">
+              <p className="px-3 text-xs font-bold uppercase tracking-wider text-slate-400">
                 {group.title}
               </p>
             )}
@@ -186,16 +186,16 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                   onClick={() => setMobileOpen(false)}
                   title={collapsed ? item.label : undefined}
                   className={cn(
-                    "flex items-center gap-3 rounded-xl px-3 py-2 text-xs font-medium transition-colors",
+                    "flex items-center gap-3.5 rounded-xl px-3.5 py-2.5 text-sm font-medium transition-colors",
                     active
-                      ? "bg-blue-50/90 text-credential font-semibold shadow-xs"
-                      : "text-slate hover:bg-slate-50 hover:text-ink",
-                    collapsed && "justify-center px-2"
+                      ? "bg-blue-50/90 text-credential font-bold shadow-xs"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-ink",
+                    collapsed && "justify-center px-2 py-3"
                   )}
                 >
                   <span
                     className={cn(
-                      "flex h-4 w-4 flex-shrink-0 items-center justify-center text-slate-500 transition-colors",
+                      "flex h-5 w-5 flex-shrink-0 items-center justify-center text-slate-500 transition-colors [&>svg]:h-5 [&>svg]:w-5",
                       active && "text-credential"
                     )}
                   >
@@ -214,20 +214,20 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       {/* User Footer & Collapse Button */}
       <div
         className={cn(
-          "border-t border-rule p-3 transition-all",
-          collapsed ? "flex flex-col items-center gap-3" : "flex items-center justify-between gap-2"
+          "border-t border-rule p-3.5 transition-all",
+          collapsed ? "flex flex-col items-center gap-3" : "flex items-center justify-between gap-2.5"
         )}
       >
-        <div className="flex items-center gap-2.5 overflow-hidden">
-          <div className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-xs font-bold text-slate-700">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <div className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl bg-slate-100 text-sm font-bold text-slate-700 border border-slate-200">
             {getInitials(user.username)}
           </div>
           {!collapsed && (
             <div className="min-w-0 flex-1">
-              <p className="truncate text-xs font-semibold text-ink leading-tight">
+              <p className="truncate text-sm font-bold text-ink leading-tight">
                 {user.username}
               </p>
-              <p className="truncate text-[10px] text-slate font-medium">
+              <p className="truncate text-xs text-slate-500 font-medium mt-0.5">
                 {ROLE_LABEL[user.role]}
               </p>
             </div>
@@ -237,15 +237,15 @@ export function AppShell({ children }: { children: React.ReactNode }) {
         <button
           onClick={() => setCollapsed(!collapsed)}
           className={cn(
-            "hidden lg:flex h-7 w-7 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors",
+            "hidden lg:flex h-8 w-8 items-center justify-center rounded-lg text-slate-400 hover:bg-slate-100 hover:text-slate-700 transition-colors",
             collapsed ? "" : "ml-auto"
           )}
           aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
         >
           {collapsed ? (
-            <ChevronRight className="h-4 w-4" />
+            <ChevronRight className="h-4.5 w-4.5" />
           ) : (
-            <ChevronLeft className="h-4 w-4" />
+            <ChevronLeft className="h-4.5 w-4.5" />
           )}
         </button>
       </div>
@@ -258,7 +258,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <aside
         className={cn(
           "hidden lg:flex flex-col flex-shrink-0 border-r border-rule bg-surface shadow-xs transition-all duration-300",
-          collapsed ? "w-16" : "w-60"
+          collapsed ? "w-18" : "w-64"
         )}
       >
         {sidebarContent}
@@ -271,10 +271,10 @@ export function AppShell({ children }: { children: React.ReactNode }) {
             className="fixed inset-0 z-40 bg-black/40 backdrop-blur-xs lg:hidden animate-fade-in"
             onClick={() => setMobileOpen(false)}
           />
-          <aside className="fixed inset-y-0 left-0 z-50 w-64 border-r border-rule bg-surface shadow-panel lg:hidden animate-slide-in-right">
+          <aside className="fixed inset-y-0 left-0 z-50 w-72 border-r border-rule bg-surface shadow-panel lg:hidden animate-slide-in-right">
             <button
               onClick={() => setMobileOpen(false)}
-              className="absolute top-4 right-4 p-1.5 rounded-lg text-slate hover:bg-slate-100"
+              className="absolute top-4 right-4 p-2 rounded-lg text-slate hover:bg-slate-100"
               aria-label="Close menu"
             >
               <X className="h-5 w-5" />
@@ -288,40 +288,41 @@ export function AppShell({ children }: { children: React.ReactNode }) {
       <div className="flex flex-1 flex-col min-w-0 h-full overflow-hidden">
         {/* Topbar */}
         <header className="flex h-16 flex-shrink-0 items-center justify-between border-b border-rule bg-surface/90 px-4 sm:px-6 shadow-xs backdrop-blur">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3.5">
             <button
               onClick={() => setMobileOpen(true)}
-              className="p-1.5 rounded-lg text-slate hover:bg-slate-100 lg:hidden"
+              className="p-2 rounded-lg text-slate hover:bg-slate-100 lg:hidden"
               aria-label="Open menu"
             >
               <Menu className="h-5 w-5" />
             </button>
             <div>
-              <h1 className="text-sm sm:text-base font-bold tracking-tight text-ink">
+              <h1 className="text-base sm:text-lg font-bold tracking-tight text-ink">
                 {pageHeading.title}
               </h1>
               {pageHeading.subtitle && (
-                <p className="hidden sm:block text-[11px] text-slate font-normal">
+                <p className="hidden sm:block text-xs sm:text-sm text-slate-500 font-normal">
                   {pageHeading.subtitle}
                 </p>
               )}
             </div>
           </div>
 
-          <div className="flex items-center gap-2.5 sm:gap-3">
+          <div className="flex items-center gap-3 sm:gap-4">
             <NotificationBell />
-            <div className="h-5 w-px bg-rule hidden sm:block" />
+            <div className="h-6 w-px bg-rule hidden sm:block" />
             <div className="hidden sm:flex flex-col text-right leading-tight">
-              <span className="text-xs font-semibold text-ink">{user.username}</span>
-              <span className="text-[10px] text-slate font-medium">{ROLE_LABEL[user.role]}</span>
+              <span className="text-sm font-bold text-ink">{user.username}</span>
+              <span className="text-xs text-slate-500 font-medium">{ROLE_LABEL[user.role]}</span>
             </div>
             <Button
-              variant="ghost"
+              variant="outline"
               size="sm"
               onClick={() => void logout()}
-              className="gap-1.5 rounded-xl text-slate hover:bg-slate-100 hover:text-red-700 text-xs h-8 px-2.5"
+              className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-white px-3.5 py-2 text-sm font-semibold text-slate-700 shadow-2xs hover:border-rose-300 hover:bg-rose-50 hover:text-rose-700 transition-all cursor-pointer h-9"
+              aria-label="Sign out of system"
             >
-              <LogOut className="h-3.5 w-3.5" />
+              <LogOut className="h-4.5 w-4.5 text-slate-500 group-hover:text-rose-600 transition-colors" />
               <span className="hidden sm:inline">Sign out</span>
             </Button>
           </div>

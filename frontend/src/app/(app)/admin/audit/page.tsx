@@ -69,30 +69,37 @@ export default function AuditLogPage() {
         description="Every critical create, update, decision and login across all six modules, in one trail."
       />
 
-      <div className="mb-4 grid gap-2 sm:grid-cols-4">
-        <Input
-          placeholder="Entity (e.g. card_requests)"
-          value={entityName}
-          onChange={(e) => { setEntityName(e.target.value); setPage(0); }}
-          aria-label="Filter by entity"
-        />
-        <Input
-          placeholder="Username"
-          value={username}
-          onChange={(e) => { setUsername(e.target.value); setPage(0); }}
-          aria-label="Filter by username"
-        />
-        <select
-          value={action ?? ""}
-          onChange={(e) => { setAction((e.target.value || undefined) as AuditAction | undefined); setPage(0); }}
-          aria-label="Filter by action"
-          className="h-8 rounded-lg border border-input bg-transparent px-2.5 text-sm"
-        >
-          <option value="">All actions</option>
-          {ACTIONS.map((a) => (
-            <option key={a} value={a}>{a.replaceAll("_", " ").toLowerCase()}</option>
-          ))}
-        </select>
+      <div className="mb-5 rounded-2xl border border-rule bg-white p-4 sm:p-5 shadow-xs">
+        <div className="mb-3 flex items-center justify-between">
+          <span className="text-xs font-bold uppercase tracking-wider text-slate-500">Filter Audit Records</span>
+        </div>
+        <div className="grid gap-3 sm:grid-cols-3">
+          <Input
+            placeholder="Entity (e.g. card_requests)"
+            value={entityName}
+            onChange={(e) => { setEntityName(e.target.value); setPage(0); }}
+            aria-label="Filter by entity"
+            className="h-10 rounded-xl"
+          />
+          <Input
+            placeholder="Username"
+            value={username}
+            onChange={(e) => { setUsername(e.target.value); setPage(0); }}
+            aria-label="Filter by username"
+            className="h-10 rounded-xl"
+          />
+          <select
+            value={action ?? ""}
+            onChange={(e) => { setAction((e.target.value || undefined) as AuditAction | undefined); setPage(0); }}
+            aria-label="Filter by action"
+            className="h-10 rounded-xl border border-input bg-transparent px-3 text-sm font-medium text-ink focus:border-credential focus:outline-none"
+          >
+            <option value="">All actions</option>
+            {ACTIONS.map((a) => (
+              <option key={a} value={a}>{a.replaceAll("_", " ").toLowerCase()}</option>
+            ))}
+          </select>
+        </div>
       </div>
 
       <DataTable

@@ -46,6 +46,7 @@ import {
   Send,
   Download,
   FileDown,
+  Wifi,
 } from "lucide-react";
 
 const DISPATCH_METHOD_LABEL: Record<string, string> = {
@@ -232,70 +233,110 @@ export default function PrintJobDetailPage() {
           {/* Left Column (2 Cols): Physical Card Mockup & Job Metadata */}
           <div className="space-y-6 lg:col-span-2">
             {/* PHYSICAL SMART CARD BADGE MOCKUP */}
-            <div className="relative overflow-hidden rounded-2xl border border-rule bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 p-6 text-white shadow-md">
-              <div className="absolute -right-12 -bottom-12 h-64 w-64 rounded-full bg-credential/20 blur-3xl" />
-              <div className="absolute -left-12 -top-12 h-64 w-64 rounded-full bg-purple-500/10 blur-3xl" />
-
-              <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-6">
-                <div className="space-y-3">
-                  <div className="flex items-center gap-2">
-                    <span className="inline-flex items-center gap-1 rounded-md bg-blue-500/20 px-2 py-0.5 text-[11px] font-bold tracking-wider text-blue-300 uppercase border border-blue-400/30">
-                      <Cpu className="h-3 w-3" /> CR80 RFID Smart Credential
-                    </span>
-                    <span className="text-[11px] font-mono text-slate-400">13.56 MHz NFC / RFID</span>
-                  </div>
-
-                  <div>
-                    <h2 className="text-2xl font-black tracking-tight text-white">{job.employeeName}</h2>
-                    <p className="text-xs font-mono text-slate-300 tracking-wider mt-0.5">
-                      CARD SERIAL: {job.cardSerial} &bull; ID: {job.empId}
-                    </p>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4 pt-2 border-t border-slate-700/60 text-xs">
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase tracking-wider font-semibold">
-                        Department
-                      </span>
-                      <span className="font-semibold text-slate-100">{job.departmentName}</span>
-                    </div>
-                    <div>
-                      <span className="text-slate-400 block text-[10px] uppercase tracking-wider font-semibold">
-                        Production Type
-                      </span>
-                      <span className="font-semibold text-blue-300">
-                        {job.jobType === "REPRINT" ? "Reprint / Replacement" : "Standard Initial Print"}
-                      </span>
-                    </div>
-                  </div>
+            <div className="surface-panel p-6 rounded-2xl border border-rule bg-surface shadow-xs space-y-4">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-rule/60">
+                <div>
+                  <h3 className="text-sm font-bold text-ink flex items-center gap-2">
+                    <ShieldCheck className="h-4 w-4 text-credential" />
+                    <span>Physical CR80 Smart Badge Layout Preview</span>
+                  </h3>
+                  <p className="text-xs text-slate">
+                    Live visual rendering of the physical ID badge and embedded security credentials
+                  </p>
                 </div>
-
-                {/* EMV Microchip Graphic & Contactless Wave */}
-                <div className="flex flex-col items-center justify-center p-4 rounded-xl bg-gradient-to-tr from-amber-200 to-amber-400 text-amber-950 shadow-lg border border-amber-300 self-center sm:self-auto flex-shrink-0 w-28 h-20">
-                  <div className="w-12 h-8 rounded border border-amber-600/40 bg-amber-300/60 grid grid-cols-3 grid-rows-2 gap-0.5 p-0.5">
-                    <div className="border-r border-b border-amber-600/40" />
-                    <div className="border-r border-b border-amber-600/40" />
-                    <div className="border-b border-amber-600/40" />
-                    <div className="border-r border-amber-600/40" />
-                    <div className="border-r border-amber-600/40" />
-                    <div />
-                  </div>
-                </div>
-              </div>
-
-              {/* Quick Print File Download Bar */}
-              <div className="relative z-10 mt-5 pt-3 border-t border-slate-700/60 flex items-center justify-between">
-                <span className="text-xs text-slate-400">Official CR80 Print Vector File</span>
                 <a
                   href={`/api/v1/print/jobs/${job.id}/card-file`}
                   download={`${job.cardSerial}.pdf`}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="inline-flex items-center gap-1.5 text-xs font-semibold text-blue-400 hover:text-blue-300 transition-colors"
+                  className="inline-flex items-center gap-1.5 rounded-xl border border-rule bg-paper px-3.5 py-2 text-xs font-semibold text-ink hover:bg-slate-50 transition-colors shadow-2xs self-start sm:self-auto"
                 >
-                  <FileDown className="h-3.5 w-3.5" />
+                  <FileDown className="h-4 w-4 text-credential" />
                   <span>Download Card PDF</span>
                 </a>
+              </div>
+
+              {/* Realistic CR80 ID Card Visualizer */}
+              <div className="flex justify-center py-2">
+                <div
+                  className="relative overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none transition-transform duration-300 hover:scale-[1.01]"
+                  style={{ width: "348px", height: "220px" }}
+                >
+                  {/* Top Header Ribbon */}
+                  <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-2 text-white shadow-xs">
+                    <div className="flex items-center gap-1.5">
+                      <ShieldCheck className="h-4 w-4 text-blue-200" />
+                      <span className="identifier text-[10px] font-bold tracking-[0.2em] text-white">
+                        CEYLON METRO
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-1">
+                      <Wifi className="h-3.5 w-3.5 rotate-90 text-blue-200" />
+                      <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-100">
+                        SECURE ID
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Card Body */}
+                  <div className="flex gap-4 p-3.5">
+                    {/* Employee Photo */}
+                    <div className="relative flex-shrink-0 h-[105px] w-[82px]">
+                      <img
+                        src={`/api/v1/cards/${job.cardId}/photo`}
+                        alt={job.employeeName}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src =
+                            "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='100' viewBox='0 0 80 100'%3E%3Crect width='80' height='100' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='10' fill='%2394a3b8'%3EPHOTO%3C/text%3E%3C/svg%3E";
+                        }}
+                        className="h-[105px] w-[82px] rounded-lg border border-slate-200 object-cover shadow-xs"
+                      />
+                      {/* Smart EMV Chip simulation */}
+                      <div className="absolute bottom-1.5 right-1.5 h-5 w-6 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                        <div className="h-3 w-4 border border-amber-400/60 rounded-xs" />
+                      </div>
+                    </div>
+
+                    {/* Details */}
+                    <div className="min-w-0 flex-1 space-y-0.5">
+                      <p className="truncate text-sm font-bold text-slate-900 leading-tight">
+                        {job.employeeName}
+                      </p>
+                      <p className="truncate text-xs font-semibold text-[#1F4B8E]">
+                        {job.empId}
+                      </p>
+                      <p className="truncate text-[11px] text-slate-500 font-medium">
+                        {job.departmentName}
+                      </p>
+
+                      <div className="pt-2">
+                        <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-800">
+                          {job.jobType === "REPRINT" ? "REPRINT ORDER" : "INITIAL ISSUE"}
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* QR Code & Card Serial Footer */}
+                  <div className="absolute bottom-2.5 right-3">
+                    <img
+                      src={`/api/v1/cards/${job.cardId}/qr?size=160`}
+                      alt="QR Code"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f8fafc'/%3E%3Crect x='8' y='8' width='16' height='16' fill='%231e293b'/%3E%3Crect x='40' y='8' width='16' height='16' fill='%231e293b'/%3E%3Crect x='8' y='40' width='16' height='16' fill='%231e293b'/%3E%3C/svg%3E";
+                      }}
+                      className="h-[64px] w-[64px] rounded border border-slate-200 bg-white p-0.5 shadow-xs"
+                    />
+                  </div>
+
+                  <div className="absolute bottom-3 left-4 flex items-center gap-2">
+                    <p className="identifier text-[10px] font-bold tracking-wider text-slate-500">
+                      {job.cardSerial}
+                    </p>
+                    <StatusBadge status={job.status} className="scale-90 origin-left" />
+                  </div>
+                </div>
               </div>
             </div>
 

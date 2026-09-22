@@ -136,18 +136,18 @@ export function QuickReviewDrawer({
       />
 
       {/* Slide-out Drawer Panel */}
-      <div className="fixed inset-y-0 right-0 max-w-full flex pl-10">
-        <div className="w-screen max-w-xl bg-surface border-l border-rule shadow-2xl flex flex-col justify-between animate-slide-in-right">
+      <div className="fixed inset-y-0 right-0 max-w-full flex pl-0 sm:pl-10">
+        <div className="w-full sm:w-screen max-w-xl bg-surface border-l border-rule shadow-2xl flex flex-col justify-between animate-slide-in-right">
           {/* 1. Header */}
-          <div className="p-6 border-b border-rule bg-slate-50/50 flex items-center justify-between">
+          <div className="p-5 sm:p-6 border-b border-rule bg-slate-50/80 flex items-center justify-between">
             <div className="space-y-1">
               <div className="flex items-center gap-2">
-                <span className="identifier text-xs font-bold text-credential bg-blue-100/80 px-2 py-0.5 rounded-md">
+                <span className="identifier text-xs font-bold text-credential bg-blue-100/80 px-2.5 py-0.5 rounded-md border border-blue-200">
                   {approval?.requestNo ?? `REQ-${requestId}`}
                 </span>
                 {approval && <StatusBadge status={approval.decision} />}
               </div>
-              <h2 className="text-base font-bold text-ink">Quick Review & Authorization</h2>
+              <h2 className="topic-title-lg text-ink">Quick Review & Authorization</h2>
             </div>
 
             <div className="flex items-center gap-2">

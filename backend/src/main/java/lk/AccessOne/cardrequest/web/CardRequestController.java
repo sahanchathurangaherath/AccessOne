@@ -83,6 +83,14 @@ public class CardRequestController {
         return service.uploadPhoto(id, file);
     }
 
+    @GetMapping("/{id}/photo")
+    public ResponseEntity<byte[]> photo(@PathVariable Long id) {
+        lk.AccessOne.card.service.CardPhoto photo = service.photo(id);
+        return ResponseEntity.ok()
+                .header(org.springframework.http.HttpHeaders.CONTENT_TYPE, photo.contentType())
+                .body(photo.bytes());
+    }
+
     @PostMapping("/{id}/submit")
     public CardRequestDetail submit(@PathVariable Long id) { return service.submit(id); }
 

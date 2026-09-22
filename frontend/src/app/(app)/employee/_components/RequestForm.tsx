@@ -258,14 +258,14 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                     idx > currentStep && "step-dot-inactive"
                   )}
                 >
-                  {isCompleted ? <Check className="h-4 w-4" /> : idx + 1}
+                  {isCompleted ? <Check className="h-4.5 w-4.5" /> : idx + 1}
                 </div>
                 <div className="ml-3 min-w-0">
                   <p
                     className={cn(
-                      "text-xs font-bold leading-none tracking-tight",
+                      "text-sm font-bold leading-none tracking-tight",
                       isActive
-                        ? "text-credential"
+                        ? "text-credential font-extrabold"
                         : isCompleted
                         ? "text-emerald-700"
                         : "text-slate-400"
@@ -273,7 +273,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                   >
                     {step.title}
                   </p>
-                  <p className="mt-1 text-[11px] text-slate-500 hidden md:block">
+                  <p className="mt-1 text-xs text-slate-500 hidden md:block">
                     {step.desc}
                   </p>
                 </div>
@@ -293,8 +293,8 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
 
       {/* Global Form Error Alert */}
       {formError && (
-        <div className="rounded-xl border border-red-200 bg-red-50/90 p-4 text-xs font-medium text-red-700 flex items-start gap-2.5 animate-fade-in shadow-xs">
-          <AlertCircle className="h-4 w-4 text-red-600 shrink-0 mt-0.5" />
+        <div className="rounded-xl border border-red-200 bg-red-50/90 p-4 text-sm font-medium text-red-700 flex items-start gap-3 animate-fade-in shadow-xs">
+          <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
           <p className="flex-1">{formError}</p>
         </div>
       )}
@@ -307,35 +307,35 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
           {currentStep === 0 && (
             <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
               {/* Employee Pre-Verified Identity Card */}
-              <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-4 sm:p-5 shadow-2xs">
-                <div className="flex items-center justify-between border-b border-blue-100 pb-3 mb-3">
+              <div className="rounded-2xl border border-blue-200/80 bg-gradient-to-br from-blue-50/70 via-white to-slate-50 p-5 shadow-2xs">
+                <div className="flex items-center justify-between border-b border-blue-100 pb-3 mb-3.5">
                   <div className="flex items-center gap-2">
-                    <BadgeCheck className="h-4 w-4 text-credential" />
-                    <span className="text-[11px] font-bold uppercase tracking-wider text-credential">
+                    <BadgeCheck className="h-5 w-5 text-credential" />
+                    <span className="text-xs font-bold uppercase tracking-wider text-credential">
                       Verified Directory Record
                     </span>
                   </div>
-                  <span className="inline-flex items-center gap-1 rounded-full bg-emerald-100/80 px-2.5 py-0.5 text-[10px] font-bold text-emerald-800">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600 animate-pulse" />
+                  <span className="inline-flex items-center gap-1.5 rounded-full bg-emerald-100/80 px-3 py-1 text-xs font-bold text-emerald-800">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600 animate-pulse" />
                     ACTIVE EMPLOYEE
                   </span>
                 </div>
 
                 <div className="flex items-center gap-4">
-                  <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-credential text-white text-base font-bold shadow-xs">
+                  <div className="flex h-13 w-13 items-center justify-center rounded-2xl bg-credential text-white text-lg font-bold shadow-xs">
                     {displayName.slice(0, 2).toUpperCase()}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <h3 className="text-sm font-bold text-ink truncate">{displayName}</h3>
-                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
-                      <span className="identifier font-semibold text-slate-700">{displayEmpId}</span>
+                    <h3 className="text-base font-bold text-ink truncate">{displayName}</h3>
+                    <div className="mt-1 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-slate-500">
+                      <span className="identifier font-bold text-slate-700">{displayEmpId}</span>
                       <span>•</span>
-                      <span className="flex items-center gap-1">
-                        <Building2 className="h-3 w-3 text-slate-400" />
+                      <span className="flex items-center gap-1.5">
+                        <Building2 className="h-4 w-4 text-slate-400" />
                         {displayDept}
                       </span>
                       <span>•</span>
-                      <span className="text-credential font-medium">{displayRole}</span>
+                      <span className="text-credential font-semibold">{displayRole}</span>
                     </div>
                   </div>
                 </div>
@@ -343,11 +343,11 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
 
               {/* Request Type Selector */}
               <div className="space-y-3">
-                <div className="flex items-center justify-between">
-                  <label className="text-xs font-bold uppercase tracking-wider text-slate-800">
+                <div className="flex items-center justify-between pb-2 border-b border-rule">
+                  <label className="text-sm font-extrabold uppercase tracking-wider text-ink">
                     Select Card Issuance Type <span className="text-red-500">*</span>
                   </label>
-                  <span className="text-[11px] text-slate-400">Step 1 of 3</span>
+                  <span className="badge-topic text-[10px]">Step 1 of 3</span>
                 </div>
 
                 <div className="grid gap-3.5 sm:grid-cols-3">
@@ -362,7 +362,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                           form.setValue("requestType", opt.type, { shouldValidate: true });
                         }}
                         className={cn(
-                          "relative flex flex-col items-start rounded-2xl border p-4 text-left transition-all cursor-pointer select-none",
+                          "relative flex flex-col items-start rounded-2xl border p-4.5 text-left transition-all cursor-pointer select-none",
                           isSelected
                             ? opt.bgActiveClass
                             : "border-rule bg-white hover:border-slate-300 hover:bg-slate-50/80"
@@ -371,23 +371,23 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                         <div className="flex w-full items-center justify-between mb-3">
                           <div
                             className={cn(
-                              "flex h-9 w-9 items-center justify-center rounded-xl bg-slate-100 transition-colors",
+                              "flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 transition-colors",
                               isSelected && "bg-white shadow-2xs"
                             )}
                           >
-                            <Icon className={cn("h-4.5 w-4.5", opt.colorClass)} />
+                            <Icon className={cn("h-5 w-5", opt.colorClass)} />
                           </div>
                           {isSelected && (
-                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-credential text-white shadow-xs">
-                              <Check className="h-3.5 w-3.5" />
+                            <div className="flex h-5.5 w-5.5 items-center justify-center rounded-full bg-credential text-white shadow-xs">
+                              <Check className="h-4 w-4" />
                             </div>
                           )}
                         </div>
-                        <span className="text-xs font-bold text-ink">{opt.title}</span>
-                        <span className="mt-0.5 text-[10px] font-semibold text-slate-400 uppercase tracking-wide">
+                        <span className="text-sm font-extrabold text-ink">{opt.title}</span>
+                        <span className="mt-0.5 text-[11px] font-bold text-slate-500 uppercase tracking-wide">
                           {opt.badge}
                         </span>
-                        <span className="mt-2 text-[11px] text-slate-500 leading-snug">
+                        <span className="mt-2 text-xs text-slate-600 leading-relaxed">
                           {opt.description}
                         </span>
                       </button>
@@ -403,12 +403,12 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
             <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
               <div className="flex items-center justify-between border-b border-rule pb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-ink">Card Specification & Notes</h3>
-                  <p className="text-xs text-slate-500">
+                  <h3 className="topic-title-lg text-ink">Card Specification & Notes</h3>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                     Provide reason and any replacement context for HR & IT authorization
                   </p>
                 </div>
-                <span className="rounded-full bg-blue-50 px-2.5 py-1 text-[10px] font-bold text-credential">
+                <span className="badge-topic">
                   {requestType} CARD
                 </span>
               </div>
@@ -416,13 +416,13 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
               {/* Conditional Replacement Warning & Input */}
               {isReplacement && (
                 <div className="rounded-2xl border border-amber-200 bg-amber-50/60 p-5 space-y-3 animate-fade-in">
-                  <div className="flex items-center gap-2 text-amber-800">
-                    <RefreshCw className="h-4 w-4" />
-                    <h4 className="text-xs font-bold uppercase tracking-wider">
+                  <div className="flex items-center gap-2.5 text-amber-800">
+                    <RefreshCw className="h-5 w-5" />
+                    <h4 className="text-sm font-bold uppercase tracking-wider">
                       Replacement Authorization Required
                     </h4>
                   </div>
-                  <p className="text-xs text-amber-700 leading-relaxed">
+                  <p className="text-sm text-amber-700 leading-relaxed">
                     Under corporate policy, issuance of a replacement badge will automatically deactivate
                     and revoke access rights from the previous card upon physical badge handover.
                   </p>
@@ -439,7 +439,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                         id="previousCardId"
                         type="number"
                         placeholder="e.g. 1042"
-                        className="bg-white pl-8 h-10 text-sm rounded-xl"
+                        className="bg-white pl-9 h-11 text-base rounded-xl"
                         value={previousCardId ?? ""}
                         onChange={(e) => {
                           const val = e.target.value ? Number(e.target.value) : undefined;
@@ -447,7 +447,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                         }}
                         aria-invalid={!!form.formState.errors.previousCardId}
                       />
-                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-xs font-bold text-slate-400">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-sm font-bold text-slate-400">
                         #
                       </span>
                     </div>
@@ -480,11 +480,11 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                         ? "e.g. Card was misplaced in transit on Friday; incident reported to line manager."
                         : "e.g. Requires standard headquarters RFID access and secure server room clearance."
                     }
-                    className="min-h-28 resize-none bg-white text-sm rounded-xl"
+                    className="min-h-28 resize-none bg-white text-base rounded-xl"
                     aria-invalid={!!form.formState.errors.reason}
                     {...form.register("reason")}
                   />
-                  <div className="mt-1.5 flex items-center justify-between text-[11px] text-slate-400">
+                  <div className="mt-2 flex items-center justify-between text-xs text-slate-400">
                     <span>Clear and accurate details expedite HR approval.</span>
                     <span className="font-mono">{reasonText.length} / 255</span>
                   </div>
@@ -498,12 +498,12 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
             <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6 animate-fade-in">
               <div className="flex items-center justify-between border-b border-rule pb-4">
                 <div>
-                  <h3 className="text-sm font-bold text-ink">Biometric Identification & Final Review</h3>
-                  <p className="text-xs text-slate-500">
+                  <h3 className="topic-title-lg text-ink">Biometric Identification & Final Review</h3>
+                  <p className="text-xs sm:text-sm text-slate-500 mt-0.5">
                     Upload your official portrait and review card layout before final submission
                   </p>
                 </div>
-                <span className="rounded-full bg-emerald-50 px-2.5 py-1 text-[10px] font-bold text-emerald-700">
+                <span className="badge-topic">
                   Step 3 of 3
                 </span>
               </div>
@@ -524,33 +524,33 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
 
               {/* Pre-Submission Verification Checklist */}
               <div className="rounded-2xl border border-slate-200 bg-slate-50/70 p-5 space-y-3">
-                <h4 className="text-xs font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-credential" />
+                <h4 className="text-sm font-bold uppercase tracking-wider text-slate-800 flex items-center gap-2.5">
+                  <CheckCircle2 className="h-5 w-5 text-credential" />
                   Pre-Submission Review Checklist
                 </h4>
-                <div className="grid gap-2 sm:grid-cols-2 text-xs text-slate-600">
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                <div className="grid gap-2.5 sm:grid-cols-2 text-sm text-slate-700">
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600" />
                     <span>
-                      Type: <strong>{requestType}</strong>
+                      Type: <strong className="font-bold text-ink">{requestType}</strong>
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600" />
                     <span>
-                      Employee: <strong>{displayName}</strong>
+                      Employee: <strong className="font-bold text-ink">{displayName}</strong>
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600" />
                     <span>
-                      ID Number: <strong>{displayEmpId}</strong>
+                      ID Number: <strong className="font-bold text-ink">{displayEmpId}</strong>
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <span className="h-1.5 w-1.5 rounded-full bg-emerald-600" />
+                  <div className="flex items-center gap-2.5">
+                    <span className="h-2 w-2 rounded-full bg-emerald-600" />
                     <span>
-                      Photo: <strong>{photoFile || previewUrl ? "Attached" : "Pending"}</strong>
+                      Photo: <strong className="font-bold text-ink">{photoFile || previewUrl ? "Attached" : "Pending"}</strong>
                     </span>
                   </div>
                 </div>
@@ -558,17 +558,17 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
             </div>
           )}
 
-          {/* ─── 3. STICKY BOTTOM ACTION TOOLBAR (Microfinance Style) ─── */}
-          <div className="rounded-2xl border border-rule bg-white/95 backdrop-blur-md p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3 sticky bottom-4 z-10">
-            <div className="flex items-center gap-2 w-full sm:w-auto">
+          {/* ─── 3. STICKY BOTTOM ACTION TOOLBAR ─── */}
+          <div className="rounded-2xl border border-rule bg-white/95 backdrop-blur-md p-4 sm:p-5 shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3.5 sticky bottom-4 z-10">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto">
               {currentStep > 0 ? (
                 <button
                   type="button"
                   onClick={() => setCurrentStep((prev) => prev - 1)}
                   disabled={busy}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                  className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl border border-rule bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4.5 w-4.5" />
                   <span>Previous</span>
                 </button>
               ) : (
@@ -576,9 +576,9 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                   type="button"
                   onClick={() => router.push("/employee")}
                   disabled={busy}
-                  className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-600 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
+                  className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl border border-rule bg-white text-sm font-semibold text-slate-600 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer"
                 >
-                  <ChevronLeft className="h-4 w-4" />
+                  <ChevronLeft className="h-4.5 w-4.5" />
                   <span>Cancel</span>
                 </button>
               )}
@@ -587,23 +587,23 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                 type="button"
                 onClick={handleSaveDraft}
                 disabled={busy}
-                className="inline-flex items-center gap-1.5 px-4 py-2.5 rounded-xl border border-rule bg-white text-xs font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
+                className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl border border-rule bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
               >
-                <Save className="h-4 w-4 text-slate-500" />
+                <Save className="h-4.5 w-4.5 text-slate-500" />
                 <span>Save Draft</span>
               </button>
             </div>
 
-            <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+            <div className="flex items-center gap-2.5 w-full sm:w-auto justify-end">
               {currentStep === 0 && (
                 <button
                   type="button"
                   onClick={handleNextFromStep1}
                   disabled={busy}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-credential text-sm font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
                 >
                   <span>Continue to Specifications</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4.5 w-4.5" />
                 </button>
               )}
 
@@ -612,10 +612,10 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                   type="button"
                   onClick={handleNextFromStep2}
                   disabled={busy}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl bg-credential text-sm font-semibold text-white hover:bg-credential/90 shadow-xs transition-colors cursor-pointer w-full sm:w-auto"
                 >
                   <span>Continue to Biometrics</span>
-                  <ChevronRight className="h-4 w-4" />
+                  <ChevronRight className="h-4.5 w-4.5" />
                 </button>
               )}
 
@@ -624,9 +624,9 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                   type="button"
                   onClick={handleSubmitFinal}
                   disabled={busy}
-                  className="inline-flex items-center justify-center gap-2 px-6 py-2.5 rounded-xl bg-credential text-xs font-semibold text-white hover:bg-credential/90 shadow-sm transition-all cursor-pointer w-full sm:w-auto"
+                  className="inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-credential text-sm font-semibold text-white hover:bg-credential/90 shadow-sm transition-all cursor-pointer w-full sm:w-auto"
                 >
-                  <Send className="h-4 w-4" />
+                  <Send className="h-4.5 w-4.5" />
                   <span>Submit for HR Verification</span>
                 </button>
               )}
@@ -639,76 +639,76 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
           {/* Live ID Badge Mockup Card */}
           <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-4">
             <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Camera className="h-4 w-4 text-credential" />
-                <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+              <div className="flex items-center gap-2.5">
+                <Camera className="h-5 w-5 text-credential" />
+                <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
                   Live Badge Preview
                 </h3>
               </div>
-              <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-semibold text-credential">
+              <span className="rounded-md bg-blue-50 px-2.5 py-1 text-xs font-bold text-credential border border-blue-200">
                 CR80 Smart Card
               </span>
             </div>
 
             {/* Card Mockup Visualizer */}
-            <div className="relative mx-auto w-full max-w-[320px] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none transition-all hover:shadow-lg">
+            <div className="relative mx-auto w-full max-w-[340px] overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none transition-all hover:shadow-lg">
               {/* Top Header Ribbon */}
-              <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-3.5 py-2 text-white">
-                <div className="flex items-center gap-1.5">
-                  <ShieldCheck className="h-3.5 w-3.5 text-blue-200" />
-                  <span className="identifier text-[9px] font-bold tracking-[0.2em] text-white">
+              <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-2.5 text-white">
+                <div className="flex items-center gap-2">
+                  <ShieldCheck className="h-4 w-4 text-blue-200" />
+                  <span className="identifier text-xs font-bold tracking-[0.2em] text-white">
                     ACCESSONE ID
                   </span>
                 </div>
-                <div className="flex items-center gap-1">
-                  <Wifi className="h-3 w-3 rotate-90 text-blue-200" />
-                  <span className="text-[8px] font-semibold uppercase tracking-wider text-blue-100">
+                <div className="flex items-center gap-1.5">
+                  <Wifi className="h-3.5 w-3.5 rotate-90 text-blue-200" />
+                  <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
                     SMART PASS
                   </span>
                 </div>
               </div>
 
               {/* Card Content */}
-              <div className="flex gap-3.5 p-3.5">
+              <div className="flex gap-4 p-4">
                 {/* Photo Area */}
-                <div className="relative flex-shrink-0 h-24 w-20">
+                <div className="relative flex-shrink-0 h-26 w-21">
                   {previewUrl ? (
                     <img
                       src={previewUrl}
                       alt="Badge portrait preview"
-                      className="h-24 w-20 rounded-lg border border-slate-200 object-cover shadow-xs"
+                      className="h-26 w-21 rounded-lg border border-slate-200 object-cover shadow-xs"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='96' viewBox='0 0 80 96'%3E%3Crect width='80' height='96' fill='%23f8fafc'/%3E%3Ccircle cx='40' cy='36' r='14' fill='%23cbd5e1'/%3E%3Cpath d='M20 78 C20 58, 60 58, 60 78' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='88' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='8' font-weight='700' fill='%2394a3b8'%3ENO PHOTO%3C/text%3E%3C/svg%3E";
+                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='84' height='104' viewBox='0 0 84 104'%3E%3Crect width='84' height='104' fill='%23f8fafc'/%3E%3Ccircle cx='42' cy='38' r='15' fill='%23cbd5e1'/%3E%3Cpath d='M21 86 C21 62, 63 62, 63 86' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='96' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='9' font-weight='700' fill='%2394a3b8'%3ENO PHOTO%3C/text%3E%3C/svg%3E";
                       }}
                     />
                   ) : (
-                    <div className="flex h-24 w-20 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-slate-400">
-                      <User className="h-7 w-7 stroke-1" />
-                      <span className="mt-1 text-[9px] font-semibold">NO PHOTO</span>
+                    <div className="flex h-26 w-21 flex-col items-center justify-center rounded-lg border border-dashed border-slate-300 bg-slate-50 text-slate-400">
+                      <User className="h-8 w-8 stroke-1" />
+                      <span className="mt-1 text-[10px] font-bold">NO PHOTO</span>
                     </div>
                   )}
                   {/* EMV Chip Simulation */}
-                  <div className="absolute bottom-1.5 right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                  <div className="absolute bottom-1.5 right-1.5 h-4.5 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
                     <div className="h-2 w-3 border border-amber-400/60 rounded-xs" />
                   </div>
                 </div>
 
                 {/* Details Area */}
-                <div className="min-w-0 flex-1 space-y-1">
-                  <p className="truncate text-xs font-bold text-ink leading-tight">
+                <div className="min-w-0 flex-1 space-y-1.5">
+                  <p className="truncate text-sm font-bold text-ink leading-tight">
                     {displayName}
                   </p>
-                  <p className="truncate text-[11px] font-semibold text-credential">
+                  <p className="truncate text-xs font-semibold text-credential">
                     {displayRole}
                   </p>
                   <div className="pt-2">
-                    <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">
+                    <span className="identifier rounded-md bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-700 border border-slate-200">
                       {displayEmpId}
                     </span>
                   </div>
                   <div className="pt-1">
-                    <span className="inline-block rounded-sm bg-blue-50 px-1.5 py-0.5 text-[9px] font-medium text-blue-700">
+                    <span className="inline-block rounded-md bg-blue-50 px-2 py-0.5 text-xs font-semibold text-blue-700 border border-blue-200">
                       {requestType} CARD
                     </span>
                   </div>
@@ -716,31 +716,31 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
               </div>
             </div>
 
-            <p className="text-center text-[11px] text-slate-400">
+            <p className="text-center text-xs text-slate-400">
               Visual preview of physical RFID smart badge
             </p>
           </div>
 
           {/* Photo Standards & Compliance Checklist */}
           <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-3">
-            <div className="flex items-center gap-2">
-              <Info className="h-4 w-4 text-credential" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <div className="flex items-center gap-2.5">
+              <Info className="h-5 w-5 text-credential" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
                 Photo Requirements
               </h3>
             </div>
 
-            <ul className="space-y-2 text-xs text-slate-600">
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+            <ul className="space-y-2.5 text-sm text-slate-600">
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
                 <span>Recent color passport portrait against plain background</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
                 <span>Full frontal facial view with neutral expression</span>
               </li>
-              <li className="flex items-start gap-2">
-                <CheckCircle2 className="h-3.5 w-3.5 shrink-0 text-emerald-600 mt-0.5" />
+              <li className="flex items-start gap-2.5">
+                <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" />
                 <span>Max size 2MB (JPG or PNG format)</span>
               </li>
             </ul>
@@ -748,41 +748,41 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
 
           {/* Process Timeline Card */}
           <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-3">
-            <div className="flex items-center gap-2">
-              <Sparkles className="h-4 w-4 text-slate-600" />
-              <h3 className="text-xs font-bold uppercase tracking-wider text-slate-800">
+            <div className="flex items-center gap-2.5">
+              <Sparkles className="h-5 w-5 text-slate-600" />
+              <h3 className="text-sm font-bold uppercase tracking-wider text-slate-800">
                 Lifecycle Stages
               </h3>
             </div>
 
-            <div className="space-y-3 text-xs">
+            <div className="space-y-3 text-sm">
               <div className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-credential text-white text-[11px] font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-credential text-white text-xs font-bold">
                   1
                 </div>
                 <div>
-                  <p className="font-semibold text-ink">Draft & Biometrics</p>
-                  <p className="text-[11px] text-slate-500">Attach photo & submit</p>
+                  <p className="font-bold text-ink">Draft & Biometrics</p>
+                  <p className="text-xs text-slate-500">Attach photo & submit</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
                   2
                 </div>
                 <div>
                   <p className="font-semibold text-slate-700">HR Verification</p>
-                  <p className="text-[11px] text-slate-500">Identity & eligibility review</p>
+                  <p className="text-xs text-slate-500">Identity & eligibility review</p>
                 </div>
               </div>
 
               <div className="flex items-center gap-3">
-                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-slate-100 text-slate-500 text-[11px] font-bold">
+                <div className="flex h-7 w-7 items-center justify-center rounded-full bg-slate-100 text-slate-600 text-xs font-bold border border-slate-200">
                   3
                 </div>
                 <div>
                   <p className="font-semibold text-slate-700">Printing & Activation</p>
-                  <p className="text-[11px] text-slate-500">Dispatched & RFID enabled</p>
+                  <p className="text-xs text-slate-500">Dispatched & RFID enabled</p>
                 </div>
               </div>
             </div>

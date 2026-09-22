@@ -252,20 +252,24 @@ export default function AccessLevelsPage() {
 
         {/* ─── 2. ACCESS LEVEL TIERS QUICK ROSTER ─── */}
         <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-sm font-bold text-ink flex items-center gap-2">
-                <Shield className="h-4 w-4 text-credential" />
-                Configured Access Level Tiers
-              </h2>
-              <p className="text-xs text-slate-500">
-                Privilege profiles assigned to employee credentials during request approvals
-              </p>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3.5">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+                <Shield className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <h2 className="topic-title text-ink">
+                  Configured Access Level Tiers
+                </h2>
+                <p className="text-xs text-slate-500">
+                  Privilege profiles assigned to employee credentials during request approvals
+                </p>
+              </div>
             </div>
             <Button
               onClick={() => setShowCreate(true)}
               size="sm"
-              className="gap-1.5 rounded-xl bg-credential text-white hover:bg-credential/90 shadow-xs text-xs font-semibold h-9 px-3.5"
+              className="gap-1.5 rounded-xl bg-credential text-white hover:bg-credential/90 shadow-xs text-xs font-semibold h-9 px-3.5 self-end sm:self-center"
             >
               <Plus className="h-4 w-4" />
               <span>New Access Level</span>
@@ -308,14 +312,18 @@ export default function AccessLevelsPage() {
 
         {/* ─── 3. INTERACTIVE PERMISSION MATRIX GRID ─── */}
         <div className="space-y-3">
-          <div>
-            <h2 className="text-sm font-bold text-ink flex items-center gap-2">
-              <Layers className="h-4 w-4 text-credential" />
-              Interactive Permission Matrix
-            </h2>
-            <p className="text-xs text-slate-500">
-              Click any cell to grant physical clearance. Revoking an existing clearance requires explicit confirmation.
-            </p>
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+              <Layers className="h-4.5 w-4.5" />
+            </div>
+            <div>
+              <h2 className="topic-title text-ink">
+                Interactive Permission Matrix
+              </h2>
+              <p className="text-xs text-slate-500">
+                Click any cell to grant physical clearance. Revoking an existing clearance requires explicit confirmation.
+              </p>
+            </div>
           </div>
 
           {matrixLoading && <TableSkeleton rows={5} />}

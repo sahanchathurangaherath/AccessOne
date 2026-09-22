@@ -44,14 +44,19 @@ export default function AdminDashboard() {
       </StatTileRow>
 
       <div className="surface-panel overflow-hidden">
-        <div className="flex items-center justify-between border-b border-rule px-6 py-4 bg-surface">
-          <div>
-            <h3 className="text-sm font-bold text-ink">Recent Audit Trail Events</h3>
-            <p className="text-xs text-slate">Live stream of administrative actions and credential modifications</p>
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule px-6 py-4 bg-slate-50/80">
+          <div className="flex items-center gap-2.5">
+            <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+              <ShieldCheck className="h-4.5 w-4.5" />
+            </div>
+            <div>
+              <h3 className="topic-title text-ink">Recent Audit Trail Events</h3>
+              <p className="text-xs text-slate-500">Live stream of administrative actions and credential modifications</p>
+            </div>
           </div>
           <Link
             href="/admin/audit"
-            className="flex items-center gap-1 text-xs font-semibold text-credential hover:underline"
+            className="flex items-center gap-1 text-xs font-bold text-credential hover:underline self-end sm:self-center"
           >
             <span>Full audit log</span>
             <ChevronRight className="h-3.5 w-3.5" />

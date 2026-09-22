@@ -132,17 +132,17 @@ export default function EntryPointPage() {
         <div className="grid gap-6 lg:grid-cols-12">
           {/* Hardware Reader Scanner Form (7 cols) */}
           <div className="lg:col-span-7 space-y-4 rounded-2xl border border-rule bg-surface p-6 shadow-xs">
-            <div className="flex items-center justify-between border-b border-rule/60 pb-3">
-              <div className="flex items-center gap-2">
-                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential shadow-2xs">
-                  <ScanLine className="h-4 w-4" />
+            <div className="flex items-center justify-between border-b border-rule pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+                  <ScanLine className="h-4.5 w-4.5" />
                 </div>
                 <div>
-                  <h2 className="text-sm font-bold text-ink">Turnstile Reader Simulator</h2>
-                  <p className="text-[11px] text-slate-400">Emulates physical gate RFID / Barcode optical hardware</p>
+                  <h2 className="topic-title text-ink">Turnstile Reader Simulator</h2>
+                  <p className="text-xs text-slate-500">Emulates physical gate RFID / Barcode optical hardware</p>
                 </div>
               </div>
-              <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 bg-paper px-2.5 py-1 rounded-lg border border-rule">
+              <div className="flex items-center gap-1.5 text-xs font-bold text-slate-600 bg-slate-100 px-2.5 py-1 rounded-lg border border-slate-200">
                 <Radio className="h-3 w-3 text-emerald-500 animate-pulse" />
                 <span>Reader 01: Main Gate</span>
               </div>
@@ -331,13 +331,17 @@ export default function EntryPointPage() {
 
         {/* ─── 2. RECENT ACCESS ATTEMPTS LOG ─── */}
         <div className="space-y-3">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-2">
-              <History className="h-4 w-4 text-credential" />
-              <h2 className="text-base font-bold text-ink">Live Access Decision Audit Trail</h2>
-              <span className="text-xs text-slate-400">
-                (Polling live events every 5s)
-              </span>
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+                <History className="h-4.5 w-4.5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h2 className="topic-title text-ink">Live Access Decision Audit Trail</h2>
+                  <span className="badge-topic text-[10px]">Live Polling 5s</span>
+                </div>
+              </div>
             </div>
             <Button
               variant="outline"
@@ -350,8 +354,8 @@ export default function EntryPointPage() {
             </Button>
           </div>
 
-          <div className="overflow-hidden rounded-2xl border border-rule bg-surface shadow-xs">
-            <table className="w-full text-left text-xs sm:text-sm">
+          <div className="table-shell overflow-x-auto rounded-2xl border border-rule bg-surface shadow-xs">
+            <table className="w-full min-w-[640px] text-left text-xs sm:text-sm">
               <thead className="border-b border-rule bg-paper font-semibold text-slate-600">
                 <tr>
                   <th className="px-4 py-3">Credential Serial</th>

@@ -120,7 +120,7 @@ public class SecurityConfig {
 
                 // --- Module 4: card generation ---
                 .requestMatchers("/api/v1/cards/**")
-                    .hasAnyRole("IT_ADMIN", "HR_MANAGER", "SYSTEM_ADMIN")
+                    .hasAnyRole("IT_ADMIN", "HR_MANAGER", "PRINT_SUPERVISOR", "EMPLOYEE", "SECURITY_OFFICER", "SYSTEM_ADMIN")
 
                 // --- Module 6: print production and dispatch ---
                 .requestMatchers("/api/v1/print/**", "/api/v1/dispatch/**")

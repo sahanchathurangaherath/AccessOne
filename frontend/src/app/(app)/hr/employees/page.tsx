@@ -141,13 +141,13 @@ export default function EmployeeProvisioningPage() {
         {/* Left 2 Cols: Form */}
         <div className="lg:col-span-2 space-y-6">
           <div className="surface-panel p-6 sm:p-8 rounded-2xl border border-rule bg-surface shadow-xs">
-            <div className="flex items-center gap-3 pb-6 border-b border-rule mb-6">
-              <div className="h-10 w-10 rounded-xl bg-credential/10 text-credential flex items-center justify-center">
+            <div className="flex items-center gap-3 pb-5 border-b border-rule mb-6">
+              <div className="h-10 w-10 rounded-xl bg-blue-50 text-credential border border-blue-100 flex items-center justify-center shadow-2xs">
                 <UserPlus className="h-5 w-5" />
               </div>
               <div>
-                <h2 className="text-base font-bold text-ink">New Employee Record</h2>
-                <p className="text-xs text-slate">
+                <h2 className="topic-title-lg text-ink">New Employee Record</h2>
+                <p className="text-xs text-slate-500">
                   Fill in official personnel details to issue their digital profile
                 </p>
               </div>

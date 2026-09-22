@@ -82,7 +82,7 @@ export function useToggleDepartment() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; active: boolean }) =>
-      http.post<DepartmentDto>(`/config/departments/${vars.id}/${vars.active ? "reactivate" : "deactivate"}`),
+      http.post<DepartmentDto>(`/config/departments/${vars.id}/${vars.active ? "deactivate" : "reactivate"}`),
     onSuccess: () => qc.invalidateQueries({ queryKey: keys.departments }),
   });
 }
@@ -121,7 +121,7 @@ export function useToggleArea() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; active: boolean }) =>
-      http.post<AreaDto>(`/config/areas/${vars.id}/${vars.active ? "reactivate" : "deactivate"}`),
+      http.post<AreaDto>(`/config/areas/${vars.id}/${vars.active ? "deactivate" : "reactivate"}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: keys.areas }); qc.invalidateQueries({ queryKey: keys.matrix }); },
   });
 }
@@ -144,7 +144,7 @@ export function useToggleAccessLevel() {
   const qc = useQueryClient();
   return useMutation({
     mutationFn: (vars: { id: number; active: boolean }) =>
-      http.post<AccessLevelDto>(`/config/access-levels/${vars.id}/${vars.active ? "reactivate" : "deactivate"}`),
+      http.post<AccessLevelDto>(`/config/access-levels/${vars.id}/${vars.active ? "deactivate" : "reactivate"}`),
     onSuccess: () => { qc.invalidateQueries({ queryKey: keys.levels }); qc.invalidateQueries({ queryKey: keys.matrix }); },
   });
 }

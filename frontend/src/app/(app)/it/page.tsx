@@ -235,18 +235,22 @@ export default function ItDashboard() {
         {/* ─── 3. DEPARTMENT CREDENTIAL DISTRIBUTION BREAKDOWN ─── */}
         {stats?.byDepartment && stats.byDepartment.length > 0 && (
           <div className="rounded-2xl border border-rule bg-surface p-5 shadow-xs space-y-4">
-            <div className="flex items-center justify-between border-b border-rule pb-3">
-              <div>
-                <h2 className="text-sm font-bold text-ink flex items-center gap-2">
-                  <Building2 className="h-4 w-4 text-credential" />
-                  Department Credential Distribution
-                </h2>
-                <p className="text-xs text-slate-500">
-                  Live breakdown of active vs. decommissioned RFID credentials across departments
-                </p>
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-rule pb-3.5">
+              <div className="flex items-center gap-2.5">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-50 text-credential border border-blue-100">
+                  <Building2 className="h-4.5 w-4.5" />
+                </div>
+                <div>
+                  <h2 className="topic-title text-ink">
+                    Department Credential Distribution
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Live breakdown of active vs. decommissioned RFID credentials across departments
+                  </p>
+                </div>
               </div>
-              <Link href="/it/departments">
-                <span className="text-xs font-semibold text-credential hover:underline">
+              <Link href="/it/departments" className="self-end sm:self-center">
+                <span className="text-xs font-bold text-credential hover:underline">
                   Manage Departments &rarr;
                 </span>
               </Link>

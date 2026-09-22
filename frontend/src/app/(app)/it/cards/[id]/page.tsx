@@ -11,12 +11,18 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusTimeline } from "@/components/status-timeline";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
 import { ApiError } from "@/lib/api";
 import { CardPreview } from "../../_components/CardPreview";
 import {
   cards, useReportLost, useReportDamaged, useSuspend, useReinstate,
   useRevoke, useVoidCard, useRegenerateCredentials,
 } from "../../_hooks/useCards";
+import { useAccessLevels, useAssignAccessLevel } from "../../_hooks/useConfig";
+import { Shield, KeyRound } from "lucide-react";
 
 /**
  * Purely a UI convenience -- which buttons make sense to show. The server
@@ -36,6 +42,7 @@ export default function CardDetailPage() {
 
   const { data: card, isLoading, isError, refetch } = cards.useDetail(cardId);
   const { data: timeline } = cards.useTimeline(cardId);
+  const { data: accessLevels } = useAccessLevels();
 
   const reportLost = useReportLost();
   const reportDamaged = useReportDamaged();
@@ -44,6 +51,7 @@ export default function CardDetailPage() {
   const revoke = useRevoke();
   const voidCard = useVoidCard();
   const regenerate = useRegenerateCredentials();
+  const assignAccessLevel = useAssignAccessLevel();
 
   const [confirmLost, setConfirmLost] = useState(false);
   const [confirmDamaged, setConfirmDamaged] = useState(false);
@@ -54,6 +62,9 @@ export default function CardDetailPage() {
   const [showRevoke, setShowRevoke] = useState(false);
   const [voidReason, setVoidReason] = useState("");
   const [showVoid, setShowVoid] = useState(false);
+  const [showChangeLevel, setShowChangeLevel] = useState(false);
+  const [selectedLevelId, setSelectedLevelId] = useState<number | null>(null);
+  const [levelRemarks, setLevelRemarks] = useState("");
 
   if (isLoading) return <FullPageSpinner />;
   if (isError || !card) {
@@ -137,6 +148,23 @@ export default function CardDetailPage() {
           <Card>
             <CardHeader><CardTitle>Actions</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-2">
+              {/* Access Level Reassignment */}
+              {["ACTIVE", "SUSPENDED", "PRINTED", "QUEUED_FOR_PRINT", "GENERATED", "DISPATCHED"].includes(card.status) && (
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    const currentLevel = accessLevels?.find((l) => l.levelName === card.accessLevelName);
+                    setSelectedLevelId(currentLevel?.id ?? null);
+                    setLevelRemarks("");
+                    setShowChangeLevel(true);
+                  }}
+                  className="gap-1.5"
+                >
+                  <KeyRound className="h-4 w-4 text-credential" />
+                  <span>Change Access Level</span>
+                </Button>
+              )}
+
               {CAN_SUSPEND_OR_REPORT.has(card.status) && !showRevoke && !showVoid && (
                 <>
                   <Button variant="outline" onClick={() => setConfirmLost(true)} disabled={reportLost.isPending}>
@@ -266,6 +294,67 @@ export default function CardDetailPage() {
         confirmLabel="Regenerate" isPending={regenerate.isPending}
         onConfirm={() => { setConfirmRegenerate(false); void run(() => regenerate.mutateAsync(cardId), "Credentials regenerated", "Could not regenerate credentials"); }}
       />
+      <Dialog open={showChangeLevel} onOpenChange={setShowChangeLevel}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Change Card Access Level</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-3">
+            <p className="text-sm text-slate">
+              Reassign access level for <strong>{card.printedName}</strong> ({card.cardSerial}). This determines which physical security areas the card can enter.
+            </p>
+            <div className="space-y-2">
+              <Label htmlFor="access-level">Security Access Level</Label>
+              <Select
+                value={selectedLevelId ? String(selectedLevelId) : ""}
+                onValueChange={(val) => setSelectedLevelId(Number(val))}
+              >
+                <SelectTrigger id="access-level">
+                  <SelectValue placeholder="Select Access Level..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {accessLevels?.filter((l) => l.active).map((lvl) => (
+                    <SelectItem key={lvl.id} value={String(lvl.id)}>
+                      {lvl.levelName} ({lvl.levelCode})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="remarks">Remarks / Reason</Label>
+              <Input
+                id="remarks"
+                value={levelRemarks}
+                onChange={(e) => setLevelRemarks(e.target.value)}
+                placeholder="e.g., Promoted to Level 2 or Project requirement"
+              />
+            </div>
+          </div>
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setShowChangeLevel(false)}>
+              Cancel
+            </Button>
+            <Button
+              disabled={!selectedLevelId || assignAccessLevel.isPending}
+              onClick={() => {
+                if (!selectedLevelId) return;
+                void run(async () => {
+                  await assignAccessLevel.mutateAsync({
+                    cardId,
+                    levelId: selectedLevelId,
+                    remarks: levelRemarks || undefined,
+                  });
+                  setShowChangeLevel(false);
+                  void refetch();
+                }, "Access level updated successfully", "Failed to update access level");
+              }}
+            >
+              {assignAccessLevel.isPending ? "Updating..." : "Save Changes"}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </RequireRole>
   );
 }

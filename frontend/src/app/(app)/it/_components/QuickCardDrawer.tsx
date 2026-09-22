@@ -85,10 +85,10 @@ export function QuickCardDrawer({ cardId, onClose }: QuickCardDrawerProps) {
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-sm font-bold text-ink">Smart Credential Inspection</h2>
+                <h2 className="topic-title text-ink">Smart Credential Inspection</h2>
                 {card && <StatusBadge status={card.status} />}
               </div>
-              <p className="identifier text-xs text-slate-500">
+              <p className="identifier text-xs text-slate-500 font-semibold mt-0.5">
                 {card?.cardSerial ?? "Loading..."}
               </p>
             </div>

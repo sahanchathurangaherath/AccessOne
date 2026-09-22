@@ -134,8 +134,8 @@ export default function LoginPage() {
           {/* Form Card Container */}
           <div className="rounded-3xl border border-rule bg-surface p-8 sm:p-10 shadow-panel animate-scale-in">
             <div className="mb-6 space-y-1.5">
-              <h2 className="text-2xl font-bold tracking-tight text-ink">Sign in</h2>
-              <p className="text-xs text-slate">
+              <h2 className="text-2xl sm:text-3xl font-extrabold tracking-tight text-ink">Sign in</h2>
+              <p className="text-xs sm:text-sm text-slate-500">
                 Enter your corporate credentials to access the system
               </p>
             </div>

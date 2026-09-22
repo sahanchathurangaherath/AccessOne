@@ -179,15 +179,15 @@ export default function DispatchListPage() {
         {/* Top Header & Contextual Navigation Tabs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-rule pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-ink">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-ink">
                 Card Dispatch & Delivery Hub
               </h1>
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-credential border border-blue-200/60">
+              <span className="badge-topic text-[10px]">
                 Logistics & Handover
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600">
               Track courier dispatches, department mail bags, and front-desk handovers that activate employee access.
             </p>
           </div>

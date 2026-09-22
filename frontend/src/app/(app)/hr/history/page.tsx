@@ -146,15 +146,15 @@ export default function ApprovalHistoryPage() {
         {/* Top Header & Navigation Switcher */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-rule pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-ink">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-ink">
                 HR Decision History & Audit Trail
               </h1>
-              <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-600">
+              <span className="badge-topic text-[10px]">
                 Immutable Records
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600">
               Complete historical record of all approved, verified, and rejected employee card requests.
             </p>
           </div>

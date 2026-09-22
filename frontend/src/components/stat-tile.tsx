@@ -61,12 +61,12 @@ export function StatTile({
     <div className="flex flex-col gap-1.5 rounded-2xl border border-rule bg-surface p-4 sm:p-4.5 shadow-xs transition-all duration-200 hover:shadow-sm hover:border-slate-300">
       <div className="flex items-start justify-between gap-3">
         <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-semibold uppercase tracking-wider text-slate">
+          <p className="truncate text-xs font-extrabold uppercase tracking-wider text-slate-500">
             {label}
           </p>
           <p
             className={cn(
-              "identifier mt-0.5 text-2xl sm:text-3xl font-bold tracking-tight text-ink",
+              "identifier mt-1 text-2xl sm:text-3xl font-black tracking-tight text-ink",
               tone === "denied" && "text-denied",
               tone === "pending" && "text-pending",
               tone === "granted" && "text-granted"

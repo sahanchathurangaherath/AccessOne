@@ -187,14 +187,25 @@ export default function AreasPage() {
       header: "",
       align: "right",
       render: (r) => (
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => void onToggle(r)}
-          className="h-8 rounded-lg text-xs"
-        >
-          {r.active ? "Deactivate" : "Reactivate"}
-        </Button>
+        <div className="flex justify-end items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => void onToggle(r)}
+            className="h-8 rounded-lg text-xs"
+          >
+            {r.active ? "Deactivate" : "Reactivate"}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            disabled
+            className="h-8 rounded-lg text-xs text-slate-400 cursor-not-allowed opacity-50"
+            title="Physical security areas cannot be deleted because entry and visitor logs refer to them permanently for security audits. Deactivate the area to prevent future access."
+          >
+            Delete
+          </Button>
+        </div>
       ),
     },
   ];
@@ -217,15 +228,15 @@ export default function AreasPage() {
         {/* Top Header & Contextual Navigation Tabs */}
         <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between border-b border-rule pb-4">
           <div>
-            <div className="flex items-center gap-2">
-              <h1 className="text-xl font-bold tracking-tight text-ink">
+            <div className="flex items-center gap-2.5">
+              <h1 className="text-xl sm:text-2xl font-extrabold tracking-tight text-ink">
                 Physical Security Areas & Zones
               </h1>
-              <span className="rounded-full bg-blue-50 px-2.5 py-0.5 text-[10px] font-bold text-credential border border-blue-200/60">
+              <span className="badge-topic text-[10px]">
                 Turnstiles & Perimeters
               </span>
             </div>
-            <p className="mt-1 text-xs text-slate-500">
+            <p className="mt-1 text-xs sm:text-sm text-slate-600">
               Physical rooms, floors, and entry points controlled by the AccessOne contactless decision engine.
             </p>
           </div>
