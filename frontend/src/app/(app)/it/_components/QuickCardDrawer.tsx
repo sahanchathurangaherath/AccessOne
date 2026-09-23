@@ -231,17 +231,22 @@ export function QuickCardDrawer({ cardId, onClose }: QuickCardDrawerProps) {
         {card && (
           <div className="border-t border-rule bg-surface p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <a
-                href={`/api/v1/cards/${card.id}/pdf`}
-                target="_blank"
-                rel="noreferrer"
-                className="flex-1 sm:flex-initial"
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full gap-1.5 rounded-xl text-xs flex-1 sm:flex-initial"
+                render={
+                  <a
+                    href={`/api/v1/cards/${card.id}/pdf`}
+                    target="_blank"
+                    rel="noreferrer"
+                    download={`card-${card.cardSerial || card.id}.pdf`}
+                  />
+                }
               >
-                <Button variant="outline" size="sm" className="w-full gap-1.5 rounded-xl text-xs">
-                  <Download className="h-3.5 w-3.5 text-slate-500" />
-                  <span>Download PDF</span>
-                </Button>
-              </a>
+                <Download className="h-3.5 w-3.5 text-slate-500" />
+                <span>Download PDF</span>
+              </Button>
 
               {card.status === "ACTIVE" && (
                 <Button

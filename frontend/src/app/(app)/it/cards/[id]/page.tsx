@@ -22,7 +22,8 @@ import {
   useRevoke, useVoidCard, useRegenerateCredentials,
 } from "../../_hooks/useCards";
 import { useAccessLevels, useAssignAccessLevel } from "../../_hooks/useConfig";
-import { Shield, KeyRound } from "lucide-react";
+import { Shield, KeyRound, ArrowLeft, Calendar, Layers, Activity, FileDown, Wifi } from "lucide-react";
+import Link from "next/link";
 
 /**
  * Purely a UI convenience -- which buttons make sense to show. The server
@@ -82,6 +83,16 @@ export default function CardDetailPage() {
 
   return (
     <RequireRole allow={["IT_ADMIN", "HR_MANAGER"]}>
+      <div className="mb-4">
+        <Link
+          href="/it/cards"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-ink transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Issued Cards
+        </Link>
+      </div>
+
       <DetailHeader
         identifier={card.cardSerial}
         title={`${card.printedName} (${card.empId})`}
@@ -91,57 +102,102 @@ export default function CardDetailPage() {
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           <Card>
-            <CardHeader><CardTitle>Card</CardTitle></CardHeader>
-            <CardContent>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Card Visual & Biometric Preview</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
               <CardPreview card={card} />
             </CardContent>
           </Card>
 
+          {/* Structured 2x2 Card Details Grid */}
           <Card>
-            <CardHeader><CardTitle>Details</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <Row label="Version" value={String(card.versionNo)} />
-              <Row label="Access level" value={card.accessLevelName ?? "None assigned"} />
-              <Row label="Issue date" value={new Date(card.issueDate).toLocaleDateString()} />
-              <Row label="Activated" value={fmt(card.activatedAt)} />
-              {card.revokedAt && <Row label="Revoked" value={`${fmt(card.revokedAt)} -- ${card.revocationReason}`} />}
-              {card.replacedByCardSerial && (
-                <Row label="Replaced by" value={card.replacedByCardSerial} />
-              )}
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Credential Metadata</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Layers className="h-3.5 w-3.5 text-credential" />
+                    <span>Card Version & Generation</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">Version {card.versionNo}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Issued: {new Date(card.issueDate).toLocaleDateString()}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Shield className="h-3.5 w-3.5 text-credential" />
+                    <span>Assigned Security Access Level</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{card.accessLevelName ?? "Standard Level"}</p>
+                  <p className="text-xs text-slate-500 mt-0.5">Physical door access profile</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Activity className="h-3.5 w-3.5 text-credential" />
+                    <span>Activation Timestamp</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{card.activatedAt ? fmt(card.activatedAt) : "Pending Activation"}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Calendar className="h-3.5 w-3.5 text-credential" />
+                    <span>Lifecycle Record</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-medium text-ink">
+                    {card.revokedAt ? (
+                      <span className="text-denied font-bold">Revoked · {card.revocationReason}</span>
+                    ) : card.replacedByCardSerial ? (
+                      <span>Replaced by: <strong className="identifier">{card.replacedByCardSerial}</strong></span>
+                    ) : (
+                      <span className="text-emerald-600 font-semibold">Active in Service</span>
+                    )}
+                  </p>
+                </div>
+              </div>
             </CardContent>
           </Card>
 
           <Card>
-            <CardHeader><CardTitle>NFC payload</CardTitle></CardHeader>
-            <CardContent>
-              <p className="text-sm text-slate">
-                {card.nfcFormat} &middot; {card.encodingAlgorithm} &middot; generated {fmt(card.credentialGeneratedAt)}
+            <CardHeader className="pb-3 border-b border-rule flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <Wifi className="h-4 w-4 text-credential" />
+                <CardTitle className="text-base font-bold text-ink">NFC Payload & Encoding</CardTitle>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                {card.nfcFormat}
+              </span>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <p className="text-sm text-slate-500">
+                Format: <strong className="text-ink">{card.nfcFormat}</strong> &middot; Algorithm: <strong className="text-ink">{card.encodingAlgorithm}</strong> &middot; Generated {fmt(card.credentialGeneratedAt)}
               </p>
-              <p className="identifier mt-3 break-all rounded-card bg-paper p-3 text-xs">
+              <p className="identifier mt-3 break-all rounded-card bg-paper p-3 text-xs border border-rule font-mono">
                 {card.nfcPayload}
               </p>
-              <p className="mt-2 text-xs text-slate">
+              <p className="mt-2 text-xs text-slate-400">
                 Writing this payload to a physical NFC chip requires card-encoding
-                hardware and is outside the scope of this system.
+                hardware and is outside the scope of this portal.
               </p>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardHeader><CardTitle>Timeline</CardTitle></CardHeader>
-            <CardContent>
-              <StatusTimeline entries={timeline ?? []} />
             </CardContent>
           </Card>
         </div>
 
-        <div className="space-y-3">
+        <div className="space-y-6">
           <Card>
             <CardHeader><CardTitle>Files</CardTitle></CardHeader>
             <CardContent className="flex flex-col gap-2">
-              <a href={`/api/v1/cards/${card.id}/pdf`}>
-                <Button variant="outline" className="w-full">Download PDF</Button>
-              </a>
+              <Button
+                variant="outline"
+                className="w-full"
+                render={<a href={`/api/v1/cards/${card.id}/pdf`} download={`card-${card.cardSerial || card.id}.pdf`} />}
+              >
+                Download PDF
+              </Button>
             </CardContent>
           </Card>
 
@@ -254,6 +310,16 @@ export default function CardDetailPage() {
                   Regenerate credentials
                 </Button>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Lifecycle Timeline Card in Right Column */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Lifecycle Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <StatusTimeline entries={timeline ?? []} />
             </CardContent>
           </Card>
         </div>

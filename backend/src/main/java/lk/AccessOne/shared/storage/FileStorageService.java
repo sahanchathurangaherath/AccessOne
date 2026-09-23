@@ -67,7 +67,11 @@ public class FileStorageService {
     }
 
     public Path resolve(String relativePath) {
-        Path target = root.resolve(relativePath).normalize();
+        if (relativePath == null) {
+            throw new BusinessRuleException("BAD_PATH", "Invalid file path.");
+        }
+        String clean = relativePath.replaceFirst("^[/\\\\]+", "");
+        Path target = root.resolve(clean).normalize();
         if (!target.startsWith(root)) {
             throw new BusinessRuleException("BAD_PATH", "Invalid file path.");
         }

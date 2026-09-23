@@ -115,17 +115,17 @@ export default function CardsPage() {
       render: (r) => (
         <div className="flex items-center gap-3">
           <div className="relative h-9 w-9 flex-shrink-0 overflow-hidden rounded-xl border border-rule bg-slate-100 flex items-center justify-center shadow-2xs">
+            <span className="text-[11px] font-bold text-slate-600 select-none">
+              {r.employeeName.slice(0, 2).toUpperCase()}
+            </span>
             <img
               src={`/api/v1/cards/${r.id}/photo`}
               alt={r.employeeName}
-              className="h-full w-full object-cover"
+              className="absolute inset-0 h-full w-full object-cover"
               onError={(e) => {
                 (e.currentTarget as HTMLElement).style.display = "none";
               }}
             />
-            <span className="text-[11px] font-bold text-slate-600 select-none">
-              {r.employeeName.slice(0, 2).toUpperCase()}
-            </span>
           </div>
           <div>
             <div className="font-semibold text-ink text-xs sm:text-sm">{r.employeeName}</div>

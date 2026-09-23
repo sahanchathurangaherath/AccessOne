@@ -14,6 +14,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Base64;
 
 /**
@@ -102,12 +103,14 @@ public class CardPdfService {
     }
 
     private String photoDataUri(IdCard card) {
-        if (card.getPhotoPath() == null) return "";
+        if (card.getPhotoPath() == null || card.getPhotoPath().isBlank()) return "";
         try {
-            byte[] bytes = Files.readAllBytes(storage.resolve(card.getPhotoPath()));
+            Path path = storage.resolve(card.getPhotoPath());
+            if (!Files.exists(path)) return "";
+            byte[] bytes = Files.readAllBytes(path);
             String mime = card.getPhotoPath().endsWith(".png") ? "image/png" : "image/jpeg";
             return dataUri(mime, bytes);
-        } catch (IOException e) {
+        } catch (Exception e) {
             return "";
         }
     }

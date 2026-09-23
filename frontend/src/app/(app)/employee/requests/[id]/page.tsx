@@ -16,6 +16,15 @@ import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusTimeline } from "@/components/status-timeline";
 import { ApiError } from "@/lib/api";
 import {
+  ArrowLeft,
+  Briefcase,
+  Building2,
+  User,
+  ShieldCheck,
+  FileText,
+  AlertCircle,
+} from "lucide-react";
+import {
   requests, useSubmitRequest, useWithdrawRequest,
   useUploadDocument, useDeleteDocument, type DocumentType,
 } from "../../_hooks/useRequests";
@@ -106,6 +115,16 @@ export default function RequestDetailPage() {
 
   return (
     <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
+      <div className="mb-4">
+        <Link
+          href="/employee"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-ink transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to My Requests
+        </Link>
+      </div>
+
       <DetailHeader
         identifier={request.requestNo}
         title={`${request.requestType.toLowerCase()} request for ${request.employeeName}`}
@@ -114,36 +133,84 @@ export default function RequestDetailPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          {/* Structured 2x2 Employment & Request Details Grid */}
           <Card>
-            <CardHeader>
-              <CardTitle>Details</CardTitle>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Request & Employee Details</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <Row label="Employee" value={`${request.employeeName} (${request.empId})`} />
-              <Row label="Designation" value={request.designation} />
-              <Row label="Department" value={request.departmentName} />
-              {request.reason && <Row label="Reason" value={request.reason} />}
-              {request.accessLevelName && <Row label="Requested access level" value={request.accessLevelName} />}
-              <Row label="Photo" value={request.hasPhoto ? "Attached" : "Not attached"} />
-              <Row
-                label="Submitted"
-                value={request.submittedAt ? new Date(request.submittedAt).toLocaleString() : "—"}
-              />
+            <CardContent className="pt-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <User className="h-3.5 w-3.5 text-credential" />
+                    <span>Employee Identity</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{request.employeeName}</p>
+                  <p className="text-xs text-slate-500 mt-0.5 identifier font-semibold">{request.empId}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Briefcase className="h-3.5 w-3.5 text-credential" />
+                    <span>Designation & Role</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{request.designation || "—"}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Building2 className="h-3.5 w-3.5 text-credential" />
+                    <span>Department</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{request.departmentName || "—"}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <ShieldCheck className="h-3.5 w-3.5 text-credential" />
+                    <span>Requested Access Level</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{request.accessLevelName || "Standard Entry"}</p>
+                </div>
+              </div>
+
+              {(request.reason || request.submittedAt) && (
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5 pt-1">
+                  {request.reason && (
+                    <div className="rounded-xl border border-rule bg-paper/40 p-3 text-xs text-slate-600 sm:col-span-2">
+                      <span className="font-bold text-slate-700 block mb-0.5">Request Reason / Purpose:</span>
+                      {request.reason}
+                    </div>
+                  )}
+                  {request.submittedAt && (
+                    <div className="text-xs text-slate-500">
+                      Submitted on: <span className="font-semibold text-ink">{new Date(request.submittedAt).toLocaleString()}</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </CardContent>
           </Card>
 
+          {/* Supporting Documents Card */}
           <Card>
-            <CardHeader>
-              <CardTitle>Supporting documents</CardTitle>
+            <CardHeader className="pb-3 border-b border-rule flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-credential" />
+                <CardTitle className="text-base font-bold text-ink">Supporting Documents</CardTitle>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                {request.documents.length} uploaded
+              </span>
             </CardHeader>
-            <CardContent className="space-y-4">
+            <CardContent className="pt-4 space-y-4">
               {request.documents.length === 0 && (
-                <p className="text-sm text-slate">No documents uploaded yet.</p>
+                <p className="text-sm text-slate-400">No documents uploaded yet.</p>
               )}
               {request.documents.length > 0 && (
                 <ul className="divide-y divide-rule">
                   {request.documents.map((doc) => (
-                    <li key={doc.id} className="flex items-center justify-between py-2 text-sm">
+                    <li key={doc.id} className="flex items-center justify-between py-2.5 text-sm">
                       <div>
                         <a
                           href={`/api/v1/requests/${id}/documents/${doc.id}/download`}
@@ -151,7 +218,7 @@ export default function RequestDetailPage() {
                         >
                           {doc.fileName}
                         </a>
-                        <p className="text-xs text-slate">
+                        <p className="text-xs text-slate-500">
                           {doc.documentType.replaceAll("_", " ").toLowerCase()} ·{" "}
                           {(doc.fileSizeBytes / 1024).toFixed(0)} KB
                         </p>
@@ -160,6 +227,7 @@ export default function RequestDetailPage() {
                         <Button
                           variant="ghost"
                           size="sm"
+                          className="text-slate-400 hover:text-red-600 transition-colors"
                           onClick={() => void onDeleteDocument(doc.id)}
                         >
                           Remove
@@ -192,31 +260,20 @@ export default function RequestDetailPage() {
               )}
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader>
-              <CardTitle>Timeline</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <StatusTimeline entries={timeline ?? []} />
-            </CardContent>
-          </Card>
         </div>
 
-        <div className="space-y-3">
+        {/* Right Column: Actions + CR80 Physical Smart Badge Preview + Lifecycle Timeline */}
+        <div className="space-y-6">
           <Card>
-            <CardHeader>
-              <CardTitle>Actions</CardTitle>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Actions</CardTitle>
             </CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {/* Never derive these from status on the frontend -- the
-                  server computes editable/withdrawable/deletable from the
-                  same rules the service enforces, so there is one source
-                  of truth for what a request may do next. */}
+            <CardContent className="pt-4 flex flex-col gap-2.5">
               {request.editable && (
                 <Button
                   variant="outline"
                   render={<Link href={`/employee/requests/${request.id}/edit`}>Edit</Link>}
+                  className="w-full"
                 />
               )}
 
@@ -224,25 +281,43 @@ export default function RequestDetailPage() {
                 <Button
                   onClick={() => void onSubmit()}
                   disabled={!request.hasPhoto || submit.isPending}
+                  className="w-full"
                 >
                   Submit request
                 </Button>
               )}
               {request.editable && !request.hasPhoto && (
-                <p className="text-xs text-slate">Attach a photo before you can submit.</p>
+                <div className="flex items-center gap-1.5 text-xs text-amber-600 bg-amber-50 rounded-lg p-2 border border-amber-200">
+                  <AlertCircle className="h-4 w-4 shrink-0" />
+                  <span>Attach a portrait photo before you can submit.</span>
+                </div>
               )}
 
               {request.withdrawable && (
-                <Button variant="outline" onClick={() => setConfirmWithdraw(true)}>
-                  Withdraw
+                <Button variant="outline" onClick={() => setConfirmWithdraw(true)} className="w-full">
+                  Withdraw Request
                 </Button>
               )}
 
               {request.deletable && (
-                <Button variant="destructive" onClick={() => setConfirmDelete(true)}>
-                  Delete draft
+                <Button variant="destructive" onClick={() => setConfirmDelete(true)} className="w-full">
+                  Delete Draft
                 </Button>
               )}
+
+              {!request.editable && !request.withdrawable && !request.deletable && (
+                <p className="text-sm text-slate-500 text-center py-1">No pending actions required.</p>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* Lifecycle Timeline Card */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Request Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <StatusTimeline entries={timeline ?? []} />
             </CardContent>
           </Card>
         </div>

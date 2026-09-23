@@ -11,7 +11,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusTimeline } from "@/components/status-timeline";
-import { Trash2 } from "lucide-react";
+import {
+  Trash2,
+  Building2,
+  Briefcase,
+  UserCheck,
+  ShieldCheck,
+  IdCard,
+  Wifi,
+  CheckCircle2,
+  FileText,
+  MessageSquare,
+  ArrowLeft,
+} from "lucide-react";
+import Link from "next/link";
 import { ApiError } from "@/lib/api";
 import {
   approvals, useVerify, useApprove, useReject, useComment,
@@ -115,6 +128,16 @@ export default function ApprovalDecisionPage() {
 
   return (
     <RequireRole allow={["HR_MANAGER"]}>
+      <div className="mb-4">
+        <Link
+          href="/hr"
+          className="inline-flex items-center gap-1.5 text-xs font-semibold text-slate-500 hover:text-ink transition-colors"
+        >
+          <ArrowLeft className="h-3.5 w-3.5" />
+          Back to Approval Queue
+        </Link>
+      </div>
+
       <DetailHeader
         identifier={approval.requestNo}
         title={`${approval.employeeName} (${approval.empId})`}
@@ -145,36 +168,99 @@ export default function ApprovalDecisionPage() {
             isApproving={approve.isPending || verify.isPending}
           />
 
+          {/* Structured 2x2 Employment & Verification Details Grid */}
           <Card>
-            <CardHeader><CardTitle>Details</CardTitle></CardHeader>
-            <CardContent className="space-y-3 text-sm">
-              <Row label="Designation" value={approval.designation} />
-              <Row label="Department" value={approval.deptName} />
-              {approval.rejectionReason && <Row label="Rejection reason" value={approval.rejectionReason} />}
-              <Row label="Verified by" value={approval.verifiedBy ? `${approval.verifiedBy} · ${fmt(approval.verifiedAt)}` : "—"} />
-              <Row label="Decided by" value={approval.decidedBy ? `${approval.decidedBy} · ${fmt(approval.decidedAt)}` : "—"} />
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Employment & Review Data</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Briefcase className="h-3.5 w-3.5 text-credential" />
+                    <span>Designation & Role</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{approval.designation || "—"}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <Building2 className="h-3.5 w-3.5 text-credential" />
+                    <span>Department Unit</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-bold text-ink">{approval.deptName || "—"}</p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <UserCheck className="h-3.5 w-3.5 text-slate-600" />
+                    <span>HR Record Verification</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-medium text-ink">
+                    {approval.verifiedBy ? (
+                      <>
+                        <span className="font-bold">{approval.verifiedBy}</span>
+                        <span className="text-xs text-slate-500 block">{fmt(approval.verifiedAt)}</span>
+                      </>
+                    ) : (
+                      <span className="text-slate-400">Pending Verification</span>
+                    )}
+                  </p>
+                </div>
+
+                <div className="rounded-xl border border-rule bg-paper/60 p-3.5">
+                  <div className="flex items-center gap-2 text-xs font-semibold text-slate-500">
+                    <ShieldCheck className="h-3.5 w-3.5 text-slate-600" />
+                    <span>Final Decision Status</span>
+                  </div>
+                  <p className="mt-1.5 text-sm font-medium text-ink">
+                    {approval.decidedBy ? (
+                      <>
+                        <span className="font-bold">{approval.decidedBy}</span>
+                        <span className="text-xs text-slate-500 block">{fmt(approval.decidedAt)}</span>
+                      </>
+                    ) : (
+                      <span className="text-slate-400">Awaiting Decision</span>
+                    )}
+                  </p>
+                </div>
+              </div>
+
+              {approval.rejectionReason && (
+                <div className="rounded-xl border border-denied/30 bg-denied/5 p-3.5 text-sm text-denied">
+                  <span className="font-bold block text-xs uppercase tracking-wider mb-1">Rejection Reason</span>
+                  {approval.rejectionReason}
+                </div>
+              )}
             </CardContent>
           </Card>
 
+          {/* Documents Card */}
           <Card>
-            <CardHeader>
-              <CardTitle>Documents</CardTitle>
+            <CardHeader className="pb-3 border-b border-rule flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <FileText className="h-4 w-4 text-credential" />
+                <CardTitle className="text-base font-bold text-ink">Supporting Documents</CardTitle>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                {approval.documents.length} attached
+              </span>
             </CardHeader>
-            <CardContent>
+            <CardContent className="pt-4">
               {approval.documents.length === 0 && (
-                <p className="text-sm text-slate">No documents attached to this request.</p>
+                <p className="text-sm text-slate-400">No documents attached to this request.</p>
               )}
               {approval.documents.length > 0 && (
                 <ul className="divide-y divide-rule text-sm">
                   {approval.documents.map((d) => (
-                    <li key={d.id} className="flex justify-between py-2">
+                    <li key={d.id} className="flex justify-between items-center py-2.5">
                       <a
                         href={`/api/v1/requests/${requestId}/documents/${d.id}/download`}
-                        className="text-credential underline-offset-4 hover:underline"
+                        className="font-medium text-credential underline-offset-4 hover:underline"
                       >
                         {d.fileName}
                       </a>
-                      <p className="text-xs text-slate">
+                      <p className="text-xs text-slate-500">
                         {d.documentType.replaceAll("_", " ").toLowerCase()} ·{" "}
                         {(d.fileSizeBytes / 1024).toFixed(0)} KB
                       </p>
@@ -185,17 +271,26 @@ export default function ApprovalDecisionPage() {
             </CardContent>
           </Card>
 
+          {/* Comments Card */}
           <Card>
-            <CardHeader><CardTitle>Comments</CardTitle></CardHeader>
-            <CardContent className="space-y-3">
+            <CardHeader className="pb-3 border-b border-rule flex flex-row items-center justify-between">
+              <div className="flex items-center gap-2">
+                <MessageSquare className="h-4 w-4 text-credential" />
+                <CardTitle className="text-base font-bold text-ink">Audit Notes & Comments</CardTitle>
+              </div>
+              <span className="text-xs text-slate-500 font-medium">
+                {approval.comments.length} notes
+              </span>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
               {approval.comments.length === 0 && (
-                <p className="text-sm text-slate">No comments yet.</p>
+                <p className="text-sm text-slate-400">No comments yet on this request.</p>
               )}
               {approval.comments.map((c) => (
-                <div key={c.id} className="flex items-start justify-between gap-2 border-b border-rule pb-2 text-sm last:border-0">
+                <div key={c.id} className="flex items-start justify-between gap-2 border-b border-rule pb-2.5 text-sm last:border-0">
                   <div className="flex-1">
-                    <p>{c.text}</p>
-                    <p className="identifier text-xs text-slate">
+                    <p className="text-ink font-medium">{c.text}</p>
+                    <p className="identifier text-xs text-slate-500 mt-0.5">
                       {c.commentedBy} · {fmt(c.commentedAt)}
                     </p>
                   </div>
@@ -215,7 +310,7 @@ export default function ApprovalDecisionPage() {
                 <Textarea
                   value={commentText}
                   onChange={(e) => setCommentText(e.target.value)}
-                  placeholder="Add a note for the record"
+                  placeholder="Add an internal HR note or review audit remark..."
                   className="flex-1"
                 />
                 <Button
@@ -227,25 +322,18 @@ export default function ApprovalDecisionPage() {
               </div>
             </CardContent>
           </Card>
-
-          <Card>
-            <CardHeader><CardTitle>Timeline</CardTitle></CardHeader>
-            <CardContent>
-              <StatusTimeline entries={timeline ?? []} />
-            </CardContent>
-          </Card>
         </div>
 
-        <div className="space-y-3">
+        {/* Right Column: Decision Actions + CR80 Smart Badge Preview + Audit Timeline */}
+        <div className="space-y-6">
           <Card>
-            <CardHeader><CardTitle>Decision & Actions</CardTitle></CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              {/* Never derive these from the decision string on the
-                  frontend -- canVerify/canDecide come from the same
-                  Decision.canTransitionTo the service enforces with. */}
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Decision & Actions</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4 flex flex-col gap-2.5">
               {approval.canVerify && (
-                <Button onClick={() => setConfirmVerify(true)} disabled={verify.isPending}>
-                  Verify
+                <Button onClick={() => setConfirmVerify(true)} disabled={verify.isPending} className="w-full">
+                  Verify Record
                 </Button>
               )}
 
@@ -254,27 +342,29 @@ export default function ApprovalDecisionPage() {
                   <Button
                     onClick={() => setConfirmApprove(true)}
                     disabled={approve.isPending || !approval.employeeStillActive}
+                    className="w-full"
                   >
-                    Approve
+                    Approve & Queue for Printing
                   </Button>
-                  <Button variant="outline" onClick={() => setShowReject(true)}>
-                    Reject
+                  <Button variant="outline" onClick={() => setShowReject(true)} className="w-full">
+                    Reject Request
                   </Button>
                 </>
               )}
 
               {approval.canDecide && showReject && (
-                <div className="space-y-2">
+                <div className="space-y-2 pt-1">
                   <Textarea
                     value={rejectReason}
                     onChange={(e) => setRejectReason(e.target.value)}
-                    placeholder="Say what needs to be corrected"
+                    placeholder="Specify the reason for rejection (e.g. invalid photo, mismatched department)"
                   />
                   <div className="flex gap-2">
                     <Button
                       variant="destructive"
                       onClick={() => void onReject()}
                       disabled={!rejectReason.trim() || reject.isPending}
+                      className="flex-1"
                     >
                       Confirm rejection
                     </Button>
@@ -297,8 +387,90 @@ export default function ApprovalDecisionPage() {
               )}
 
               {!approval.canVerify && !approval.canDecide && (
-                <p className="text-sm text-slate">This decision is concluded.</p>
+                <p className="text-sm text-slate-500 text-center py-1">This decision workflow is concluded.</p>
               )}
+            </CardContent>
+          </Card>
+
+          {/* Physical CR80 Smart Badge & Portrait Mockup Card */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-rule">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold uppercase tracking-wider text-slate-700 flex items-center gap-1.5">
+                  <IdCard className="h-4 w-4 text-credential" />
+                  Physical Badge Preview
+                </span>
+                <span className="rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-credential">
+                  CR80 RFID
+                </span>
+              </div>
+            </CardHeader>
+            <CardContent className="pt-4 space-y-3">
+              <div className="relative mx-auto w-full overflow-hidden rounded-2xl border border-slate-300 bg-white shadow-md select-none">
+                <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-3.5 py-2 text-white">
+                  <div className="flex items-center gap-1.5">
+                    <ShieldCheck className="h-3.5 w-3.5 text-blue-200" />
+                    <span className="identifier text-[9px] font-bold tracking-[0.2em] text-white">
+                      ACCESSONE ID
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1">
+                    <Wifi className="h-3 w-3 rotate-90 text-blue-200" />
+                    <span className="text-[8px] font-semibold uppercase tracking-wider text-blue-100">
+                      SMART PASS
+                    </span>
+                  </div>
+                </div>
+
+                <div className="flex gap-3.5 p-3.5">
+                  <div className="relative flex-shrink-0 h-24 w-20">
+                    <img
+                      src={`/api/v1/requests/${requestId}/photo`}
+                      alt={approval.employeeName}
+                      className="h-24 w-20 rounded-lg border border-slate-200 object-cover shadow-xs"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src =
+                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='96' viewBox='0 0 80 96'%3E%3Crect width='80' height='96' fill='%23f8fafc'/%3E%3Ccircle cx='40' cy='36' r='14' fill='%23cbd5e1'/%3E%3Cpath d='M20 78 C20 58, 60 58, 60 78' fill='%23cbd5e1'/%3E%3Ctext x='50%25' y='88' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='8' font-weight='700' fill='%2394a3b8'%3EPHOTO%3C/text%3E%3C/svg%3E";
+                      }}
+                    />
+                    <div className="absolute bottom-1.5 right-1.5 h-4 w-5 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                      <div className="h-2 w-3 border border-amber-400/60 rounded-xs" />
+                    </div>
+                  </div>
+
+                  <div className="min-w-0 flex-1 space-y-1">
+                    <p className="truncate text-xs font-bold text-ink leading-tight">
+                      {approval.employeeName}
+                    </p>
+                    <p className="truncate text-[11px] font-semibold text-credential">
+                      {approval.designation}
+                    </p>
+                    <p className="truncate text-[10px] text-slate-500">
+                      {approval.deptName}
+                    </p>
+                    <div className="pt-2">
+                      <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">
+                        {approval.empId}
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 rounded-lg bg-paper/80 p-2.5 text-xs text-slate-600 border border-rule">
+                <CheckCircle2 className="h-4 w-4 text-credential shrink-0" />
+                <span>Verify portrait clarity before issuing approval for card encoding.</span>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Audit Timeline Card */}
+          <Card>
+            <CardHeader className="pb-3 border-b border-rule">
+              <CardTitle className="text-base font-bold text-ink">Lifecycle Timeline</CardTitle>
+            </CardHeader>
+            <CardContent className="pt-4">
+              <StatusTimeline entries={timeline ?? []} />
             </CardContent>
           </Card>
         </div>

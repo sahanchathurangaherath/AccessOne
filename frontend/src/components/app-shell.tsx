@@ -28,6 +28,7 @@ import {
   Shield,
   SlidersHorizontal,
   IdCard,
+  User,
 } from "lucide-react";
 
 type NavItem = {
@@ -87,7 +88,8 @@ const NAV_GROUPS: NavGroup[] = [
   {
     title: "System Administration",
     items: [
-      { href: "/admin", label: "Administration", roles: ["SYSTEM_ADMIN"], icon: <Shield className="h-4 w-4" /> },
+      { href: "/admin", label: "Admin Dashboard", roles: ["SYSTEM_ADMIN"], icon: <Shield className="h-4 w-4" /> },
+      { href: "/hr/employees", label: "User Accounts", roles: ["SYSTEM_ADMIN"], icon: <Users className="h-4 w-4" /> },
       { href: "/admin/audit", label: "Audit Log", roles: ["SYSTEM_ADMIN"], icon: <FileText className="h-4 w-4" /> },
     ],
   },
@@ -126,12 +128,29 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   if (!user) return null;
 
   // Filter groups and items based on role
-  const visibleGroups = NAV_GROUPS.map((group) => ({
+  let visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,
-    items: group.items.filter(
-      (item) => item.roles.includes(user.role) || user.role === "SYSTEM_ADMIN"
-    ),
+    items: group.items.filter((item) => {
+      // Personal self-service requests are only relevant for employees with a linked employee profile
+      if (item.href === "/employee") {
+        return user.role === "EMPLOYEE" || Boolean(user.employeeId);
+      }
+      // Avoid duplicate User Accounts item under HR Approvals for System Admin
+      if (group.title === "HR Approvals" && item.href === "/hr/employees" && user.role === "SYSTEM_ADMIN") {
+        return false;
+      }
+      return item.roles.includes(user.role) || user.role === "SYSTEM_ADMIN";
+    }),
   })).filter((group) => group.items.length > 0);
+
+  // For SYSTEM_ADMIN, move "System Administration" to the very top of the sidebar for immediate re-entry
+  if (user.role === "SYSTEM_ADMIN") {
+    const adminIdx = visibleGroups.findIndex((g) => g.title === "System Administration");
+    if (adminIdx > 0) {
+      const [adminGroup] = visibleGroups.splice(adminIdx, 1);
+      visibleGroups = [adminGroup, ...visibleGroups];
+    }
+  }
 
   const isActive = (href: string) => {
     if (href === "/employee" || href === "/hr" || href === "/it" || href === "/print" || href === "/security" || href === "/admin") {
@@ -309,11 +328,28 @@ export function AppShell({ children }: { children: React.ReactNode }) {
           </div>
 
           <div className="flex items-center gap-3 sm:gap-4">
+            {user.role === "SYSTEM_ADMIN" && pathname !== "/admin" && (
+              <Link
+                href="/admin"
+                className="inline-flex items-center gap-1.5 rounded-xl border border-blue-200 bg-blue-50/80 px-3 py-1.5 text-xs font-bold text-credential hover:bg-blue-100 transition-colors shadow-2xs"
+                title="Return to System Administration Dashboard"
+              >
+                <Shield className="h-3.5 w-3.5" />
+                <span className="hidden sm:inline">Admin Dashboard</span>
+              </Link>
+            )}
             <NotificationBell />
             <div className="h-6 w-px bg-rule hidden sm:block" />
-            <div className="hidden sm:flex flex-col text-right leading-tight">
-              <span className="text-sm font-bold text-ink">{user.username}</span>
-              <span className="text-xs text-slate-500 font-medium">{ROLE_LABEL[user.role]}</span>
+            
+            {/* Topbar User Profile Avatar Widget */}
+            <div className="hidden sm:flex items-center gap-2.5 rounded-xl border border-rule/80 bg-slate-50/70 py-1 pl-3 pr-1.5 shadow-2xs">
+              <div className="flex flex-col text-right leading-tight">
+                <span className="text-xs font-bold text-ink truncate max-w-[140px]">{user.username}</span>
+                <span className="text-[10px] font-semibold text-slate-500">{ROLE_LABEL[user.role]}</span>
+              </div>
+              <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-[#1F4B8E] to-blue-700 text-white shadow-xs font-bold text-xs ring-1 ring-white/50 select-none">
+                {getInitials(user.username)}
+              </div>
             </div>
             <Button
               variant="outline"

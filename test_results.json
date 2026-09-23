@@ -1,6 +1,6 @@
 {
-  "total": 53,
-  "passed": 44,
+  "total": 52,
+  "passed": 43,
   "failed": 9,
   "tests": [
     {
@@ -46,17 +46,17 @@
     {
       "name": "Employee READ own requests",
       "status": "PASS",
-      "details": "Items: 12"
+      "details": "Items: 20"
     },
     {
       "name": "Employee CREATE draft request",
       "status": "PASS",
-      "details": "Req ID: 55, Status: DRAFT"
+      "details": "Req ID: 84, Status: DRAFT"
     },
     {
       "name": "Employee READ request details",
       "status": "PASS",
-      "details": "RequestNo: REQ-2026-0059"
+      "details": "RequestNo: REQ-2026-0088"
     },
     {
       "name": "Employee READ request timeline",
@@ -81,7 +81,7 @@
     {
       "name": "HR READ pending approvals queue",
       "status": "PASS",
-      "details": "Queue size: 1"
+      "details": "Queue size: 2"
     },
     {
       "name": "HR CREATE approval comment",
@@ -106,12 +106,12 @@
     {
       "name": "IT Admin CREATE department",
       "status": "PASS",
-      "details": "Dept Code: D-6845"
+      "details": "Dept Code: D-6915"
     },
     {
       "name": "IT Admin READ departments",
       "status": "PASS",
-      "details": "Total departments: 16"
+      "details": "Total departments: 18"
     },
     {
       "name": "IT Admin UPDATE department",
@@ -121,12 +121,12 @@
     {
       "name": "IT Admin CREATE building area",
       "status": "PASS",
-      "details": "Area Code: A-6845"
+      "details": "Area Code: A-6915"
     },
     {
       "name": "IT Admin CREATE access level",
       "status": "PASS",
-      "details": "Level Code: L-6845"
+      "details": "Level Code: L-6915"
     },
     {
       "name": "IT Admin UPDATE access level areas mapping",
@@ -146,12 +146,12 @@
     {
       "name": "IT/System READ generated card",
       "status": "PASS",
-      "details": "Card ID: 20, Serial: ACO-2026-000020, Status: GENERATED"
+      "details": "Card ID: 34, Serial: ACO-2026-000034, Status: GENERATED"
     },
     {
       "name": "IT Admin READ card detail",
       "status": "PASS",
-      "details": "Card Serial: ACO-2026-000020"
+      "details": "Card Serial: ACO-2026-000034"
     },
     {
       "name": "IT Admin READ card QR byte stream",
@@ -176,22 +176,17 @@
     {
       "name": "Print Supervisor CREATE print job",
       "status": "PASS",
-      "details": "Job ID: 22"
-    },
-    {
-      "name": "Print Supervisor UPDATE (Start Print Job)",
-      "status": "PASS",
-      "details": "Status: IN_PROGRESS"
+      "details": "Job ID: 43"
     },
     {
       "name": "Print Supervisor UPDATE (Mark Printed)",
       "status": "PASS",
-      "details": "Status: PRINTED"
+      "details": "Status: Already Printed"
     },
     {
       "name": "Print Supervisor UPDATE (Record QC Pass)",
       "status": "PASS",
-      "details": "QC status: QC_PASSED"
+      "details": "QC status: undefined"
     },
     {
       "name": "Print Supervisor CREATE dispatch record",
@@ -201,7 +196,7 @@
     {
       "name": "Print Supervisor READ dispatch queue",
       "status": "PASS",
-      "details": "Dispatches: 10"
+      "details": "Dispatches: 20"
     },
     {
       "name": "Print Supervisor UPDATE (Mark Dispatched)",
@@ -221,7 +216,7 @@
     {
       "name": "Security Officer READ visitors list",
       "status": "PASS",
-      "details": "Total registered: 7"
+      "details": "Total registered: 12"
     },
     {
       "name": "Security Officer CREATE (Issue Pass)",
@@ -261,12 +256,12 @@
     {
       "name": "Access Engine READ access audit logs",
       "status": "PASS",
-      "details": "Total logged attempts: 30"
+      "details": "Total logged attempts: 67"
     },
     {
       "name": "Access Engine READ denials summary report",
       "status": "PASS",
-      "details": "Distinct denial reasons: 9"
+      "details": "Distinct denial reasons: 15"
     }
   ]
 }

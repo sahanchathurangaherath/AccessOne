@@ -26,6 +26,7 @@ import {
   History,
   Info,
   Check,
+  FileText,
 } from "lucide-react";
 import { requests, type CardRequestSummary, type RequestStatus } from "./_hooks/useRequests";
 
@@ -107,13 +108,13 @@ export default function EmployeePortalPage() {
     );
   } else if (isPipeline) {
     headerAction = (
-      <Link
-        href={`/employee/requests/${activeRequest.id}`}
-        className="inline-flex items-center gap-1.5 rounded-xl bg-credential px-4 py-2 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
-      >
-        <ArrowRight className="h-4 w-4" />
-        <span>Track In-Progress Request</span>
-      </Link>
+      <div className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-3.5 py-2 text-xs font-semibold text-credential shadow-2xs">
+        <span className="relative flex h-2 w-2">
+          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
+          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
+        </span>
+        <span>Active Request: <span className="font-bold text-ink">{activeRequest.requestNo}</span></span>
+      </div>
     );
   } else if (isRejected) {
     headerAction = (
@@ -381,7 +382,7 @@ export default function EmployeePortalPage() {
                     className="inline-flex items-center gap-2 rounded-xl bg-credential px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
                   >
                     <ArrowRight className="h-4 w-4" />
-                    <span>View In-Progress Request</span>
+                    <span>Track In-Progress Request</span>
                   </Link>
                 )}
 
@@ -550,39 +551,64 @@ export default function EmployeePortalPage() {
           </button>
 
           {historyOpen && (
-            <div className="border-t border-rule p-5 animate-fade-in">
+            <div className="border-t border-rule animate-fade-in overflow-x-auto">
               {historyRequests.length === 0 ? (
-                <p className="text-center text-sm text-slate-500 py-4">
+                <p className="text-center text-sm text-slate-500 py-8">
                   No previous closed or archived requests found in audit history.
                 </p>
               ) : (
-                <div className="divide-y divide-rule">
-                  {historyRequests.map((r) => (
-                    <div
-                      key={r.id}
-                      className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3.5"
-                    >
-                      <div>
-                        <div className="flex items-center gap-2.5">
-                          <span className="identifier text-sm font-bold text-credential">
-                            {r.requestNo}
-                          </span>
-                          <StatusBadge status={r.status} />
-                        </div>
-                        <p className="text-sm text-slate-600 mt-1">
-                          {r.requestType} Request · Submitted on {formatDate(r.submittedAt)}
-                        </p>
-                      </div>
-
-                      <Link
-                        href={`/employee/requests/${r.id}`}
-                        className="inline-flex items-center gap-1 text-sm font-semibold text-credential hover:underline"
+                <table className="w-full text-left text-sm border-collapse">
+                  <thead>
+                    <tr className="border-b border-rule bg-slate-50/70 text-[11px] font-bold uppercase tracking-wider text-slate-500">
+                      <th className="py-3 px-5">Request Reference</th>
+                      <th className="py-3 px-4">Application Type</th>
+                      <th className="py-3 px-4">Department Unit</th>
+                      <th className="py-3 px-4">Submission Date</th>
+                      <th className="py-3 px-4">Audit Status</th>
+                      <th className="py-3 px-5 text-right">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-rule text-slate-700">
+                    {historyRequests.map((r) => (
+                      <tr
+                        key={r.id}
+                        className="hover:bg-slate-50/60 transition-colors group"
                       >
-                        Inspect Record →
-                      </Link>
-                    </div>
-                  ))}
-                </div>
+                        <td className="py-3.5 px-5">
+                          <div className="flex items-center gap-2">
+                            <FileText className="h-4 w-4 text-slate-400 group-hover:text-credential transition-colors shrink-0" />
+                            <span className="identifier text-xs font-bold text-ink">
+                              {r.requestNo}
+                            </span>
+                          </div>
+                        </td>
+                        <td className="py-3.5 px-4 font-medium text-slate-600">
+                          <span className="inline-flex items-center rounded-md bg-slate-100 px-2 py-0.5 text-xs font-semibold text-slate-700 border border-slate-200/80">
+                            {r.requestType}
+                          </span>
+                        </td>
+                        <td className="py-3.5 px-4 text-xs font-medium text-slate-600">
+                          {r.departmentName || "General Staff"}
+                        </td>
+                        <td className="py-3.5 px-4 text-xs text-slate-500 whitespace-nowrap">
+                          {r.submittedAt ? formatDate(r.submittedAt) : formatDate(r.createdAt)}
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <StatusBadge status={r.status} />
+                        </td>
+                        <td className="py-3.5 px-5 text-right whitespace-nowrap">
+                          <Link
+                            href={`/employee/requests/${r.id}`}
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-credential hover:text-[#173B72] bg-blue-50/70 hover:bg-blue-100/80 border border-blue-200/60 px-3 py-1.5 rounded-lg transition-all shadow-2xs"
+                          >
+                            <span>Inspect Record</span>
+                            <ArrowRight className="h-3 w-3" />
+                          </Link>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
               )}
             </div>
           )}
