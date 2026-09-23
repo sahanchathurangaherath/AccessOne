@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth";
 import { AppShell } from "@/components/app-shell";
 import { FullPageSpinner } from "@/components/states";
+import { SecOpsCopilotDrawer } from "@/components/ai/SecOpsCopilotDrawer";
 
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   const { user, isLoading } = useAuth();
@@ -17,5 +18,15 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (isLoading) return <FullPageSpinner />;
   if (!user) return null;
 
-  return <AppShell>{children}</AppShell>;
+  const showCopilot =
+    user.role === "SECURITY_OFFICER" ||
+    user.role === "IT_ADMIN" ||
+    user.role === "SYSTEM_ADMIN";
+
+  return (
+    <AppShell>
+      {children}
+      {showCopilot && <SecOpsCopilotDrawer />}
+    </AppShell>
+  );
 }

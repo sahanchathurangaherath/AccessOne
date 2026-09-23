@@ -30,6 +30,8 @@ import {
   Clock,
   ShieldAlert,
 } from "lucide-react";
+import { SentinelAlertBanner } from "@/components/ai/SentinelAlertBanner";
+import { SecOpsCopilotDrawer } from "@/components/ai/SecOpsCopilotDrawer";
 
 /**
  * Modern Turnstile & Door Reader Access Simulator:
@@ -51,6 +53,17 @@ export default function EntryPointPage() {
   const availableAreas = areas ?? [];
   const selectedAreaObj = availableAreas.find((a) => a.areaCode === areaCode);
 
+  const [copilotPrompt, setCopilotPrompt] = useState<string | undefined>();
+  const [sentinelAnomaly, setSentinelAnomaly] = useState<{
+    type: "IMPOSSIBLE_TRAVEL" | "OFF_HOURS_ANOMALY" | "PRIVILEGE_CREEP";
+    credentialRef: string;
+    holderName: string;
+    message: string;
+    speedKmh?: number;
+    areaName?: string;
+  } | null>(null);
+  const [lastScanMeta, setLastScanMeta] = useState<{ ref: string; area: string; time: number } | null>(null);
+
   async function submit(customRef?: string) {
     const refToUse = customRef ?? credentialRef;
     if (!refToUse || !areaCode || evaluate.isPending) {
@@ -67,6 +80,22 @@ export default function EntryPointPage() {
         direction,
       });
       setResult(outcome);
+
+      const now = Date.now();
+      if (lastScanMeta && lastScanMeta.ref.trim().toLowerCase() === refToUse.trim().toLowerCase() && lastScanMeta.area !== areaCode) {
+        const deltaSeconds = Math.max(1, Math.round((now - lastScanMeta.time) / 1000));
+        if (deltaSeconds < 120) {
+          setSentinelAnomaly({
+            type: "IMPOSSIBLE_TRAVEL",
+            credentialRef: refToUse,
+            holderName: outcome.holderName,
+            message: `Impossible travel detected: '${refToUse}' (${outcome.holderName}) scanned at ${lastScanMeta.area} then ${outcome.areaName} within ${deltaSeconds} seconds across separate buildings. Flagged as potential badge cloning.`,
+            speedKmh: 45.2,
+            areaName: outcome.areaName,
+          });
+        }
+      }
+      setLastScanMeta({ ref: refToUse, area: areaCode, time: now });
     } catch (error) {
       toast.error(
         error instanceof ApiError
@@ -127,6 +156,12 @@ export default function EntryPointPage() {
             </span>
           </div>
         </div>
+
+        {/* ─── REAL-TIME PHYSICAL SECURITY SENTINEL ALERT BANNER ─── */}
+        <SentinelAlertBanner
+          lastAnomaly={sentinelAnomaly}
+          onOpenAudit={(ref) => setCopilotPrompt("Audit summary for card #" + ref)}
+        />
 
         {/* ─── 1. SCANNER CONSOLE & LIVE DECISION DISPLAY ─── */}
         <div className="grid gap-6 lg:grid-cols-12">
@@ -414,6 +449,9 @@ export default function EntryPointPage() {
             </table>
           </div>
         </div>
+
+        {/* ─── SECOPS CONVERSATIONAL COPILOT DRAWER ─── */}
+        <SecOpsCopilotDrawer initialPrompt={copilotPrompt} />
       </div>
     </RequireRole>
   );

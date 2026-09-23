@@ -16,7 +16,6 @@ public interface SecurityAlertRepository extends JpaRepository<SecurityAlert, Lo
     @Query(value = """
            select a from SecurityAlert a
            where (:status is null or a.status = :status)
-           order by a.createdAt desc
            """,
            countQuery = """
            select count(a) from SecurityAlert a

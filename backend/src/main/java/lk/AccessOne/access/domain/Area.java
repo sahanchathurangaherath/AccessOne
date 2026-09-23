@@ -39,6 +39,12 @@ public class Area extends AuditableEntity {
     @Column(name = "description", length = 255)
     private String description;
 
+    @Column(name = "geo_x")
+    private Double geoX;
+
+    @Column(name = "geo_y")
+    private Double geoY;
+
     protected Area() { }
 
     public Area(String areaCode, String areaName, String building, String floorNo,
@@ -78,4 +84,10 @@ public class Area extends AuditableEntity {
     public boolean isRestricted() { return restricted; }
     public boolean isActive() { return active; }
     public String getDescription() { return description; }
+    public Double getGeoX() { return geoX != null ? geoX : 0.0; }
+    public Double getGeoY() { return geoY != null ? geoY : 0.0; }
+    public void setCoordinates(Double geoX, Double geoY) {
+        this.geoX = geoX;
+        this.geoY = geoY;
+    }
 }

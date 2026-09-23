@@ -36,6 +36,8 @@ public interface AccessLogRepository extends JpaRepository<AccessLog, Long> {
                             @Param("to") LocalDateTime to,
                             Pageable pageable);
 
+    java.util.Optional<AccessLog> findTopByCredentialRefAndIdNotOrderByAccessTimeDesc(String credentialRef, Long currentLogId);
+
     /**
      * "How many times has this credential been refused recently" -- runs
      * after every denial. Backed by idx_accesslogs_denials (V70), a

@@ -17,6 +17,7 @@ import {
   approvals, useVerify, useApprove, useReject, useComment,
   useDeleteComment, useRemovePendingRequest,
 } from "../../_hooks/useApprovals";
+import { AiGatekeeperCard } from "@/components/ai/AiGatekeeperCard";
 
 export default function ApprovalDecisionPage() {
   const params = useParams<{ id: string }>();
@@ -128,6 +129,22 @@ export default function ApprovalDecisionPage() {
 
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
+          {/* AI Gatekeeper Autonomous Triage & HITL Approval */}
+          <AiGatekeeperCard
+            requestId={requestId}
+            onOneClickApprove={async () => {
+              if (approval.canVerify) {
+                try {
+                  await verify.mutateAsync(requestId);
+                } catch {
+                  // continue
+                }
+              }
+              await onApprove();
+            }}
+            isApproving={approve.isPending || verify.isPending}
+          />
+
           <Card>
             <CardHeader><CardTitle>Details</CardTitle></CardHeader>
             <CardContent className="space-y-3 text-sm">
