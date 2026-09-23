@@ -51,7 +51,8 @@ public class SecurityConfig {
         http
             .csrf(csrf -> csrf
                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
-                .csrfTokenRequestHandler(csrfHandler))
+                .csrfTokenRequestHandler(csrfHandler)
+                .ignoringRequestMatchers("/api/v1/auth/**"))
 
             // No CORS configuration anywhere: the Next.js rewrite proxy means
             // the browser only ever sees one origin. This is deliberate.
@@ -93,7 +94,9 @@ public class SecurityConfig {
 
                 // --- open ---
                 .requestMatchers("/api/v1/auth/login",
-                                 "/api/v1/auth/csrf").permitAll()
+                                 "/api/v1/auth/csrf",
+                                 "/api/v1/auth/forgot-password",
+                                 "/api/v1/auth/reset-password").permitAll()
                 .requestMatchers("/api/actuator/health").permitAll()
 
                 // --- Module 1: employees raise and track their own requests ---
@@ -134,9 +137,9 @@ public class SecurityConfig {
                 .requestMatchers("/api/v1/access/**", "/api/v1/alerts/**", "/api/v1/blacklist/**")
                     .hasAnyRole("SECURITY_OFFICER", "SYSTEM_ADMIN")
 
-                // --- employee provisioning: HR creates the authoritative record;
+                // --- employee directory & provisioning: HR manages employee records;
                 // scoped narrower than /admin/** below, which stays SYSTEM_ADMIN-only ---
-                .requestMatchers(HttpMethod.POST, "/api/v1/admin/employees/provision")
+                .requestMatchers("/api/v1/admin/employees/**")
                     .hasAnyRole("HR_MANAGER", "SYSTEM_ADMIN")
 
                 // --- administration ---

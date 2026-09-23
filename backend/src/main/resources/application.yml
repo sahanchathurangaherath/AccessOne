@@ -33,9 +33,30 @@ spring:
       max-file-size: 5MB
       max-request-size: 6MB
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${SMTP_USERNAME:}
+    password: ${SMTP_APP_PASSWORD:}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+            required: true
+          connectiontimeout: 10000
+          timeout: 10000
+          writetimeout: 10000
+
 accessone:
   storage:
     root: ./storage
+  mail:
+    from: ${SMTP_FROM:AccessOne <accessoneid@gmail.com>}
+    portal-base-url: ${PORTAL_BASE_URL:http://localhost:3000}
+    frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
+    enabled: ${SMTP_ENABLED:true}
 
 server:
   port: 8080

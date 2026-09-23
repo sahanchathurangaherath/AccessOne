@@ -30,4 +30,36 @@ public interface EmployeeRepository extends JpaRepository<Employee, Long> {
     long countByDepartmentIdAndEmploymentStatus(Long departmentId, EmploymentStatus status);
 
     long countByDepartmentId(Long departmentId);
+
+    @Query(value = """
+           select e from Employee e
+           join fetch e.department d
+           where (:query is null or :query = ''
+                  or lower(e.empId) like lower(concat('%', :query, '%'))
+                  or lower(e.firstName) like lower(concat('%', :query, '%'))
+                  or lower(e.lastName) like lower(concat('%', :query, '%'))
+                  or lower(e.email) like lower(concat('%', :query, '%'))
+                  or lower(e.designation) like lower(concat('%', :query, '%'))
+                  or lower(d.deptName) like lower(concat('%', :query, '%')))
+             and (:departmentId is null or d.id = :departmentId)
+             and (:status is null or e.employmentStatus = :status)
+           """,
+           countQuery = """
+           select count(e) from Employee e
+           join e.department d
+           where (:query is null or :query = ''
+                  or lower(e.empId) like lower(concat('%', :query, '%'))
+                  or lower(e.firstName) like lower(concat('%', :query, '%'))
+                  or lower(e.lastName) like lower(concat('%', :query, '%'))
+                  or lower(e.email) like lower(concat('%', :query, '%'))
+                  or lower(e.designation) like lower(concat('%', :query, '%'))
+                  or lower(d.deptName) like lower(concat('%', :query, '%')))
+             and (:departmentId is null or d.id = :departmentId)
+             and (:status is null or e.employmentStatus = :status)
+           """)
+    Page<Employee> searchEmployees(
+            @Param("query") String query,
+            @Param("departmentId") Long departmentId,
+            @Param("status") EmploymentStatus status,
+            Pageable pageable);
 }

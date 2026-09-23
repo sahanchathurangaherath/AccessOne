@@ -142,6 +142,8 @@ public class PrintJobService {
         statusChanges.apply("id_cards", card.getId(), card::getStatus,
                 () -> card.moveTo(CardStatus.PRINTED));
 
+        events.publishEvent(new lk.AccessOne.print.event.CardPrinted(card.getId(), card.getCardSerial(), card.getEmployee().getId()));
+
         return mapper.toDetail(job);
     }
 

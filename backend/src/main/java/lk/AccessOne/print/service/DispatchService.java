@@ -87,6 +87,10 @@ public class DispatchService {
         statusChanges.apply("id_cards", card.getId(), card::getStatus,
                 () -> card.moveTo(CardStatus.DISPATCHED));
 
+        events.publishEvent(new lk.AccessOne.print.event.CardDispatched(
+                card.getId(), card.getCardSerial(), card.getEmployee().getId(),
+                record.getDispatchMethod(), record.getRemarks()));
+
         return mapper.toDetail(record);
     }
 

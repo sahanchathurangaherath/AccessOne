@@ -1,0 +1,280 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>AccessOne Digital Visitor Pass</title>
+  <style>
+    @page {
+      size: A5 portrait;
+      margin: 12mm;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background: #FFFFFF;
+      font-family: "Noto Sans", "Noto Sans Sinhala", "Noto Sans Tamil", sans-serif;
+      color: #0F172A;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .pass-container {
+      border: 2px solid #1E3A8A;
+      border-radius: 12px;
+      overflow: hidden;
+      background: #FFFFFF;
+    }
+
+    /* Header */
+    .header {
+      background: #0F294D;
+      color: #FFFFFF;
+      padding: 16px 20px;
+    }
+
+    .org-title {
+      font-size: 12px;
+      font-weight: 800;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: #93C5FD;
+      margin-bottom: 4px;
+    }
+
+    .pass-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFFFFF;
+      letter-spacing: 0.5px;
+    }
+
+    .pass-status-badge {
+      float: right;
+      background: #10B981;
+      color: #FFFFFF;
+      font-size: 11px;
+      font-weight: 800;
+      padding: 4px 10px;
+      border-radius: 6px;
+      text-transform: uppercase;
+      margin-top: -24px;
+    }
+
+    /* Content body */
+    .body {
+      padding: 20px;
+    }
+
+    .grid {
+      display: table;
+      width: 100%;
+    }
+
+    .left-col {
+      display: table-cell;
+      width: 62%;
+      vertical-align: top;
+      padding-right: 15px;
+    }
+
+    .right-col {
+      display: table-cell;
+      width: 38%;
+      vertical-align: top;
+      text-align: center;
+    }
+
+    /* QR Code Card */
+    .qr-card {
+      background: #F8FAFC;
+      border: 1px solid #CBD5E1;
+      border-radius: 10px;
+      padding: 12px;
+      text-align: center;
+    }
+
+    .qr-img {
+      width: 140px;
+      height: 140px;
+      margin: 0 auto;
+      display: block;
+    }
+
+    .qr-caption {
+      font-size: 11px;
+      font-weight: 700;
+      color: #475569;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-top: 8px;
+    }
+
+    .qr-subtext {
+      font-size: 9px;
+      color: #94A3B8;
+      margin-top: 2px;
+    }
+
+    /* Info Fields */
+    .field-group {
+      margin-bottom: 12px;
+    }
+
+    .field-label {
+      font-size: 10px;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #64748B;
+      margin-bottom: 2px;
+    }
+
+    .field-value {
+      font-size: 14px;
+      font-weight: 700;
+      color: #0F172A;
+    }
+
+    .field-value-lg {
+      font-size: 18px;
+      font-weight: 800;
+      color: #1E3A8A;
+    }
+
+    .field-value-mono {
+      font-family: "Noto Sans Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1E3A8A;
+    }
+
+    .highlight-box {
+      background: #EFF6FF;
+      border: 1px solid #BFDBFE;
+      border-radius: 8px;
+      padding: 10px 14px;
+      margin: 14px 0;
+    }
+
+    .highlight-box .field-label {
+      color: #1D4ED8;
+    }
+
+    .highlight-box .field-value {
+      color: #1E40AF;
+      font-size: 13px;
+    }
+
+    /* Security Rules & Instructions */
+    .rules-box {
+      border-top: 1px dashed #CBD5E1;
+      margin-top: 16px;
+      padding-top: 14px;
+      font-size: 10px;
+      color: #64748B;
+      line-height: 1.6;
+    }
+
+    .rules-title {
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: #334155;
+      margin-bottom: 4px;
+    }
+
+    /* Footer */
+    .footer {
+      background: #F8FAFC;
+      border-top: 1px solid #E2E8F0;
+      padding: 10px 20px;
+      font-size: 10px;
+      color: #94A3B8;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="pass-container">
+    <div class="header">
+      <div class="org-title">Ceylon Metro Holdings · AccessOne</div>
+      <div class="pass-title">DIGITAL VISITOR PASS</div>
+      <div class="pass-status-badge">AUTHORIZED</div>
+    </div>
+
+    <div class="body">
+      <div class="grid">
+        <div class="left-col">
+          <div class="field-group">
+            <div class="field-label">Visitor Name</div>
+            <div class="field-value-lg" th:text="${pass.visitorName}">Jane Smith</div>
+          </div>
+
+          <div class="field-group" th:if="${pass.company != null and pass.company != ''}">
+            <div class="field-label">Organization / Company</div>
+            <div class="field-value" th:text="${pass.company}">Acme Corp</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">Identification Document</div>
+            <div class="field-value" th:text="${pass.idDocType + ' - ' + pass.idDocNo}">NIC - 199512345678</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">Host Employee</div>
+            <div class="field-value" th:text="${pass.hostName}">John Doe</div>
+          </div>
+
+          <div class="field-group">
+            <div class="field-label">Purpose of Visit</div>
+            <div class="field-value" th:text="${pass.purpose}">Business Meeting</div>
+          </div>
+        </div>
+
+        <div class="right-col">
+          <div class="qr-card">
+            <img class="qr-img" th:src="${qrDataUri}" alt="Turnstile Optical QR Credential"/>
+            <div class="qr-caption">Gate Access QR</div>
+            <div class="qr-subtext">Scan at security turnstile</div>
+          </div>
+
+          <div style="margin-top: 12px; text-align: center;">
+            <div class="field-label">Pass Number</div>
+            <div class="field-value-mono" th:text="${pass.passNo}">VP-2026-0001</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="highlight-box">
+        <div class="field-label">Authorized Validity Window</div>
+        <div class="field-value">
+          <strong>From:</strong> <span th:text="${pass.validFrom}">2026-09-22 09:00</span>
+          &nbsp;&nbsp;|&nbsp;&nbsp;
+          <strong>Until:</strong> <span th:text="${pass.validUntil}">2026-09-22 17:00</span>
+        </div>
+        <div style="margin-top: 4px; font-size: 11px; color: #1E40AF;" th:if="${pass.clearanceLevel != null}">
+          <strong>Clearance Level:</strong> <span th:text="${pass.clearanceLevel}">General Access</span>
+        </div>
+      </div>
+
+      <div class="rules-box">
+        <div class="rules-title">Security & Building Regulations</div>
+        <p>1. Please present this pass and your government-issued ID upon arrival at the security desk.</p>
+        <p>2. This digital pass is non-transferable and valid exclusively for the designated timeframe.</p>
+        <p>3. Visitors must remain accompanied by their host employee in restricted access zones.</p>
+      </div>
+    </div>
+
+    <div class="footer">
+      Generated automatically by AccessOne Physical Security Information Management System
+    </div>
+  </div>
+</body>
+</html>

@@ -5,6 +5,7 @@ import lk.AccessOne.access.repository.AccessLevelRepository;
 import lk.AccessOne.card.service.QrCodeService;
 import lk.AccessOne.identity.domain.User;
 import lk.AccessOne.identity.repository.UserRepository;
+import lk.AccessOne.notification.service.EmailService;
 import lk.AccessOne.organisation.domain.Employee;
 import lk.AccessOne.organisation.repository.EmployeeRepository;
 import lk.AccessOne.shared.audit.AuditEvent;
@@ -34,10 +35,14 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
+import java.time.format.DateTimeFormatter;
 import java.util.EnumSet;
+import java.util.Map;
 
 @Service
 public class VisitorPassService {
+
+    private static final DateTimeFormatter DATE_TIME = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm");
 
     /** Statuses that still occupy the one-live-pass-per-visitor slot. */
     private static final EnumSet<PassStatus> LIVE_STATUSES =
@@ -50,6 +55,8 @@ public class VisitorPassService {
     private final AccessLevelRepository accessLevels;
     private final UserRepository users;
     private final QrCodeService qrCodes;
+    private final VisitorPassPdfService passPdfService;
+    private final EmailService emailService;
     private final VisitorMapper mapper;
     private final EntityLookup lookup;
     private final StatusChangeSupport statusChanges;
@@ -61,7 +68,8 @@ public class VisitorPassService {
     public VisitorPassService(VisitorRepository visitors, VisitorPassRepository passes,
                                VisitLogRepository visitLogs, EmployeeRepository employees,
                                AccessLevelRepository accessLevels, UserRepository users,
-                               QrCodeService qrCodes, VisitorMapper mapper, EntityLookup lookup,
+                               QrCodeService qrCodes, VisitorPassPdfService passPdfService,
+                               EmailService emailService, VisitorMapper mapper, EntityLookup lookup,
                                StatusChangeSupport statusChanges, CurrentUserProvider currentUser,
                                ApplicationEventPublisher events, SequenceGenerator sequences,
                                @Value("${accessone.credentials.qr-base-url}") String qrBaseUrl) {
@@ -72,6 +80,8 @@ public class VisitorPassService {
         this.accessLevels = accessLevels;
         this.users = users;
         this.qrCodes = qrCodes;
+        this.passPdfService = passPdfService;
+        this.emailService = emailService;
         this.mapper = mapper;
         this.lookup = lookup;
         this.statusChanges = statusChanges;
@@ -148,6 +158,33 @@ public class VisitorPassService {
         events.publishEvent(AuditEvent.created("visitor_passes", pass.getId(),
                 AuditValue.of().with("pass_no", passNo).with("valid_until", input.validUntil()).json()));
 
+        if (visitor.getEmail() != null && !visitor.getEmail().isBlank()) {
+            try {
+                byte[] pdfBytes = passPdfService.render(pass);
+                String attachmentName = "VisitorPass-" + pass.getPassNo() + ".pdf";
+                emailService.sendHtmlEmailWithAttachment(
+                        visitor.getEmail(),
+                        "AccessOne Digital Visitor Pass - " + pass.getPassNo(),
+                        "visitor-pass-issued",
+                        Map.of(
+                                "visitorName", visitor.getFullName(),
+                                "passNo", pass.getPassNo(),
+                                "hostName", host.getFullName(),
+                                "purpose", pass.getPurpose(),
+                                "validFrom", pass.getValidFrom().format(DATE_TIME),
+                                "validUntil", pass.getValidUntil().format(DATE_TIME),
+                                "accessLevelName", level.getLevelName(),
+                                "attachmentName", attachmentName
+                        ),
+                        attachmentName,
+                        pdfBytes,
+                        "application/pdf"
+                );
+            } catch (Exception ignored) {
+                // Non-blocking: Pass issuance transaction must not fail if SMTP is unreachable
+            }
+        }
+
         return mapper.toDetail(pass);
     }
 
@@ -163,6 +200,24 @@ public class VisitorPassService {
         events.publishEvent(new AuditEvent("visitor_passes", passId, AuditAction.UPDATE,
                 AuditValue.of().with("valid_until", before).json(),
                 AuditValue.of().with("valid_until", newUntil).with("reason", reason).json()));
+
+        if (pass.getVisitor().getEmail() != null && !pass.getVisitor().getEmail().isBlank()) {
+            try {
+                emailService.sendHtmlEmail(
+                        pass.getVisitor().getEmail(),
+                        "AccessOne Visitor Pass Validity Extended - " + pass.getPassNo(),
+                        "visitor-pass-extended",
+                        Map.of(
+                                "visitorName", pass.getVisitor().getFullName(),
+                                "passNo", pass.getPassNo(),
+                                "newValidUntil", newUntil.format(DATE_TIME),
+                                "reason", reason != null ? reason : ""
+                        )
+                );
+            } catch (Exception ignored) {
+                // Non-blocking
+            }
+        }
 
         return mapper.toDetail(pass);
     }

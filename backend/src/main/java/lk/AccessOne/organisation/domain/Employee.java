@@ -112,4 +112,14 @@ public class Employee extends AuditableEntity {
     public void updatePhoto(String photoPath) {
         this.photoPath = photoPath;
     }
+
+    public void updateDetails(String firstName, String lastName, String email,
+                              String phone, String designation, Department department) {
+        this.firstName = firstName;
+        this.lastName = lastName;
+        this.email = email;
+        this.phone = phone;
+        this.designation = designation;
+        this.department = department;
+    }
 }

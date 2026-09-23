@@ -3,8 +3,19 @@ spring:
     username: accessone_app
     password: PasswordHere
 
+  # Gmail SMTP Settings (Optional for local testing)
+  # Generate a 16-character App Password at: Google Account > Security > 2-Step Verification > App Passwords
+  mail:
+    username: "your-email@gmail.com"
+    password: "your-16-char-google-app-password"
+
 accessone:
   credentials:
     # 32 random bytes, base64. Generate your own -- never reuse this one or commit a real key.
     nfc-key: "PASTE_YOUR_BASE64_KEY_HERE"
     qr-base-url: "https://accessone.local/verify"
+  mail:
+    from: "AccessOne <your-email@gmail.com>"
+    frontend-base-url: "http://localhost:3000"
+    enabled: true
+

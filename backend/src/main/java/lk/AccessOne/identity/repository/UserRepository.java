@@ -34,4 +34,12 @@ public interface UserRepository extends JpaRepository<User, Long> {
            where u.username = :username
            """)
     Optional<User> findByUsernameWithRoleAndPermissions(@Param("username") String username);
+
+    @Query("""
+           select u from User u
+           left join fetch u.employee e
+           where lower(u.username) = lower(:identifier)
+              or (e is not null and lower(e.email) = lower(:identifier))
+           """)
+    Optional<User> findByUsernameOrEmailIgnoreCase(@Param("identifier") String identifier);
 }
