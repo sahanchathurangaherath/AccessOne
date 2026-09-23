@@ -2,9 +2,6 @@ package lk.AccessOne.ai.gatekeeper.domain;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lk.AccessOne.shared.domain.AuditableEntity;
 
@@ -13,10 +10,6 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "card_request_ai_evaluations")
 public class RequestAiEvaluation extends AuditableEntity {
-
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
 
     @Column(name = "card_request_id", nullable = false)
     private Long cardRequestId;
@@ -57,7 +50,6 @@ public class RequestAiEvaluation extends AuditableEntity {
         this.evaluatedAt = LocalDateTime.now();
     }
 
-    public Long getId() { return id; }
     public Long getCardRequestId() { return cardRequestId; }
     public int getRiskScore() { return riskScore; }
     public String getRiskLevel() { return riskLevel; }
