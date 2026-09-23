@@ -202,6 +202,15 @@ export function AiGatekeeperCard({
               )}
             </div>
           </div>
+
+          {parsedChecks.summary && (
+            <div className={cn(
+              "pt-2 border-t border-rule/60 text-[11px] font-medium leading-relaxed",
+              evalData.photoComplianceStatus === "COMPLIANT" ? "text-slate-600" : "text-rose-700"
+            )}>
+              {parsedChecks.summary}
+            </div>
+          )}
         </div>
 
         {/* Least Privilege Access Level Recommendation */}
