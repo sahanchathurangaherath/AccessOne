@@ -57,6 +57,11 @@ accessone:
     portal-base-url: ${PORTAL_BASE_URL:http://localhost:3000}
     frontend-base-url: ${FRONTEND_BASE_URL:http://localhost:3000}
     enabled: ${SMTP_ENABLED:true}
+  ai:
+    enabled: ${AI_ENABLED:true}
+    api-key: ${GEMINI_API_KEY:}
+    model: ${GEMINI_MODEL:gemini-1.5-flash}
+    base-url: ${GEMINI_BASE_URL:https://generativelanguage.googleapis.com/v1beta/openai/}
 
 server:
   port: 8080
