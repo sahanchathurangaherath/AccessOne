@@ -231,22 +231,35 @@ export function QuickCardDrawer({ cardId, onClose }: QuickCardDrawerProps) {
         {card && (
           <div className="border-t border-rule bg-surface p-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <div className="flex items-center gap-2 w-full sm:w-auto">
-              <Button
-                variant="outline"
-                size="sm"
-                className="w-full gap-1.5 rounded-xl text-xs flex-1 sm:flex-initial"
-                render={
-                  <a
-                    href={`/api/v1/cards/${card.id}/pdf`}
-                    target="_blank"
-                    rel="noreferrer"
-                    download={`card-${card.cardSerial || card.id}.pdf`}
-                  />
-                }
-              >
-                <Download className="h-3.5 w-3.5 text-slate-500" />
-                <span>Download PDF</span>
-              </Button>
+              {["GENERATED", "QUEUED_FOR_PRINT", "PRINTED"].includes(card.status) ? (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  className="w-full gap-1.5 rounded-xl text-xs flex-1 sm:flex-initial"
+                  render={
+                    <a
+                      href={`/api/v1/cards/${card.id}/pdf`}
+                      target="_blank"
+                      rel="noreferrer"
+                      download={`card-${card.cardSerial || card.id}.pdf`}
+                    />
+                  }
+                >
+                  <Download className="h-3.5 w-3.5 text-slate-500" />
+                  <span>Download PDF</span>
+                </Button>
+              ) : (
+                <Button
+                  variant="outline"
+                  size="sm"
+                  disabled
+                  title="PDF pass was only available prior to physical card dispatch"
+                  className="w-full gap-1.5 rounded-xl text-xs flex-1 sm:flex-initial opacity-60 cursor-not-allowed"
+                >
+                  <Download className="h-3.5 w-3.5 text-slate-400" />
+                  <span>PDF Closed (Dispatched)</span>
+                </Button>
+              )}
 
               {card.status === "ACTIVE" && (
                 <Button

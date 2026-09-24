@@ -1,7 +1,8 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { toast } from "sonner";
 import { RequireRole } from "@/components/require-role";
 import { DataTable, type Column } from "@/components/data-table";
@@ -50,8 +51,17 @@ const STATUS_FILTERS = [
 ];
 
 export default function PassesPage() {
+  const searchParams = useSearchParams();
+  const initialStatus = searchParams.get("status") || "";
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("");
+  const [statusFilter, setStatusFilter] = useState(initialStatus);
+
+  useEffect(() => {
+    const s = searchParams.get("status");
+    if (s !== null) {
+      setStatusFilter(s);
+    }
+  }, [searchParams]);
   const { data, isLoading, isError, refetch } = passes.useList({ sort: "createdAt,desc" });
   const issue = passes.useCreate();
   const { data: levels } = useAccessLevels();

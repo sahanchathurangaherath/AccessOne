@@ -5,13 +5,25 @@ import { useMutation } from "@tanstack/react-query";
 import { api } from "@/lib/api";
 import type { CopilotMessage, CopilotQueryResponse } from "@/types/ai";
 
-export function useSecOpsCopilot() {
+export function useSecOpsCopilot(userRole?: string) {
+  const getInitialMessage = (): string => {
+    switch (userRole) {
+      case "EMPLOYEE":
+        return "👋 **Welcome to AccessOne Copilot!**\n\nI'm your AI assistant for ID badge requests, digital passes, facility access, and card help:\n- *'What is the status of my card request?'*\n- *'How long is my digital PDF pass valid?'*\n- *'How do I report a lost or damaged card?'*\n- *'What facility zones does my badge access?'*";
+      case "HR_MANAGER":
+        return "👋 **AccessOne HR & Identity Copilot Ready**.\n\nAsk me about onboarding pipelines, card verification, or identity policies:\n- *'Show me pending employee card requests'*\n- *'What are the requirements for employee ID photo approval?'*\n- *'Summarize card replacement guidelines'*";
+      case "PRINT_SUPERVISOR":
+        return "👋 **AccessOne Production Copilot Ready**.\n\nAsk me about print queues, batch throughput, or QC analysis:\n- *'Show me current print queue status'*\n- *'What are the main causes for QC rejections?'*\n- *'List cards ready for dispatch packaging'*";
+      default:
+        return "👋 **AccessOne SecOps Copilot Ready**.\n\nYou can ask about real-time access telemetry, on-site visitors, or trace incident cards:\n- *'Show me active visitors currently on-site'*\n- *'Generate incident audit for card serial #ACO-2026-000030'*\n- *'Show me open security alerts and impossible travel warnings'*";
+    }
+  };
+
   const [messages, setMessages] = useState<CopilotMessage[]>([
     {
       id: "initial-assistant-msg",
       role: "assistant",
-      content:
-        "👋 **AccessOne SecOps Copilot Ready**.\n\nYou can ask about real-time access telemetry, on-site visitors, or trace incident cards:\n- *'Show me active visitors currently on-site'*\n- *'Generate incident audit for card serial #ACO-2026-000030'*\n- *'Show me open security alerts and impossible travel warnings'*",
+      content: getInitialMessage(),
       timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
     },
   ]);
@@ -63,7 +75,9 @@ export function useSecOpsCopilot() {
       {
         id: "cleared-msg",
         role: "assistant",
-        content: "Conversation history cleared. How can I assist physical security operations?",
+        content: userRole === "EMPLOYEE"
+          ? "Conversation reset. How can I help with your ID badge, card request, or facility access?"
+          : "Conversation history cleared. How can I assist physical access and security operations?",
         timestamp: new Date().toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" }),
       },
     ]);

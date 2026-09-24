@@ -131,9 +131,9 @@ export function AppShell({ children }: { children: React.ReactNode }) {
   let visibleGroups = NAV_GROUPS.map((group) => ({
     ...group,
     items: group.items.filter((item) => {
-      // Personal self-service requests are only relevant for employees with a linked employee profile
+      // Personal self-service requests are strictly reserved for the standard EMPLOYEE role
       if (item.href === "/employee") {
-        return user.role === "EMPLOYEE" || Boolean(user.employeeId);
+        return user.role === "EMPLOYEE";
       }
       // Avoid duplicate User Accounts item under HR Approvals for System Admin
       if (group.title === "HR Approvals" && item.href === "/hr/employees" && user.role === "SYSTEM_ADMIN") {

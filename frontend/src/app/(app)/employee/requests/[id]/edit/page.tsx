@@ -15,7 +15,7 @@ export default function EditRequestPage() {
   const { data: request, isLoading, isError, refetch } = requests.useDetail(id);
 
   return (
-    <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
+    <RequireRole allow={["EMPLOYEE"]}>
       <div className="space-y-4">
         <Link
           href={`/employee/requests/${id}`}

@@ -38,8 +38,8 @@ const STEPPER_STAGES: {
 }[] = [
   { key: "draft", label: "Draft Created", description: "Details saved", statuses: ["DRAFT"] },
   { key: "submitted", label: "Submitted", description: "Sent to HR", statuses: ["SUBMITTED"] },
-  { key: "review", label: "HR Verification", description: "Reviewing credentials", statuses: ["UNDER_VERIFICATION"] },
-  { key: "approved", label: "Approved & Queued", description: "Print queue", statuses: ["APPROVED"] },
+  { key: "review", label: "HR Verification", description: "Identity & photo review", statuses: ["UNDER_VERIFICATION"] },
+  { key: "approved", label: "IT & Print Queue", description: "QR & NFC assigned", statuses: ["APPROVED"] },
   { key: "active", label: "Badge Active", description: "Ready / Issued", statuses: [] },
 ];
 
@@ -106,16 +106,6 @@ export default function EmployeePortalPage() {
         <span>Resume Draft & Upload</span>
       </Link>
     );
-  } else if (isPipeline) {
-    headerAction = (
-      <div className="inline-flex items-center gap-2 rounded-xl border border-blue-200 bg-blue-50/80 px-3.5 py-2 text-xs font-semibold text-credential shadow-2xs">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-400 opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-blue-600"></span>
-        </span>
-        <span>Active Request: <span className="font-bold text-ink">{activeRequest.requestNo}</span></span>
-      </div>
-    );
   } else if (isRejected) {
     headerAction = (
       <Link
@@ -126,7 +116,7 @@ export default function EmployeePortalPage() {
         <span>Edit & Resubmit</span>
       </Link>
     );
-  } else {
+  } else if (!activeRequest) {
     headerAction = (
       <Link
         href="/employee/requests/new"
@@ -139,7 +129,7 @@ export default function EmployeePortalPage() {
   }
 
   return (
-    <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
+    <RequireRole allow={["EMPLOYEE"]}>
       <div className="space-y-6">
         {/* Page Header */}
         <PageHeader
@@ -334,52 +324,73 @@ export default function EmployeePortalPage() {
         {/* 2. MIDDLE SECTION: Request Stepper & Lifecycle Container */}
         {activeRequest ? (
           <div className="rounded-2xl border border-rule bg-surface p-6 sm:p-8 shadow-xs space-y-6">
-            {/* Header of Stepper Container */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-rule">
-              <div>
-                <div className="flex items-center gap-2.5">
-                  <span className="identifier text-sm font-bold text-credential bg-blue-50 px-2.5 py-1 rounded-md border border-blue-200">
+            {/* Balanced 3-Section Header of Stepper Container */}
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4 pb-5 border-b border-rule">
+              {/* Left Section: Request Identity & Subtitle */}
+              <div className="space-y-1.5 min-w-0">
+                <div className="flex items-center gap-2 flex-wrap">
+                  <span className="identifier text-xs font-bold text-credential bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200 shadow-2xs">
                     {activeRequest.requestNo}
                   </span>
                   <StatusBadge status={activeRequest.status} />
                   {isDraft && (
-                    <span className="rounded-full bg-slate-100 px-3 py-1 text-xs font-bold text-slate-600 border border-slate-200">
+                    <span className="rounded-full bg-slate-100 px-2.5 py-0.5 text-[11px] font-bold text-slate-600 border border-slate-200">
                       Uncommitted Draft
                     </span>
                   )}
-                  {isPipeline && (
-                    <span className="rounded-full bg-blue-50 px-3 py-1 text-xs font-bold text-blue-700 border border-blue-200">
-                      In Review Pipeline
-                    </span>
-                  )}
                 </div>
-                <h2 className="mt-2 text-lg font-bold text-ink">
+                <h2 className="text-lg font-extrabold text-ink tracking-tight">
                   {isDraft
                     ? `Draft ${activeRequest.requestType} Request Workspace`
                     : `${activeRequest.requestType} ID Card Request Tracker`}
                 </h2>
-                <p className="text-sm text-slate-500 mt-0.5">
+                <p className="text-xs text-slate-500">
                   Initiated on {formatDate(activeRequest.createdAt)}
                   {activeRequest.submittedAt && ` · Submitted on ${formatDate(activeRequest.submittedAt)}`}
                 </p>
               </div>
 
-              {/* Strict Conditional Action Button */}
-              <div className="flex items-center gap-2">
+              {/* Center Section: Stage & Workflow Context (Fills the awkward gap) */}
+              <div className="flex items-center gap-3 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/70 via-slate-50 to-blue-50/40 px-4 py-2.5 self-stretch sm:self-auto shadow-2xs">
+                <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-credential text-white font-black text-xs shadow-xs">
+                  {currentStep + 1}/5
+                </div>
+                <div className="text-xs">
+                  <p className="font-bold text-ink">
+                    {currentStep === 0
+                      ? "Phase 1: Draft Workspace"
+                      : currentStep === 1
+                      ? "Phase 2: Submitted to HR"
+                      : currentStep === 2
+                      ? "Phase 3: HR Verification"
+                      : currentStep === 3
+                      ? "Phase 4: IT Encoding & Print Queue"
+                      : "Phase 5: Badge Active"}
+                  </p>
+                  <p className="text-[11px] text-slate-500">
+                    {currentStep === 3
+                      ? "QR & NFC linked · Queued for production"
+                      : "Corporate credential pipeline"}
+                  </p>
+                </div>
+              </div>
+
+              {/* Right Section: Action Controls */}
+              <div className="flex items-center gap-2 self-start lg:self-center">
                 {isDraft && (
                   <Link
                     href={`/employee/requests/${activeRequest.id}/edit`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-credential px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-credential px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
                   >
                     <FileEdit className="h-4 w-4" />
-                    <span>Edit Draft & Upload</span>
+                    <span>Resume Draft & Upload</span>
                   </Link>
                 )}
 
                 {isPipeline && (
                   <Link
                     href={`/employee/requests/${activeRequest.id}`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-credential px-4 py-2.5 text-sm font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-credential px-4 py-2.5 text-xs font-semibold text-white shadow-xs hover:bg-[#173B72] transition-all"
                   >
                     <ArrowRight className="h-4 w-4" />
                     <span>Track In-Progress Request</span>
@@ -389,7 +400,7 @@ export default function EmployeePortalPage() {
                 {isRejected && (
                   <Link
                     href={`/employee/requests/${activeRequest.id}/edit`}
-                    className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-sm font-semibold text-white shadow-xs transition-all"
+                    className="inline-flex items-center gap-2 rounded-xl bg-red-600 hover:bg-red-700 px-4 py-2.5 text-xs font-semibold text-white shadow-xs transition-all"
                   >
                     <RefreshCw className="h-4 w-4" />
                     <span>Edit & Resubmit</span>
@@ -486,8 +497,8 @@ export default function EmployeePortalPage() {
                       : activeRequest.status === "UNDER_VERIFICATION"
                       ? "HR is reviewing your records and identity documents."
                       : activeRequest.status === "APPROVED"
-                      ? "Approved by HR. Card is queued for physical printing and RFID flashing."
-                      : "Card lifecycle is active."}
+                      ? "Approved by HR. IT has assigned your NFC/RFID credentials and QR code. Badge is queued in print production."
+                      : "Card lifecycle is active. Ready for corporate access."}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-slate-400 hidden sm:inline">

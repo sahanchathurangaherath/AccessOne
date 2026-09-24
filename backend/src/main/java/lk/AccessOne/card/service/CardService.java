@@ -18,6 +18,7 @@ import lk.AccessOne.shared.audit.StatusChangeSupport;
 import lk.AccessOne.shared.audit.TimelineService;
 import lk.AccessOne.shared.enums.AuditAction;
 import lk.AccessOne.shared.enums.CardStatus;
+import lk.AccessOne.shared.enums.RequestStatus;
 import lk.AccessOne.shared.error.BusinessRuleException;
 import lk.AccessOne.shared.error.ResourceNotFoundException;
 import lk.AccessOne.shared.service.EntityLookup;
@@ -117,6 +118,26 @@ public class CardService {
     @Transactional(readOnly = true)
     public CardPdf pdf(Long id) {
         IdCard card = lookup.require(cards.findDetailById(id), "Card", id);
+
+        // 1. Download restriction: Request must have received HR approval
+        if (card.getRequest() != null && card.getRequest().getStatus() != RequestStatus.APPROVED) {
+            throw new BusinessRuleException("CARD_NOT_APPROVED",
+                    "Card PDF download requires approvals from both HR and IT Admin.");
+        }
+
+        // 2. Availability Window: Active only until the card is printed and dispatched
+        CardStatus status = card.getStatus();
+        if (status == CardStatus.DISPATCHED || status == CardStatus.ACTIVE) {
+            throw new BusinessRuleException("DOWNLOAD_WINDOW_EXPIRED",
+                    "Card PDF download is no longer available as the physical card has already been dispatched/activated.");
+        }
+
+        if (status == CardStatus.VOID || status == CardStatus.REVOKED || status == CardStatus.LOST
+                || status == CardStatus.DAMAGED || status == CardStatus.REPLACED || status == CardStatus.SUSPENDED) {
+            throw new BusinessRuleException("CARD_NOT_ACTIVE",
+                    "This card is not eligible for PDF download in its current status: " + status);
+        }
+
         CardCredential credential = lookup.require(credentials.findByCardId(id), "Credential", id);
         return new CardPdf(card.getCardSerial(), pdfService.render(card, credential));
     }

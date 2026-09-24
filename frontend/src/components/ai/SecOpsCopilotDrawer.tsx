@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 import { useSecOpsCopilot } from "@/hooks/useSecOpsCopilot";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,6 +20,9 @@ import {
   ShieldAlert,
   Search,
   ArrowUp,
+  Sparkles,
+  HelpCircle,
+  Compass,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -28,12 +32,23 @@ interface SecOpsCopilotDrawerProps {
 }
 
 export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps) {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [input, setInput] = useState("");
   const [isRecording, setIsRecording] = useState(false);
-  const { messages, sendMessage, clearHistory, isThinking } = useSecOpsCopilot();
+  const [showDiscoveryCallout, setShowDiscoveryCallout] = useState(true);
+  const { messages, sendMessage, clearHistory, isThinking } = useSecOpsCopilot(user?.role);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const isEmployee = user?.role === "EMPLOYEE";
+
+  useEffect(() => {
+    const dismissed = typeof window !== "undefined" && sessionStorage.getItem("accessone_copilot_callout_dismissed");
+    if (dismissed) {
+      setShowDiscoveryCallout(false);
+    }
+  }, []);
 
   useEffect(() => {
     if (initialPrompt) {
@@ -48,12 +63,34 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
     }
   }, [messages, isOpen]);
 
-  const quickPrompts = [
-    { label: "Active visitors on-site", icon: Users },
-    { label: "Audit card #ACO-2026-000030", icon: CreditCard },
-    { label: "Open security alerts", icon: ShieldAlert },
-    { label: "Recent access denials", icon: Search },
-  ];
+  // Role-tailored prompt discovery chips
+  const quickPrompts = isEmployee
+    ? [
+        { label: "Check my card request status", icon: CreditCard },
+        { label: "How long is my digital pass valid?", icon: HelpCircle },
+        { label: "Report my card lost or damaged", icon: ShieldAlert },
+        { label: "Smart badge & door access guide", icon: Compass },
+      ]
+    : user?.role === "HR_MANAGER"
+    ? [
+        { label: "Pending card requests summary", icon: Users },
+        { label: "Photo compliance guidelines", icon: ImageIcon },
+        { label: "Card replacement policy", icon: CreditCard },
+        { label: "Employee onboarding guide", icon: HelpCircle },
+      ]
+    : user?.role === "PRINT_SUPERVISOR"
+    ? [
+        { label: "Print queue status", icon: Terminal },
+        { label: "QC rejection analysis", icon: ShieldAlert },
+        { label: "Cards ready for dispatch", icon: CreditCard },
+        { label: "Throughput metrics", icon: Search },
+      ]
+    : [
+        { label: "Active visitors on-site", icon: Users },
+        { label: "Audit card #ACO-2026-000030", icon: CreditCard },
+        { label: "Open security alerts", icon: ShieldAlert },
+        { label: "Recent access denials", icon: Search },
+      ];
 
   function handleSubmit(e?: React.FormEvent) {
     if (e) e.preventDefault();
@@ -77,12 +114,15 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
   function handleVoiceInput() {
     if (!isRecording) {
       setIsRecording(true);
-      toast.info("Listening for physical security query... Speak now.");
+      toast.info("Listening for query... Speak now.");
       // Simulated voice recognition timeout for realistic UX
       setTimeout(() => {
         setIsRecording(false);
-        setInput("Show me active visitors currently checked in on-site");
-        toast.success("Voice transcribed: 'Show me active visitors currently checked in on-site'");
+        const query = isEmployee
+          ? "What is the status of my ID card request?"
+          : "Show me active visitors currently checked in on-site";
+        setInput(query);
+        toast.success(`Voice transcribed: '${query}'`);
       }, 2500);
     } else {
       setIsRecording(false);
@@ -91,28 +131,79 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
 
   return (
     <>
-      {/* 1. Large Circular Floating Launcher with Modern Bot Avatar */}
+      {/* 0. High-Visibility Onboarding Discovery Callout Pill */}
+      {showDiscoveryCallout && !isOpen && (
+        <div className={cn(
+          "fixed z-40 flex items-center gap-2.5 rounded-2xl border border-sky-400/40 bg-slate-900/95 shadow-2xl backdrop-blur-md text-white animate-in fade-in slide-in-from-bottom-2 duration-300",
+          isEmployee
+            ? "bottom-7 right-[88px] sm:right-[96px] px-4 py-3"
+            : "bottom-6.5 right-[80px] sm:right-[88px] px-3.5 py-2.5"
+        )}>
+          <div className="flex h-8 w-8 items-center justify-center rounded-xl bg-sky-500/25 text-sky-400 shadow-inner">
+            <Sparkles className="h-4.5 w-4.5 animate-pulse" />
+          </div>
+          <button
+            onClick={() => setIsOpen(true)}
+            className="text-left group cursor-pointer"
+          >
+            <div className="flex items-center gap-1.5">
+              <span className="text-xs font-bold text-white group-hover:text-sky-300 transition-colors">
+                {isEmployee ? "Ask Copilot AI" : "AccessOne Copilot AI"}
+              </span>
+              <span className="rounded-full bg-sky-500/30 px-1.5 py-0.2 text-[9px] font-black uppercase tracking-wider text-sky-300 border border-sky-400/40">
+                ACTIVE
+              </span>
+            </div>
+            <p className="text-[10.5px] text-slate-300 font-medium">
+              {isEmployee
+                ? "Instant help with smart badge requests & passes"
+                : "Ask telemetry, card audits & instant queries"}
+            </p>
+          </button>
+          <button
+            onClick={() => {
+              setShowDiscoveryCallout(false);
+              sessionStorage.setItem("accessone_copilot_callout_dismissed", "true");
+            }}
+            className="ml-1 rounded-lg p-1 text-slate-400 hover:bg-slate-800 hover:text-white transition-colors"
+            title="Dismiss notification"
+            aria-label="Dismiss notification"
+          >
+            <X className="h-3.5 w-3.5" />
+          </button>
+        </div>
+      )}
+
+      {/* 1. Sized-Up Circular Floating Launcher with Dynamic Glow and Sizing */}
       {!isOpen && (
         <button
           onClick={() => setIsOpen(true)}
-          className="fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-slate-900 shadow-2xl border-2 border-slate-700/80 hover:bg-slate-800 hover:scale-110 active:scale-95 transition-all duration-300 group"
-          aria-label="Open AccessOne Copilot"
-          title="AccessOne Copilot"
+          className={cn(
+            "fixed z-40 flex items-center justify-center rounded-full bg-slate-900 shadow-2xl border-[2.5px] hover:scale-110 active:scale-95 transition-all duration-300 group cursor-pointer",
+            isEmployee
+              ? "bottom-6 right-6 h-[72px] w-[72px] border-sky-400/90 shadow-[0_0_28px_rgba(56,189,248,0.45)] ring-4 ring-sky-500/20"
+              : "bottom-6 right-6 h-16 w-16 border-slate-700/90 hover:bg-slate-800"
+          )}
+          aria-label={isEmployee ? "Open AccessOne Assistant" : "Open AccessOne Copilot"}
+          title={isEmployee ? "Open AccessOne Assistant" : "Open AccessOne Copilot"}
         >
           {/* Live Beacon Ring */}
-          <span className="absolute -top-0.5 -right-0.5 flex h-3.5 w-3.5">
-            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-75" />
-            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-sky-500 border-2 border-slate-900" />
+          <span className="absolute -top-0.5 -right-0.5 flex h-4.5 w-4.5">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-sky-400 opacity-80" />
+            <span className="relative inline-flex rounded-full h-4.5 w-4.5 bg-sky-500 border-2 border-slate-900" />
           </span>
 
           {/* Modern Robot Graphic / Avatar */}
           <div className="relative flex items-center justify-center">
             <svg
-              className="h-7 w-7 text-sky-400 group-hover:scale-110 group-hover:text-sky-300 transition-all duration-200"
+              className={cn(
+                "text-sky-400 group-hover:scale-110 group-hover:text-sky-300 transition-all duration-200",
+                isEmployee ? "h-10 w-10" : "h-9 w-9"
+              )}
               viewBox="0 0 24 24"
               fill="none"
               stroke="currentColor"
-              strokeWidth="1.8"
+              strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
             >
@@ -141,13 +232,13 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
           <div className="flex items-center justify-between border-b border-slate-800 bg-slate-900 px-5 py-4 text-white">
             <div className="flex items-center gap-3">
               {/* Modern Bot Graphic in Header */}
-              <div className="relative flex h-10 w-10 items-center justify-center rounded-2xl bg-slate-800 border border-slate-700/80 shadow-inner">
+              <div className="relative flex h-12 w-12 items-center justify-center rounded-2xl bg-slate-800 border border-slate-700/80 shadow-inner">
                 <svg
-                  className="h-6 w-6 text-sky-400"
+                  className="h-7 w-7 text-sky-400"
                   viewBox="0 0 24 24"
                   fill="none"
                   stroke="currentColor"
-                  strokeWidth="1.8"
+                  strokeWidth="2"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 >
@@ -160,16 +251,18 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
                   <circle cx="15.5" cy="13" r="1.5" fill="currentColor" />
                   <path d="M9.5 16.5h5" />
                 </svg>
-                <span className="absolute -bottom-0.5 -right-0.5 flex h-2.5 w-2.5">
-                  <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-emerald-400 ring-2 ring-slate-900" />
+                <span className="absolute -bottom-0.5 -right-0.5 flex h-3 w-3">
+                  <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-400 ring-2 ring-slate-900" />
                 </span>
               </div>
               <div>
                 <h2 className="text-base font-bold tracking-tight text-white leading-tight">
-                  AccessOne Copilot
+                  {isEmployee ? "AccessOne Employee Assistant" : "AccessOne Copilot"}
                 </h2>
                 <p className="text-[11px] text-slate-400 font-medium">
-                  Physical Access Intelligence &amp; Security Operations Assistant
+                  {isEmployee
+                    ? "24/7 Smart Badge, Pass & Request Assistant"
+                    : "Physical Access Intelligence & Security Operations Assistant"}
                 </p>
               </div>
             </div>
@@ -208,13 +301,13 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
               >
                 {/* Assistant Chat Avatar with Inside Bot Graphic */}
                 {m.role === "assistant" && (
-                  <div className="relative h-8 w-8 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
+                  <div className="relative h-9 w-9 rounded-full bg-slate-900 border border-slate-700 flex items-center justify-center shrink-0 mt-0.5 shadow-xs">
                     <svg
-                      className="h-4 w-4 text-sky-400"
+                      className="h-5 w-5 text-sky-400"
                       viewBox="0 0 24 24"
                       fill="none"
                       stroke="currentColor"
-                      strokeWidth="1.8"
+                      strokeWidth="2"
                       strokeLinecap="round"
                       strokeLinejoin="round"
                     >
@@ -224,7 +317,7 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
                       <circle cx="8.5" cy="13" r="1.5" fill="currentColor" />
                       <circle cx="15.5" cy="13" r="1.5" fill="currentColor" />
                     </svg>
-                    <span className="absolute bottom-0 right-0 h-2 w-2 rounded-full bg-emerald-400 ring-1 ring-slate-900" />
+                    <span className="absolute bottom-0 right-0 h-2.5 w-2.5 rounded-full bg-emerald-400 ring-1 ring-slate-900" />
                   </div>
                 )}
 
@@ -331,6 +424,8 @@ export function SecOpsCopilotDrawer({ initialPrompt }: SecOpsCopilotDrawerProps)
                   placeholder={
                     isRecording
                       ? "Listening to voice input..."
+                      : isEmployee
+                      ? "Ask Copilot (e.g. card request status, lost badge, pass validity)..."
                       : "Ask Copilot (e.g. active visitors, card audit, alerts)..."
                   }
                   disabled={isThinking}

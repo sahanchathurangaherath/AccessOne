@@ -8,7 +8,7 @@ import { RequestForm } from "../../_components/RequestForm";
 
 export default function NewRequestPage() {
   return (
-    <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
+    <RequireRole allow={["EMPLOYEE"]}>
       <div className="space-y-4">
         <Link
           href="/employee"

@@ -127,30 +127,34 @@ export default function SecurityDashboard() {
           </div>
 
           {/* Open Alerts / Overdue */}
-          <div
-            className={cn(
-              "rounded-2xl border p-5 shadow-xs select-none bg-surface",
-              (stats?.openAlerts ?? 0) > 0 || rawRows.some((r) => r.passOverdue)
-                ? "border-red-300 ring-2 ring-red-500/15 bg-red-50/20"
-                : "border-rule"
-            )}
-          >
-            <div className="flex items-center justify-between">
-              <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
-                Overdue Pass Alerts
-              </span>
-              <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 shadow-2xs">
-                <AlertTriangle className="h-4.5 w-4.5" />
+          <Link href="/security/passes?status=EXPIRED" className="group block focus-visible:outline-none">
+            <div
+              className={cn(
+                "rounded-2xl border p-5 shadow-xs select-none bg-surface transition-all hover:shadow-md",
+                (stats?.openAlerts ?? 0) > 0 || rawRows.some((r) => r.passOverdue)
+                  ? "border-red-300 ring-2 ring-red-500/15 bg-red-50/20 hover:border-red-400"
+                  : "border-rule hover:border-slate-300"
+              )}
+            >
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-bold text-slate-500 uppercase tracking-wider">
+                  Overdue Pass Alerts
+                </span>
+                <div className="flex h-9 w-9 items-center justify-center rounded-xl bg-red-50 text-red-600 shadow-2xs group-hover:scale-105 transition-transform">
+                  <AlertTriangle className="h-4.5 w-4.5" />
+                </div>
+              </div>
+              <div className="mt-3 flex items-baseline gap-2">
+                <span className="text-2xl font-black text-red-700">
+                  {stats?.openAlerts ?? rawRows.filter((r) => r.passOverdue).length}
+                </span>
+                <span className="text-xs font-medium text-red-600">breached passes</span>
+              </div>
+              <div className="mt-2 text-[11px] text-red-600 font-medium group-hover:underline flex items-center gap-1">
+                <span>View expired & breached passes &rarr;</span>
               </div>
             </div>
-            <div className="mt-3 flex items-baseline gap-2">
-              <span className="text-2xl font-black text-red-700">
-                {stats?.openAlerts ?? rawRows.filter((r) => r.passOverdue).length}
-              </span>
-              <span className="text-xs font-medium text-red-600">breached passes</span>
-            </div>
-            <div className="mt-2 text-[11px] text-red-600">Requires desk escort or checkout</div>
-          </div>
+          </Link>
 
           {/* Denied Attempts Today */}
           <Link href="/security/access" className="group block focus-visible:outline-none">

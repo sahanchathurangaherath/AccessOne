@@ -238,10 +238,45 @@
       text-transform: uppercase;
       float: right;
     }
+
+    /* ─── Digital Pass Watermark ─── */
+    .watermark-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 85.6mm;
+      height: 53.98mm;
+      overflow: hidden;
+      z-index: 100;
+      pointer-events: none;
+    }
+
+    .watermark-text {
+      position: absolute;
+      top: 23mm;
+      left: -15mm;
+      width: 115mm;
+      text-align: center;
+      font-size: 2.1mm;
+      font-weight: 800;
+      letter-spacing: 0.3mm;
+      color: rgba(220, 38, 38, 0.26);
+      text-transform: uppercase;
+      transform: rotate(-22deg);
+      border-top: 0.3mm dashed rgba(220, 38, 38, 0.32);
+      border-bottom: 0.3mm dashed rgba(220, 38, 38, 0.32);
+      padding: 0.8mm 0;
+      background: rgba(254, 242, 242, 0.18);
+    }
   </style>
 </head>
 <body>
   <div class="card">
+    <!-- Security Watermark -->
+    <div class="watermark-container">
+      <div class="watermark-text">Valid only for one month from the date of issue</div>
+    </div>
+
     <!-- Top Corporate Header -->
     <div class="header-band">
       <span class="org-title">CEYLON METRO HOLDINGS</span>

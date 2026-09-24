@@ -114,7 +114,7 @@ export default function RequestDetailPage() {
   }
 
   return (
-    <RequireRole allow={["EMPLOYEE", "HR_MANAGER"]}>
+    <RequireRole allow={["EMPLOYEE"]}>
       <div className="mb-4">
         <Link
           href="/employee"

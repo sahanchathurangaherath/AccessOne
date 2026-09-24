@@ -22,7 +22,7 @@ import {
   useRevoke, useVoidCard, useRegenerateCredentials,
 } from "../../_hooks/useCards";
 import { useAccessLevels, useAssignAccessLevel } from "../../_hooks/useConfig";
-import { Shield, KeyRound, ArrowLeft, Calendar, Layers, Activity, FileDown, Wifi } from "lucide-react";
+import { Shield, KeyRound, ArrowLeft, Calendar, Layers, Activity, FileDown, Wifi, Download } from "lucide-react";
 import Link from "next/link";
 
 /**
@@ -189,15 +189,38 @@ export default function CardDetailPage() {
 
         <div className="space-y-6">
           <Card>
-            <CardHeader><CardTitle>Files</CardTitle></CardHeader>
-            <CardContent className="flex flex-col gap-2">
-              <Button
-                variant="outline"
-                className="w-full"
-                render={<a href={`/api/v1/cards/${card.id}/pdf`} download={`card-${card.cardSerial || card.id}.pdf`} />}
-              >
-                Download PDF
-              </Button>
+            <CardHeader>
+              <CardTitle className="text-sm font-bold text-ink">Digital Pass (PDF)</CardTitle>
+            </CardHeader>
+            <CardContent className="flex flex-col gap-2.5">
+              {["GENERATED", "QUEUED_FOR_PRINT", "PRINTED"].includes(card.status) ? (
+                <>
+                  <Button
+                    variant="outline"
+                    className="w-full font-semibold"
+                    render={<a href={`/api/v1/cards/${card.id}/pdf`} download={`card-${card.cardSerial || card.id}.pdf`} />}
+                  >
+                    <Download className="mr-2 h-4 w-4 text-credential" />
+                    Download PDF Pass
+                  </Button>
+                  <p className="text-[11px] text-slate-500 leading-relaxed">
+                    Includes temporary 1-month validity watermark. Active prior to physical card dispatch.
+                  </p>
+                </>
+              ) : (
+                <div className="rounded-xl border border-slate-200 bg-slate-50 p-3 text-center">
+                  <p className="text-xs font-semibold text-slate-600">
+                    {card.status === "DISPATCHED" || card.status === "ACTIVE"
+                      ? "Physical Badge Dispatched"
+                      : "Download Unavailable"}
+                  </p>
+                  <p className="mt-1 text-[11px] text-slate-400">
+                    {card.status === "DISPATCHED" || card.status === "ACTIVE"
+                      ? "Digital PDF pass download is closed once physical badge is dispatched/active."
+                      : `Digital download not allowed in ${card.status} status.`}
+                  </p>
+                </div>
+              )}
             </CardContent>
           </Card>
 

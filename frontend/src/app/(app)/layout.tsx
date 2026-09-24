@@ -18,15 +18,10 @@ export default function AppLayout({ children }: { children: React.ReactNode }) {
   if (isLoading) return <FullPageSpinner />;
   if (!user) return null;
 
-  const showCopilot =
-    user.role === "SECURITY_OFFICER" ||
-    user.role === "IT_ADMIN" ||
-    user.role === "SYSTEM_ADMIN";
-
   return (
     <AppShell>
       {children}
-      {showCopilot && <SecOpsCopilotDrawer />}
+      <SecOpsCopilotDrawer />
     </AppShell>
   );
 }
