@@ -34,7 +34,7 @@ public class CardRequestMapper {
                         : r.getRequestedAccessLevel().getLevelName(),
                 r.getPhotoPath() != null,
                 r.getSubmittedAt(), r.getClosedAt(), r.getCreatedAt(),
-                r.getStatus() == RequestStatus.DRAFT,
+                r.getStatus() == RequestStatus.DRAFT || r.getStatus() == RequestStatus.REJECTED,
                 r.getStatus().canTransitionTo(RequestStatus.WITHDRAWN),
                 r.isHardDeletable(),
                 r.getDocuments().stream().map(this::toDocument).toList());

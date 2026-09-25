@@ -15,6 +15,7 @@ import {
 import { ConfirmDialog } from "@/components/confirm-dialog";
 import { StatusTimeline } from "@/components/status-timeline";
 import { ApiError } from "@/lib/api";
+import { cn } from "@/lib/utils";
 import {
   ArrowLeft,
   Briefcase,
@@ -23,7 +24,15 @@ import {
   ShieldCheck,
   FileText,
   AlertCircle,
+  RefreshCw,
+  Cpu,
+  Printer,
+  CheckCircle2,
+  Clock,
+  Check,
+  Sparkles,
 } from "lucide-react";
+import { dashboard } from "@/lib/dashboard";
 import {
   requests, useSubmitRequest, useWithdrawRequest,
   useUploadDocument, useDeleteDocument, type DocumentType,
@@ -44,6 +53,7 @@ export default function RequestDetailPage() {
 
   const { data: request, isLoading, isError, refetch } = requests.useDetail(id);
   const { data: timeline } = requests.useTimeline(id);
+  const { data: stats } = dashboard.useEmployee();
 
   const submit = useSubmitRequest();
   const withdraw = useWithdrawRequest();
@@ -131,6 +141,27 @@ export default function RequestDetailPage() {
         status={request.status}
       />
 
+      {request.status === "REJECTED" && (
+        <div className="rounded-xl border border-red-200 bg-red-50/90 p-4.5 text-sm text-red-800 flex items-start gap-3.5 mb-6">
+          <AlertCircle className="h-5 w-5 text-red-600 shrink-0 mt-0.5" />
+          <div className="space-y-1.5 flex-1">
+            <p className="text-base font-bold">Request Rejected / Revision Required by HR</p>
+            <p className="text-sm text-red-700 leading-snug">
+              This request was rejected during verification. You can review your submitted details, update your photo or documents, and resubmit it for HR verification.
+            </p>
+            <div className="pt-2 flex flex-wrap gap-2.5">
+              <Link
+                href={`/employee/requests/${request.id}/edit`}
+                className="inline-flex items-center gap-2 font-semibold text-xs text-white bg-red-600 hover:bg-red-700 px-3.5 py-2 rounded-xl shadow-2xs transition-all"
+              >
+                <RefreshCw className="h-3.5 w-3.5" />
+                <span>Edit & Resubmit Request</span>
+              </Link>
+            </div>
+          </div>
+        </div>
+      )}
+
       <div className="grid gap-6 lg:grid-cols-3">
         <div className="space-y-6 lg:col-span-2">
           {/* Structured 2x2 Employment & Request Details Grid */}
@@ -191,6 +222,126 @@ export default function RequestDetailPage() {
               )}
             </CardContent>
           </Card>
+
+          {/* Department Processing & Fulfillment Breakdown: Split into IT vs Print */}
+          {(request.status === "APPROVED" || stats?.cardStatus) && (
+            <div className="space-y-3.5">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-sm font-bold uppercase tracking-wider text-ink flex items-center gap-2">
+                    <Sparkles className="h-4 w-4 text-credential" />
+                    <span>Department Processing & Fulfillment Breakdown</span>
+                  </h3>
+                  <p className="text-xs text-slate-500 mt-0.5">
+                    Clear separation between IT digital credential encoding and Print physical badge manufacturing
+                  </p>
+                </div>
+                <span className="hidden sm:inline-flex text-[11px] font-bold px-2.5 py-1 rounded-full bg-blue-50 text-credential border border-blue-200">
+                  2 Distinct Department Units
+                </span>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* 1. IT Department Section */}
+                <Card className="border-blue-200 bg-gradient-to-b from-blue-50/30 to-surface shadow-xs overflow-hidden">
+                  <CardHeader className="pb-3 border-b border-blue-100 bg-blue-50/50 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-blue-600 text-white shadow-xs">
+                        <Cpu className="h-4.5 w-4.5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-bold text-ink">IT Department</CardTitle>
+                        <p className="text-[11px] text-blue-700 font-semibold">Digital Credential Authority</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-700 border border-emerald-200">
+                      <CheckCircle2 className="h-3 w-3" />
+                      Digital Ready
+                    </span>
+                  </CardHeader>
+                  <CardContent className="pt-3.5 space-y-3 text-xs">
+                    <div className="rounded-xl bg-white p-3 border border-blue-100 shadow-2xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Department Unit</span>
+                        <span className="font-bold text-ink">IT / SecOps Security</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">QR Verification Token</span>
+                        <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                          <Check className="h-3.5 w-3.5" /> Cryptographically Signed
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">NFC / RFID Security Keys</span>
+                        <span className="font-semibold text-emerald-700 flex items-center gap-1">
+                          <Check className="h-3.5 w-3.5" /> 13.56 MHz Standard Formatted
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Access Permission Tier</span>
+                        <span className="font-bold text-credential">{request.accessLevelName || "Standard Entry"}</span>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-blue-50/60 p-2.5 border border-blue-100/80 text-[11px] text-blue-900 leading-relaxed">
+                      <strong>IT Department Scope:</strong> Responsible for credential signing, door permissions, and electronic encryption keys.
+                    </div>
+                  </CardContent>
+                </Card>
+
+                {/* 2. Print Department Section */}
+                <Card className="border-indigo-200 bg-gradient-to-b from-indigo-50/30 to-surface shadow-xs overflow-hidden">
+                  <CardHeader className="pb-3 border-b border-indigo-100 bg-indigo-50/50 flex flex-row items-center justify-between">
+                    <div className="flex items-center gap-2.5">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-indigo-600 text-white shadow-xs">
+                        <Printer className="h-4.5 w-4.5" />
+                      </div>
+                      <div>
+                        <CardTitle className="text-sm font-bold text-ink">Print Department</CardTitle>
+                        <p className="text-[11px] text-indigo-700 font-semibold">Physical Badge Production & QC</p>
+                      </div>
+                    </div>
+                    <span className="inline-flex items-center gap-1 rounded-md bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">
+                      <Clock className="h-3 w-3" />
+                      {stats?.cardStatus === "ACTIVE" || stats?.cardStatus === "DISPATCHED"
+                        ? "Dispatched"
+                        : stats?.cardStatus === "PRINTED"
+                        ? "Printed (QC Passed)"
+                        : "In Print Queue"}
+                    </span>
+                  </CardHeader>
+                  <CardContent className="pt-3.5 space-y-3 text-xs">
+                    <div className="rounded-xl bg-white p-3 border border-indigo-100 shadow-2xs space-y-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Department Unit</span>
+                        <span className="font-bold text-ink">Print Production Facility</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Physical Substrate</span>
+                        <span className="font-semibold text-slate-700">Dual-Sided CR80 Thermal PVC</span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Production Status</span>
+                        <span className="font-bold text-indigo-900">
+                          {stats?.cardStatus === "ACTIVE" || stats?.cardStatus === "DISPATCHED"
+                            ? "Completed & Dispatched"
+                            : stats?.cardStatus === "PRINTED"
+                            ? "Thermal Printed & Verified"
+                            : "Awaiting Hardware Printer"}
+                        </span>
+                      </div>
+                      <div className="flex items-center justify-between">
+                        <span className="text-slate-500 font-medium">Quality Inspection (QC)</span>
+                        <span className="font-semibold text-slate-700">Optical Check & Lamination</span>
+                      </div>
+                    </div>
+                    <div className="rounded-lg bg-indigo-50/60 p-2.5 border border-indigo-100/80 text-[11px] text-indigo-900 leading-relaxed">
+                      <strong>Print Department Scope:</strong> Responsible for physical thermal burning, laminate overlay, QC inspection, and dispatch.
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
 
           {/* Supporting Documents Card */}
           <Card>
@@ -272,7 +423,11 @@ export default function RequestDetailPage() {
               {request.editable && (
                 <Button
                   variant="outline"
-                  render={<Link href={`/employee/requests/${request.id}/edit`}>Edit</Link>}
+                  render={
+                    <Link href={`/employee/requests/${request.id}/edit`}>
+                      {request.status === "REJECTED" ? "Edit & Update Request" : "Edit Draft"}
+                    </Link>
+                  }
                   className="w-full"
                 />
               )}
@@ -283,7 +438,7 @@ export default function RequestDetailPage() {
                   disabled={!request.hasPhoto || submit.isPending}
                   className="w-full"
                 >
-                  Submit request
+                  {request.status === "REJECTED" ? "Resubmit Request" : "Submit request"}
                 </Button>
               )}
               {request.editable && !request.hasPhoto && (

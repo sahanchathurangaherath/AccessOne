@@ -590,7 +590,7 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                 className="inline-flex items-center gap-2 px-4.5 py-2.5 rounded-xl border border-rule bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50 shadow-2xs transition-colors cursor-pointer disabled:opacity-50"
               >
                 <Save className="h-4.5 w-4.5 text-slate-500" />
-                <span>Save Draft</span>
+                <span>{existing?.status === "REJECTED" ? "Save Changes" : "Save Draft"}</span>
               </button>
             </div>
 
@@ -627,7 +627,11 @@ export function RequestForm({ existing }: { existing?: CardRequestDetail }) {
                   className="inline-flex items-center justify-center gap-2.5 px-6 py-3 rounded-xl bg-credential text-sm font-semibold text-white hover:bg-credential/90 shadow-sm transition-all cursor-pointer w-full sm:w-auto"
                 >
                   <Send className="h-4.5 w-4.5" />
-                  <span>Submit for HR Verification</span>
+                  <span>
+                    {existing?.status === "REJECTED"
+                      ? "Resubmit for HR Verification"
+                      : "Submit for HR Verification"}
+                  </span>
                 </button>
               )}
             </div>

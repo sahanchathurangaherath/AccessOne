@@ -13,7 +13,7 @@ export type PrintJobRow = {
 
 export type PrintJobDetail = {
   id: number; jobNo: string; cardId: number; cardSerial: string;
-  employeeName: string; empId: string; departmentName: string;
+  employeeName: string; empId: string; designation?: string; departmentName: string;
   jobType: "INITIAL" | "REPRINT"; status: string; printerName: string | null;
   queuedAt: string; printedAt: string | null;
   qcResult: "PENDING" | "PASS" | "FAIL"; qcNotes: string | null; cancelledReason: string | null;

@@ -5,7 +5,7 @@ import { useParams } from "next/navigation";
 import { RequireRole } from "@/components/require-role";
 import { PageHeader } from "@/components/page-header";
 import { ErrorState, FullPageSpinner } from "@/components/states";
-import { ArrowLeft, FileEdit } from "lucide-react";
+import { ArrowLeft, FileEdit, RefreshCw } from "lucide-react";
 import { requests } from "../../../_hooks/useRequests";
 import { RequestForm } from "../../../_components/RequestForm";
 
@@ -13,6 +13,8 @@ export default function EditRequestPage() {
   const params = useParams<{ id: string }>();
   const id = Number(params.id);
   const { data: request, isLoading, isError, refetch } = requests.useDetail(id);
+
+  const isRejected = request?.status === "REJECTED";
 
   return (
     <RequireRole allow={["EMPLOYEE"]}>
@@ -26,12 +28,22 @@ export default function EditRequestPage() {
         </Link>
 
         <PageHeader
-          title="Edit Card Request"
-          description="Update draft details, reason, or photo. Once you submit the request for verification, these details are locked."
+          title={isRejected ? "Edit & Resubmit Request" : "Edit Card Request"}
+          description={
+            isRejected
+              ? "Update details, upload a revised portrait photo, or address the revision notes requested by HR before resubmitting."
+              : "Update draft details, reason, or photo. Once you submit the request for verification, these details are locked."
+          }
           actions={
-            <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-200 bg-amber-50/80 px-3 py-1 text-xs font-semibold text-amber-800 shadow-2xs">
-              <FileEdit className="h-3.5 w-3.5" />
-              <span>Editing Draft</span>
+            <div
+              className={`inline-flex items-center gap-1.5 rounded-full border px-3 py-1 text-xs font-semibold shadow-2xs ${
+                isRejected
+                  ? "border-red-200 bg-red-50 text-red-700"
+                  : "border-amber-200 bg-amber-50/80 text-amber-800"
+              }`}
+            >
+              {isRejected ? <RefreshCw className="h-3.5 w-3.5" /> : <FileEdit className="h-3.5 w-3.5" />}
+              <span>{isRejected ? "Revision Required" : "Editing Draft"}</span>
             </div>
           }
         />
@@ -43,7 +55,7 @@ export default function EditRequestPage() {
         {request && !request.editable && (
           <ErrorState
             title="This request can no longer be edited"
-            body="Only a draft can be changed. This request has already been submitted."
+            body="Only a draft or a rejected request can be edited. This request is currently locked in verification or processing."
           />
         )}
         {request && request.editable && <RequestForm existing={request} />}

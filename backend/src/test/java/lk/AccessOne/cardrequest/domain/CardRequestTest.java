@@ -116,4 +116,26 @@ class CardRequestTest {
         assertThat(request.getStatus()).isEqualTo(RequestStatus.WITHDRAWN);
         assertThat(request.getClosedAt()).isNotNull();
     }
+
+    @Test
+    void rejectedRequestCanBeEditedAndResubmitted() {
+        CardRequest request = draftWithPhoto();
+        request.submit();
+        request.transitionTo(RequestStatus.UNDER_VERIFICATION);
+        request.transitionTo(RequestStatus.REJECTED);
+        assertThat(request.getStatus()).isEqualTo(RequestStatus.REJECTED);
+
+        // Can update draft details / justification
+        request.updateDraft(RequestType.NEW, "Corrected info based on HR feedback", null, null);
+        assertThat(request.getReason()).isEqualTo("Corrected info based on HR feedback");
+
+        // Can attach new photo
+        request.attachPhoto("requests/1/new_photo.jpg");
+        assertThat(request.getPhotoPath()).isEqualTo("requests/1/new_photo.jpg");
+
+        // Can resubmit
+        request.submit();
+        assertThat(request.getStatus()).isEqualTo(RequestStatus.SUBMITTED);
+        assertThat(request.getClosedAt()).isNull();
+    }
 }

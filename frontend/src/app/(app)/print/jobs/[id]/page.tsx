@@ -149,9 +149,13 @@ export default function PrintJobDetailPage() {
               <div className="flex items-center gap-2">
                 <span className="font-mono text-xs font-bold text-slate-500">{job.jobNo}</span>
                 <StatusBadge status={job.status} />
-                {job.jobType === "REPRINT" && (
+                {job.jobType === "REPRINT" ? (
                   <span className="inline-flex items-center gap-1 rounded bg-amber-50 px-2 py-0.5 text-[10px] font-bold text-amber-700 border border-amber-200">
                     <RotateCcw className="h-3 w-3" /> Reprint Order
+                  </span>
+                ) : (
+                  <span className="inline-flex items-center gap-1 rounded bg-blue-50 px-2 py-0.5 text-[10px] font-bold text-blue-700 border border-blue-200">
+                    Initial Issue
                   </span>
                 )}
               </div>
@@ -263,25 +267,25 @@ export default function PrintJobDetailPage() {
                   style={{ width: "348px", height: "220px" }}
                 >
                   {/* Top Header Ribbon */}
-                  <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-2 text-white shadow-xs">
+                  <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-2.5 text-white shadow-xs">
                     <div className="flex items-center gap-1.5">
                       <ShieldCheck className="h-4 w-4 text-blue-200" />
-                      <span className="identifier text-[10px] font-bold tracking-[0.2em] text-white">
-                        CEYLON METRO
+                      <span className="identifier text-[10px] font-extrabold tracking-[0.25em] text-white">
+                        ACCESSONE
                       </span>
                     </div>
                     <div className="flex items-center gap-1">
                       <Wifi className="h-3.5 w-3.5 rotate-90 text-blue-200" />
-                      <span className="text-[9px] font-semibold uppercase tracking-wider text-blue-100">
-                        SECURE ID
+                      <span className="text-[8.5px] font-bold uppercase tracking-wider text-blue-100">
+                        SMART PASS
                       </span>
                     </div>
                   </div>
 
                   {/* Card Body */}
-                  <div className="flex gap-4 p-3.5">
+                  <div className="flex gap-3.5 p-3.5">
                     {/* Employee Photo */}
-                    <div className="relative flex-shrink-0 h-[105px] w-[82px]">
+                    <div className="relative flex-shrink-0 h-[104px] w-[82px]">
                       <img
                         src={`/api/v1/cards/${job.cardId}/photo`}
                         alt={job.employeeName}
@@ -289,49 +293,53 @@ export default function PrintJobDetailPage() {
                           (e.target as HTMLImageElement).src =
                             "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='80' height='100' viewBox='0 0 80 100'%3E%3Crect width='80' height='100' fill='%23f1f5f9'/%3E%3Ctext x='50%25' y='50%25' dominant-baseline='middle' text-anchor='middle' font-family='sans-serif' font-size='10' fill='%2394a3b8'%3EPHOTO%3C/text%3E%3C/svg%3E";
                         }}
-                        className="h-[105px] w-[82px] rounded-lg border border-slate-200 object-cover shadow-xs"
+                        className="h-[104px] w-[82px] rounded-lg border border-slate-200 object-cover shadow-xs"
                       />
                       {/* Smart EMV Chip simulation */}
-                      <div className="absolute bottom-1.5 right-1.5 h-5 w-6 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
-                        <div className="h-3 w-4 border border-amber-400/60 rounded-xs" />
+                      <div className="absolute bottom-1 right-1 h-5 w-6 rounded border border-amber-300 bg-gradient-to-br from-amber-100 to-amber-200 shadow-xs flex items-center justify-center">
+                        <div className="h-3 w-4 border border-amber-400/70 rounded-[2px]" />
                       </div>
                     </div>
 
                     {/* Details */}
-                    <div className="min-w-0 flex-1 space-y-0.5">
-                      <p className="truncate text-sm font-bold text-slate-900 leading-tight">
+                    <div className="min-w-0 flex-1 space-y-1 pt-0.5" style={{ maxWidth: "140px" }}>
+                      <p className="truncate text-[15px] font-black text-slate-950 tracking-tight leading-tight">
                         {job.employeeName}
                       </p>
-                      <p className="truncate text-xs font-semibold text-[#1F4B8E]">
-                        {job.empId}
-                      </p>
-                      <p className="truncate text-[11px] text-slate-500 font-medium">
+                      {job.designation ? (
+                        <p className="truncate text-[11.5px] font-bold text-[#1F4B8E] leading-tight">
+                          {job.designation}
+                        </p>
+                      ) : null}
+                      <p className="truncate text-[10.5px] text-slate-500 font-medium">
                         {job.departmentName}
                       </p>
-
-                      <div className="pt-2">
-                        <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-800">
-                          {job.jobType === "REPRINT" ? "REPRINT ORDER" : "INITIAL ISSUE"}
-                        </span>
+                      <div className="pt-1.5">
+                        <p className="font-mono text-[13px] font-black text-slate-900 tracking-wider">
+                          {job.empId}
+                        </p>
                       </div>
                     </div>
                   </div>
 
-                  {/* QR Code & Card Serial Footer */}
-                  <div className="absolute bottom-2.5 right-3">
+                  {/* Scaled 96px QR Code (Bottom-Right) */}
+                  <div className="absolute bottom-2 right-2.5 flex flex-col items-center">
                     <img
-                      src={`/api/v1/cards/${job.cardId}/qr?size=160`}
+                      src={`/api/v1/cards/${job.cardId}/qr?size=240`}
                       alt="QR Code"
                       onError={(e) => {
                         (e.target as HTMLImageElement).src =
-                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='64' height='64' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%23f8fafc'/%3E%3Crect x='8' y='8' width='16' height='16' fill='%231e293b'/%3E%3Crect x='40' y='8' width='16' height='16' fill='%231e293b'/%3E%3Crect x='8' y='40' width='16' height='16' fill='%231e293b'/%3E%3C/svg%3E";
+                          "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='96' height='96' viewBox='0 0 96 96'%3E%3Crect width='96' height='96' fill='%23f8fafc'/%3E%3Crect x='12' y='12' width='24' height='24' fill='%231e293b'/%3E%3Crect x='60' y='12' width='24' height='24' fill='%231e293b'/%3E%3Crect x='12' y='60' width='24' height='24' fill='%231e293b'/%3E%3C/svg%3E";
                       }}
-                      className="h-[64px] w-[64px] rounded border border-slate-200 bg-white p-0.5 shadow-xs"
+                      className="h-[96px] w-[96px] rounded-lg border border-slate-300 bg-white p-1 shadow-xs"
                     />
+                    <span className="text-[7.5px] font-bold text-slate-400 tracking-wider uppercase mt-0.5">
+                      VERIFY SCAN
+                    </span>
                   </div>
 
-                  <div className="absolute bottom-3 left-4 flex items-center gap-2">
-                    <p className="identifier text-[10px] font-bold tracking-wider text-slate-500">
+                  <div className="absolute bottom-2.5 left-3.5 flex items-center gap-2">
+                    <p className="identifier font-mono text-[9.5px] font-bold tracking-wider text-slate-500">
                       {job.cardSerial}
                     </p>
                     <StatusBadge status={job.status} className="scale-90 origin-left" />

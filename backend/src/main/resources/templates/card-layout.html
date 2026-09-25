@@ -131,22 +131,22 @@
     /* ─── Middle Column: Cardholder Information ─── */
     .details { 
       position: absolute; 
-      top: 12.5mm; 
-      left: 27.5mm; 
-      width: 36mm;
+      top: 12mm; 
+      left: 27mm; 
+      width: 32mm;
     }
 
     .name { 
-      font-size: 3.6mm; 
+      font-size: 4.1mm; 
       font-weight: 700; 
       color: #0F172A;
       line-height: 1.15;
-      margin-bottom: 1mm;
+      margin-bottom: 1.2mm;
       word-wrap: break-word;
     }
 
     .designation { 
-      font-size: 2.5mm; 
+      font-size: 2.6mm; 
       font-weight: 600;
       color: #0284C7; 
       line-height: 1.2;
@@ -159,52 +159,49 @@
       font-weight: 500;
       color: #475569; 
       line-height: 1.2;
-      margin-bottom: 1.6mm;
+      margin-bottom: 1.8mm;
     }
 
     .emp-id-badge {
-      display: inline-block;
-      background: #F1F5F9;
-      border: 0.25mm solid #CBD5E1;
-      border-radius: 0.8mm;
-      padding: 0.5mm 1.8mm;
+      display: block;
       font-family: "Noto Sans Mono", monospace;
-      font-size: 2.4mm;
+      font-size: 3.2mm;
       font-weight: 700;
-      color: #1E293B;
-      letter-spacing: 0.3mm;
+      color: #0F172A;
+      letter-spacing: 0.4mm;
+      margin-top: 1.5mm;
     }
 
-    /* ─── Right Column: Secure Verification QR Code ─── */
+    /* ─── Right Column: Secure Verification QR Code (Scaled 96px equivalent) ─── */
     .qr-container {
       position: absolute;
-      top: 12.5mm;
-      right: 4mm;
-      width: 17mm;
+      top: 11.5mm;
+      right: 3.5mm;
+      width: 23mm;
       text-align: center;
     }
 
     .qr-box {
-      width: 17mm;
-      height: 17mm;
+      width: 23mm;
+      height: 23mm;
       border: 0.25mm solid #CBD5E1;
-      border-radius: 0.8mm;
-      padding: 0.6mm;
+      border-radius: 1mm;
+      padding: 0.7mm;
       background: #FFFFFF;
     }
 
     .qr-img {
-      width: 15.6mm;
-      height: 15.6mm;
+      width: 21.6mm;
+      height: 21.6mm;
       display: block;
     }
 
     .qr-caption {
-      margin-top: 1mm;
+      margin-top: 0.8mm;
       font-size: 1.6mm;
       font-weight: 700;
       color: #64748B;
-      letter-spacing: 0.25mm;
+      letter-spacing: 0.3mm;
       text-transform: uppercase;
       text-align: center;
     }
@@ -279,8 +276,8 @@
 
     <!-- Top Corporate Header -->
     <div class="header-band">
-      <span class="org-title">CEYLON METRO HOLDINGS</span>
-      <span class="badge-type">SMART ID</span>
+      <span class="org-title">ACCESSONE</span>
+      <span class="badge-type">SMART PASS</span>
     </div>
     <div class="header-accent"></div>
 
@@ -312,13 +309,13 @@
       <div class="qr-box">
         <img class="qr-img" th:src="${qrDataUri}" alt="Verification QR Code"/>
       </div>
-      <div class="qr-caption">Scan to Verify</div>
+      <div class="qr-caption">VERIFY SCAN</div>
     </div>
 
     <!-- Security Footer -->
     <div class="footer-band">
       <span class="serial-no" th:text="${card.cardSerial}">ACO-2026-000001</span>
-      <span class="security-tag">&#x25CF; AUTHORIZED PASS</span>
+      <span class="security-tag">&#x25CF; SECURE RFID</span>
     </div>
   </div>
 </body>

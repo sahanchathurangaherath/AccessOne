@@ -51,7 +51,7 @@ public class CardRequest extends AuditableEntity {
     private AccessLevel requestedAccessLevel;
 
     /**
-     * Deliberately a plain Long, not a @ManyToOne to IdCard. Module 4 owns
+     * Deliberately a plain Long, not a @ManyToOne to IdCard.  owns
      * id_cards and may not exist yet, and the schema has no foreign key here
      * either -- it would create a cycle with id_cards.card_request_id.
      * Storing the id keeps the two modules independent.
@@ -104,7 +104,7 @@ public class CardRequest extends AuditableEntity {
     //  behaviour 
     public void updateDraft(RequestType type, String reason,
                              AccessLevel level, Long previousCardId) {
-        requireDraft("edited");
+        requireDraftOrRejected("edited");
         this.requestType = type;
         this.reason = reason;
         this.requestedAccessLevel = level;
@@ -113,7 +113,7 @@ public class CardRequest extends AuditableEntity {
     }
 
     public void attachPhoto(String path) {
-        requireDraft("given a new photo");
+        requireDraftOrRejected("given a new photo");
         this.photoPath = path;
     }
 
@@ -156,20 +156,20 @@ public class CardRequest extends AuditableEntity {
     }
 
     public void addDocument(RequestDocument document) {
-        requireDraft("given new documents");
+        requireDraftOrRejected("given new documents");
         documents.add(document);
         document.attachTo(this);
     }
 
     public void removeDocument(RequestDocument document) {
-        requireDraft("stripped of documents");
+        requireDraftOrRejected("stripped of documents");
         documents.remove(document);
     }
 
     // ---------- guards ----------
 
-    private void requireDraft(String action) {
-        if (status != RequestStatus.DRAFT) {
+    private void requireDraftOrRejected(String action) {
+        if (status != RequestStatus.DRAFT && status != RequestStatus.REJECTED) {
             throw new BusinessRuleException("NOT_A_DRAFT",
                 "A request that has been submitted cannot be " + action + ".");
         }

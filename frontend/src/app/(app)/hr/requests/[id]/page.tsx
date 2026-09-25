@@ -410,8 +410,8 @@ export default function ApprovalDecisionPage() {
                 <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-3.5 py-2 text-white">
                   <div className="flex items-center gap-1.5">
                     <ShieldCheck className="h-3.5 w-3.5 text-blue-200" />
-                    <span className="identifier text-[9px] font-bold tracking-[0.2em] text-white">
-                      ACCESSONE ID
+                    <span className="identifier text-[9.5px] font-extrabold tracking-[0.25em] text-white uppercase">
+                      ACCESSONE
                     </span>
                   </div>
                   <div className="flex items-center gap-1">
@@ -438,20 +438,20 @@ export default function ApprovalDecisionPage() {
                     </div>
                   </div>
 
-                  <div className="min-w-0 flex-1 space-y-1">
-                    <p className="truncate text-xs font-bold text-ink leading-tight">
+                  <div className="min-w-0 flex-1 space-y-1 pt-0.5">
+                    <p className="truncate text-[13px] font-black text-slate-950 leading-tight">
                       {approval.employeeName}
                     </p>
-                    <p className="truncate text-[11px] font-semibold text-credential">
+                    <p className="truncate text-[11px] font-bold text-credential">
                       {approval.designation}
                     </p>
-                    <p className="truncate text-[10px] text-slate-500">
+                    <p className="truncate text-[10px] text-slate-500 font-medium">
                       {approval.deptName}
                     </p>
-                    <div className="pt-2">
-                      <span className="identifier rounded bg-slate-100 px-1.5 py-0.5 text-[10px] font-bold text-slate-700">
+                    <div className="pt-1.5">
+                      <p className="font-mono text-xs font-black text-slate-900 tracking-wider">
                         {approval.empId}
-                      </span>
+                      </p>
                     </div>
                   </div>
                 </div>

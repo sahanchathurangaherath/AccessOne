@@ -33,19 +33,22 @@ import { requests, type CardRequestSummary, type RequestStatus } from "./_hooks/
 const STEPPER_STAGES: {
   key: string;
   label: string;
+  department: string;
   description: string;
   statuses: RequestStatus[];
 }[] = [
-  { key: "draft", label: "Draft Created", description: "Details saved", statuses: ["DRAFT"] },
-  { key: "submitted", label: "Submitted", description: "Sent to HR", statuses: ["SUBMITTED"] },
-  { key: "review", label: "HR Verification", description: "Identity & photo review", statuses: ["UNDER_VERIFICATION"] },
-  { key: "approved", label: "IT & Print Queue", description: "QR & NFC assigned", statuses: ["APPROVED"] },
-  { key: "active", label: "Badge Active", description: "Ready / Issued", statuses: [] },
+  { key: "draft", label: "Draft Created", department: "Employee", description: "Details saved", statuses: ["DRAFT"] },
+  { key: "submitted", label: "Submitted", department: "HR Review", description: "Sent to HR", statuses: ["SUBMITTED"] },
+  { key: "review", label: "HR Verification", department: "HR Manager", description: "Identity & photo review", statuses: ["UNDER_VERIFICATION"] },
+  { key: "it_encoding", label: "IT Encoding", department: "IT Department", description: "QR & NFC assigned", statuses: ["APPROVED"] },
+  { key: "print_production", label: "Print Production", department: "Print Department", description: "Badge queue & QC", statuses: ["APPROVED"] },
+  { key: "active", label: "Badge Active", department: "Security Hub", description: "Ready / Issued", statuses: [] },
 ];
 
 function getStepIndex(status: RequestStatus, cardStatus: string | null): number {
-  if (cardStatus === "ACTIVE") return 4;
-  if (status === "APPROVED") return 3;
+  if (cardStatus === "ACTIVE") return 5;
+  if (cardStatus === "QUEUED_FOR_PRINT" || cardStatus === "PRINTED" || cardStatus === "DISPATCHED") return 4;
+  if (cardStatus === "GENERATED" || status === "APPROVED") return 3;
   if (status === "UNDER_VERIFICATION") return 2;
   if (status === "SUBMITTED") return 1;
   return 0;
@@ -180,14 +183,14 @@ export default function EmployeePortalPage() {
               <div className="flex items-center justify-between bg-gradient-to-r from-slate-900 via-[#1F4B8E] to-blue-800 px-4 py-3 text-white">
                 <div className="flex items-center gap-2">
                   <ShieldCheck className="h-4.5 w-4.5 text-blue-200" />
-                  <span className="identifier text-xs font-bold tracking-[0.2em] text-white">
-                    CEYLON METRO
+                  <span className="identifier text-xs font-extrabold tracking-[0.25em] text-white uppercase">
+                    ACCESSONE
                   </span>
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Wifi className="h-3.5 w-3.5 rotate-90 text-blue-200" />
                   <span className="text-[10px] font-bold uppercase tracking-wider text-blue-100">
-                    SECURE RFID
+                    SMART PASS
                   </span>
                 </div>
               </div>
@@ -218,22 +221,17 @@ export default function EmployeePortalPage() {
                 </div>
 
                 {/* Details */}
-                <div className="min-w-0 flex-1 space-y-1.5">
-                  <p className="truncate text-base font-bold text-ink leading-tight">
+                <div className="min-w-0 flex-1 space-y-1 pt-1">
+                  <p className="truncate text-base font-black text-slate-950 leading-tight">
                     {displayName}
                   </p>
-                  <p className="truncate text-sm font-semibold text-credential">
+                  <p className="truncate text-xs font-bold text-credential">
                     {displayRole}
                   </p>
                   <div className="pt-2">
-                    <span className="identifier rounded-md bg-slate-100 px-2.5 py-1 text-xs font-bold text-slate-800 border border-slate-200">
+                    <p className="font-mono text-sm font-black text-slate-900 tracking-wider">
                       {displayEmpId}
-                    </span>
-                  </div>
-                  <div className="pt-1">
-                    <span className="text-xs text-slate-500 font-medium">
-                      Door Access: Multi-Zone
-                    </span>
+                    </p>
                   </div>
                 </div>
               </div>
@@ -286,7 +284,7 @@ export default function EmployeePortalPage() {
                 </h3>
               </div>
               <p className="text-sm text-slate-600 leading-relaxed">
-                Your AccessOne smart badge grants physical entry to authorized zones across Ceylon Metro headquarters and regional campuses. Keep your card visible at all times within corporate premises.
+                Your AccessOne smart badge grants physical entry to authorized zones across corporate headquarters and regional campuses. Keep your card visible at all times within corporate premises.
               </p>
             </div>
 
@@ -353,7 +351,7 @@ export default function EmployeePortalPage() {
               {/* Center Section: Stage & Workflow Context (Fills the awkward gap) */}
               <div className="flex items-center gap-3 rounded-xl border border-blue-100 bg-gradient-to-r from-blue-50/70 via-slate-50 to-blue-50/40 px-4 py-2.5 self-stretch sm:self-auto shadow-2xs">
                 <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-credential text-white font-black text-xs shadow-xs">
-                  {currentStep + 1}/5
+                  {currentStep + 1}/6
                 </div>
                 <div className="text-xs">
                   <p className="font-bold text-ink">
@@ -364,12 +362,18 @@ export default function EmployeePortalPage() {
                       : currentStep === 2
                       ? "Phase 3: HR Verification"
                       : currentStep === 3
-                      ? "Phase 4: IT Encoding & Print Queue"
-                      : "Phase 5: Badge Active"}
+                      ? "Phase 4: IT Department (Digital Encoding)"
+                      : currentStep === 4
+                      ? "Phase 5: Print Department (Production & QC)"
+                      : "Phase 6: Badge Active & Issued"}
                   </p>
                   <p className="text-[11px] text-slate-500">
                     {currentStep === 3
-                      ? "QR & NFC linked · Queued for production"
+                      ? "IT Dept · Cryptographic QR & NFC payload encoded"
+                      : currentStep === 4
+                      ? "Print Dept · Physical badge in production queue & QC"
+                      : currentStep === 5
+                      ? "Authorized for corporate access"
                       : "Corporate credential pipeline"}
                   </p>
                 </div>
@@ -435,26 +439,29 @@ export default function EmployeePortalPage() {
             <div className="space-y-6 pt-2 pb-1">
               <div className="relative">
                 {/* Connecting track line */}
-                <div className="hidden sm:block absolute top-5 left-[10%] right-[10%] h-0.5 bg-slate-200 -z-0">
+                <div className="hidden lg:block absolute top-5 left-[8%] right-[8%] h-0.5 bg-slate-200 -z-0">
                   <div
                     className="h-full bg-emerald-500 transition-all duration-300"
-                    style={{ width: `${(Math.min(currentStep, 4) / 4) * 100}%` }}
+                    style={{ width: `${(Math.min(currentStep, 5) / 5) * 100}%` }}
                   />
                 </div>
 
-                {/* 5 Spaced Step Nodes */}
-                <div className="grid grid-cols-2 sm:grid-cols-5 gap-3 sm:gap-2 relative z-10">
+                {/* 6 Spaced Step Nodes */}
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 sm:gap-2 relative z-10">
                   {STEPPER_STAGES.map((step, idx) => {
                     const isDone = currentStep > idx;
                     const isCurrent = currentStep === idx;
                     return (
                       <div
                         key={step.key}
-                        className="flex flex-col items-center text-center p-2 rounded-xl transition-all"
+                        className={cn(
+                          "flex flex-col items-center text-center p-2 rounded-xl transition-all",
+                          isCurrent && "bg-blue-50/50 border border-blue-200/60 shadow-2xs"
+                        )}
                       >
                         <div
                           className={cn(
-                            "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all bg-white mb-2 shadow-2xs",
+                            "flex h-9 w-9 items-center justify-center rounded-full text-sm font-bold transition-all bg-white mb-1.5 shadow-2xs",
                             isDone
                               ? "bg-emerald-600 text-white shadow-xs ring-4 ring-emerald-50"
                               : isCurrent
@@ -464,9 +471,15 @@ export default function EmployeePortalPage() {
                         >
                           {isDone ? <Check className="h-4.5 w-4.5" /> : idx + 1}
                         </div>
+                        <span className={cn(
+                          "text-[10px] font-bold uppercase tracking-wider",
+                          isCurrent ? "text-credential font-extrabold" : "text-slate-400"
+                        )}>
+                          {step.department}
+                        </span>
                         <p
                           className={cn(
-                            "text-sm font-bold leading-tight",
+                            "text-sm font-bold leading-tight mt-0.5",
                             isCurrent
                               ? "text-credential font-extrabold"
                               : isDone
@@ -496,13 +509,15 @@ export default function EmployeePortalPage() {
                       ? "Your card request has been submitted to HR. Verification in progress."
                       : activeRequest.status === "UNDER_VERIFICATION"
                       ? "HR is reviewing your records and identity documents."
-                      : activeRequest.status === "APPROVED"
-                      ? "Approved by HR. IT has assigned your NFC/RFID credentials and QR code. Badge is queued in print production."
+                      : currentStep === 3
+                      ? "IT Department: Approved by HR. Digital QR verification payload and NFC security keys are being encoded."
+                      : currentStep === 4
+                      ? "Print Department: Physical badge is queued in print production for thermal burning, lamination, and quality inspection."
                       : "Card lifecycle is active. Ready for corporate access."}
                   </span>
                 </div>
                 <span className="text-xs font-bold text-slate-400 hidden sm:inline">
-                  Step {currentStep + 1} of 5
+                  Step {currentStep + 1} of 6
                 </span>
               </div>
             </div>

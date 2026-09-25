@@ -100,7 +100,13 @@ export default function EmployeeManagementPage() {
   const today = new Date().toISOString().split("T")[0];
 
   const { data: departments, isLoading: deptsLoading } = useDepartments();
-  const { data: employeeData, isLoading: employeesLoading, refetch: refetchEmployees } = useEmployees({
+  const {
+    data: employeeData,
+    isLoading: employeesLoading,
+    isError: employeesError,
+    error: employeesErrorObj,
+    refetch: refetchEmployees,
+  } = useEmployees({
     query: searchQuery,
     departmentId: selectedDeptId,
     status: selectedStatus,
@@ -337,6 +343,42 @@ export default function EmployeeManagementPage() {
               <div className="p-12 flex flex-col items-center justify-center gap-3 text-slate-500">
                 <Loader2 className="h-8 w-8 animate-spin text-credential" />
                 <p className="text-xs font-medium">Loading employee directory...</p>
+              </div>
+            ) : employeesError ? (
+              <div className="p-12 text-center text-slate-500 space-y-3">
+                <AlertCircle className="h-12 w-12 mx-auto text-amber-500" />
+                <p className="text-sm font-bold text-ink">
+                  {employeesErrorObj instanceof ApiError && employeesErrorObj.status === 401
+                    ? "Session Expired"
+                    : "Unable to load employee directory"}
+                </p>
+                <p className="text-xs text-slate-500 max-w-md mx-auto">
+                  {employeesErrorObj instanceof ApiError && employeesErrorObj.status === 401
+                    ? "Your session has expired or the server was restarted. Please sign in again to access employee records."
+                    : employeesErrorObj instanceof ApiError
+                    ? employeesErrorObj.problem.detail || "An error occurred while fetching the employee records."
+                    : "Please check your network connection and try again."}
+                </p>
+                <div className="pt-2 flex justify-center gap-2">
+                  {employeesErrorObj instanceof ApiError && employeesErrorObj.status === 401 ? (
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={() => (window.location.href = "/login")}
+                    >
+                      Sign In Again
+                    </Button>
+                  ) : (
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => void refetchEmployees()}
+                    >
+                      <RefreshCw className="h-3.5 w-3.5 mr-1.5" />
+                      Try Again
+                    </Button>
+                  )}
+                </div>
               </div>
             ) : !employeeData || employeeData.content.length === 0 ? (
               <div className="p-12 text-center text-slate-500">

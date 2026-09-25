@@ -27,10 +27,13 @@ public class PrintMapper {
     }
 
     public PrintJobDetail toDetail(PrintJob j) {
-        Employee e = j.getCard().getEmployee();
+        IdCard card = j.getCard();
+        Employee e = card.getEmployee();
+        String designation = card.getPrintedDesignation() != null ? card.getPrintedDesignation()
+                : (e.getDesignation() != null ? e.getDesignation() : "");
         return new PrintJobDetail(
-                j.getId(), j.getJobNo(), j.getCard().getId(), j.getCard().getCardSerial(),
-                e.getFullName(), e.getEmpId(), e.getDepartment().getDeptName(),
+                j.getId(), j.getJobNo(), card.getId(), card.getCardSerial(),
+                e.getFullName(), e.getEmpId(), designation, e.getDepartment().getDeptName(),
                 j.getJobType().name(), j.getStatus().name(), j.getPrinterName(),
                 j.getQueuedAt(), j.getPrintedAt(),
                 j.getQcResult().name(), j.getQcNotes(), j.getCancelledReason(),
